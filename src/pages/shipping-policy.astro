@@ -1,0 +1,98 @@
+---
+import StandardLayout from "@layouts/StandardLayout.astro";
+import "@styles/others/legal-pages.css";
+import { siteInfo } from "@shared/siteInfo.js";
+const pageName = "Shipping Policy";
+const pageTitle = `${pageName} | ${siteInfo.name}`;
+const pageDescription = `Read ${siteInfo.name}'s shipping policy. Details on processing times, courier partners, delivery estimates, and international shipping.`;
+---
+<StandardLayout title={pageTitle} description={pageDescription}>
+	<h1 class="hidden-visually">{pageTitle}</h1>
+
+	<section class="center-layout left">
+		<h2 class="section-title">{pageName}</h2>
+		<p><span id="last-updated">Last Updated:</span> 01 January 2025</p>
+		<p>At {siteInfo.name}, we aim to be transparent about how logistics work when you order physical goods from us. Here is how we get your order from us to your door.</p>
+
+		<ol class="legal-ol">
+			<li>
+				<h3 class="legal">Processing &amp; Packing</h3>
+				<p>Orders are processed on <b><!-- insert processing days here, e.g. Monday–Friday -->business days</b>. Once your order is placed, it typically takes <b><!-- insert days here, e.g. 1–3 -->X business days</b> to pack and hand it over to the courier.</p>
+				<p>If you need your order faster, <a href="/contact">contact us</a> and we'll see what we can do.</p>
+				<p><b>A note on mixed carts:</b> If your order includes items with different processing times, we ship everything together once the full order is ready.</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Subscription Orders</h3>
+				<p>Subscriptions operate on a dedicated schedule to keep fulfillment predictable.</p>
+				<ul class="legal-ul-nested">
+					<li>
+						<p><b>Billing:</b> Subscription orders are billed on a recurring schedule. Check your account or the subscription description for exact billing dates.</p>
+					</li>
+					<li>
+						<p><b>Shipping:</b> Subscription shipments are dispatched around <!-- insert schedule details, e.g. the first week of each month --><span style="background: yellow;">[your dispatch schedule here]</span>. Shipping fees are calculated at checkout.</p>
+					</li>
+				</ul>
+			</li>
+
+			<li>
+				<h3 class="legal">Domestic Shipping</h3>
+				<p>We use <!-- insert courier names, e.g. UPS, FedEx --><span style="background: yellow;">[your courier partners here]</span> to deliver within <!-- insert country --><span style="background: yellow;">[your country]</span>. Shipping fees are calculated automatically at checkout based on weight and distance.</p>
+				<ul class="legal-ul-nested">
+					<li>
+						<p><b>Delivery Times:</b> Expect <b><!-- insert days -->X–Y day</b> delivery for most items. Larger or heavier shipments may take longer.</p>
+					</li>
+					<li>
+						<p><b>Free Shipping:</b> We occasionally run free shipping promotions. Check the checkout page for current thresholds and eligibility.</p>
+					</li>
+					<li>
+						<p><b>Address Restrictions:</b> Please provide a standard residential or business address. We cannot deliver to P.O. Boxes unless stated otherwise.</p>
+					</li>
+				</ul>
+			</li>
+
+			<li>
+				<h3 class="legal">International Shipping</h3>
+				<p>
+					We ship internationally to select countries, typically via <!-- insert courier, e.g. DHL, NinjaVan --><span style="background: yellow;">[your international courier here]</span>. Expect a <b><!-- insert days -->X–Y day</b> delivery window. Shipping costs are calculated automatically at checkout.
+				</p>
+				<p>
+					<b>Customs &amp; Import Duties:</b> Any import taxes or customs duties charged by your local government are your responsibility. We ensure all paperwork is accurate on our end to facilitate smooth clearance. Border fees are borne by the recipient.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Order Changes &amp; Typos</h3>
+				<p>
+					If you realize you entered the wrong shipping address, you have a <b><!-- insert hours, e.g. 24 -->X-hour window</b> to contact us and update it before the order is locked in.
+				</p>
+				<p>
+					If the package ships to the wrong address due to a customer error, or if the courier returns it after multiple delivery attempts, you will need to cover the re-shipping fee. If the error was on our end, we cover redelivery in full.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Peak Seasons &amp; Damaged Goods</h3>
+				<p>
+					<b>Peak Seasons:</b> During holidays, major sales events, or peak shopping seasons, couriers may experience delays. Please allow extra time for delivery during these periods.
+				</p>
+				<p>
+					<b>Damaged in Transit:</b> If your order arrives damaged, please contact us immediately. See our <a href="/refund-return-policy/">Refund &amp; Return Policy</a> for the steps to resolve it. We will do our best to make it right.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Tracking &amp; Missing Packages</h3>
+				<p>
+					You will receive a tracking number via email once your order is handed off to the courier. Please allow up to 24 hours for the tracking link to become active in the courier's system.
+				</p>
+				<p>
+					<b>When to contact us:</b> If <b><!-- insert days, e.g. 3 -->X business days</b> have passed since you placed your order and you haven't received a tracking number, let us know.
+				</p>
+				<p>
+					If your package seems lost, delayed, or the courier is unresponsive, reach out to us via <a href="/contact">our contact page</a>. We handle every issue on a case-by-case basis and work with you to get your order delivered.
+				</p>
+			</li>
+		</ol>
+	</section>
+</StandardLayout>

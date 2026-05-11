@@ -1,0 +1,115 @@
+---
+import { overlayConfig } from "./overlay.store.ts";
+
+
+const cfg = overlayConfig.announcementBanner;
+const bannerId = "announcementBanner";
+const campaignId = cfg.campaignId;
+const storageKey = `overlay-dismissals:v1:${bannerId}`;
+---
+
+{ cfg.active && (<>
+<script is:inline define:vars={{ storageKey, campaignId }}>
+(function () {
+  try {
+    var dismissed = localStorage.getItem(storageKey);
+    if (dismissed === campaignId) {
+      document.documentElement.style.setProperty("--banner-display", "none");
+    }
+  } catch (e) { }
+})();
+</script>
+
+<div
+  id={bannerId}
+  class="announcement-banner"
+  style="display: var(--banner-display, grid);"
+  data-banner-id={bannerId}
+  data-campaign-id={campaignId}
+>
+  <div class="content-wrapper">
+    <div class="content">
+      <div class="seamless-marquee-container">
+        <div class="seamless-marquee-track banner">
+          <div class="seamless-marquee-content">
+            <img src="https://placehold.co/24x24?text=Star" class="section-icon" alt="" width="24" height="24" /> 
+            <span>Welcome to our store — check out the latest deals and updates!</span>
+          </div>
+          <div class="seamless-marquee-content" aria-hidden="true">
+            <img src="https://placehold.co/24x24?text=Star" class="section-icon" alt="" width="24" height="24" /> 
+            <span>Welcome to our store — check out the latest deals and updates!</span>
+          </div>
+          <div class="seamless-marquee-content" aria-hidden="true">
+            <img src="https://placehold.co/24x24?text=Star" class="section-icon" alt="" width="24" height="24" /> 
+            <span>Welcome to our store — check out the latest deals and updates!</span>
+          </div>
+          <div class="seamless-marquee-content" aria-hidden="true">
+            <img src="https://placehold.co/24x24?text=Star" class="section-icon" alt="" width="24" height="24" /> 
+            <span>Welcome to our store — check out the latest deals and updates!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="overlay-close-btn" aria-label="Close announcement" data-banner-close={bannerId}>&times;</button>
+</div>
+</>
+)}
+
+<style>
+.announcement-banner {
+  grid-column: 1 / -1;
+  background: var(--accent-bg);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  @media (min-width: 769px) { grid-template-columns: subgrid; }
+}
+
+.content-wrapper {
+  grid-column: 2;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  @media (max-width: 768px) { padding: 0 2rem; }
+}
+
+.content {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  width: 100%;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.seamless-marquee-content .section-icon { transform: scaleX(-1); }
+.overlay-close-btn {
+  grid-column: 3;
+  display: grid;
+  place-items: center;
+  margin-top: -4px;
+}
+</style>
+
+<script>
+import { dismissOverlay } from "./overlay.store.ts";
+
+document.addEventListener("astro:page-load", () => {
+  document.querySelectorAll("[data-banner-close]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = (e.currentTarget as HTMLElement).dataset.bannerClose;
+      const banner = document.getElementById(id || "");
+      const campaignId = banner?.dataset.campaignId;
+      if (id && campaignId) {
+        dismissOverlay(id, campaignId);
+        if (banner) banner.style.display = "none";
+      }
+    });
+  });
+});
+</script>

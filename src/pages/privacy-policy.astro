@@ -1,0 +1,427 @@
+---
+import StandardLayout from "@layouts/StandardLayout.astro";
+import "@styles/others/legal-pages.css";
+import { siteInfo } from "@shared/siteInfo.js";
+const pageName = "Privacy Policy";
+const pageTitle = `${pageName} | ${siteInfo.name}`;
+const pageDescription = `Learn how ${siteInfo.name} collects, uses, and protects your personal data. Read our official Privacy Policy.`;
+---
+
+<StandardLayout title={pageTitle} description={pageDescription}>
+	<h1 class="hidden-visually">{pageTitle}</h1>
+
+	<section class="center-layout left">
+		<h2 class="section-title">{pageName}</h2>
+		<p><span id="last-updated">Last Updated:</span> 01 November 2025</p>
+		<p>
+			This Privacy Policy explains how we collect, use, disclose, and protect the personal information you provide or
+			that we collect when you access or use our services when you use our website ({siteInfo.domain}). It explains your
+			privacy rights and choices, and how to contact us about our privacy practices. Please read this Policy carefully.
+			By using our Platform, you consent to the data practices described in this Policy.
+		</p>
+		<p>
+			This Privacy Policy is published on behalf of our business entity, <b>{siteInfo.legalBusinessName}</b> (Reg. No: {
+				siteInfo.legalBusinessRegNo
+			}), operating in {siteInfo.address.locality}, {siteInfo.address.country} under the business address {
+				siteInfo.legalBusinessAddress
+			}. All references to “we”, “us”, or “our” refer to the business entity identified above. If you have questions,
+			requests, or concerns about this Privacy Policy, please contact us at: <b>{siteInfo.email}</b>.
+		</p>
+		<p>
+			We may modify this Privacy Policy at any time without any prior notice to you and will post the revised Privacy
+			Policy on the Service. The revised Policy will be effective 180 days from when the revised Policy is posted in the
+			Service and your continued access or use of the Service after such time will constitute your acceptance of the
+			revised Privacy Policy. We therefore recommend that you periodically review this page.
+		</p>
+
+		<ol class="legal-ol">
+			<li>
+				<h3 class="legal">Information We Collect</h3>
+				<p>
+					We collect multiple types of information to operate effectively and provide you the best experience. The
+					categories of information we collect include:
+				</p>
+				<ol class="legal-ol-nested">
+					<li>
+						<p>
+							<b>Information You Provide Directly</b>: When you register, create an account, fill forms, contact us, or
+							otherwise communicate with us, you may provide personal information such as your name, email address,
+							phone number, billing and payment information, profile information, and other identifiers. For businesses,
+							this may include the business contact person, company name, and business address — only when you entered
+							that information and only if entity_type is 'business'. For individual operators, business name and
+							address are intentionally omitted from this Policy output and will not appear in rendered policy text.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>Automatically Collected Information</b>: We automatically collect technical and usage data when you
+							interact with the Platform, which may include IP address, device identifiers, device model and operating
+							system, browser type, language preferences, access times, pages visited, search queries, referring/exit
+							pages, crash logs, and performance metrics.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>Location Data</b>: We may collect approximate or precise location data from your device if you grant
+							location permissions. Location data may be used to provide location-sensitive functionality, improve
+							service relevance, or for fraud prevention. You can control location access in your device settings.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>Payment and Transaction Data</b>: When you make purchases or use paid features, we collect payment data
+							(such as billing name, billing address, and payment card details) which is processed by secure third-party
+							payment processors. We do not store full payment card numbers on our servers unless explicitly required
+							and disclosed.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>Communications and Support Data</b>: We maintain records of communications and support interactions to
+							provide assistance, detect abuse, and improve service quality. These records may include email content,
+							chat transcripts, telephone logs, and attachments you send.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>Derived and Aggregated Data</b>: We may derive non-identifying, aggregated, or de-identified data from
+							the information we collect. Aggregated data is used for analytics, performance measurement, and research;
+							it cannot reasonably be used to identify you.
+						</p>
+					</li>
+				</ol>
+			</li>
+
+			<li>
+				<h3 class="legal">How we use your information</h3>
+				<p>We will use the information that we collect about you for the following purposes:</p>
+				<ol class="legal-ol-nested">
+					<li><p>To provide, operate, maintain, and improve the Platform and related services.</p></li>
+					<li>
+						<p>To authenticate users, manage accounts, provide customer support, and communicate important updates.</p>
+					</li>
+					<li><p>To process payments, prevent fraud, and enforce our Terms of Service.</p></li>
+					<li><p>To personalize content, recommendations, and advertising where allowed.</p></li>
+					<li><p>To send you marketing and promotional communications.</p></li>
+					<li>
+						<p>To perform analytics, monitor service health, and produce aggregated statistics for internal use.</p>
+					</li>
+					<li>
+						<p>
+							To comply with legal obligations, respond to lawful requests from government or law enforcement, and
+							protect rights and safety.
+						</p>
+					</li>
+					<li>
+						<p>
+							To use your information for other Business Purposes, such as data analysis, identifying usage trends,
+							determining the effectiveness of our promotional campaigns and to evaluate and improve our Services,
+							products, marketing and your experience. We may use and store this information in aggregated and
+							anonymized form so that it is not associated with individual end users and does not include personal
+							information. We will not use identifiable personal information without your consent.
+						</p>
+					</li>
+				</ol>
+				<p>
+					If we want to use your information for any other purpose, we will ask you for consent and will use your
+					information only on receiving your consent and then, only for the purpose(s) for which grant consent unless we
+					are required to do otherwise by law.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Legal Bases for Processing (If Applicable)</h3>
+				<p>To the extent applicable, our lawful bases for processing personal data may include:</p>
+				<ol class="legal-ol-nested">
+					<li>
+						<b>Consent</b>: We may process your data if you have given us specific consent to use your personal
+						information in a specific purpose.
+					</li>
+					<li>
+						<b>Legitimate Interests</b>: We may process your data when it is reasonably necessary to achieve our
+						legitimate business interests.
+					</li>
+					<li>
+						<b>Performance of a Contract</b>: Where we have entered into a contract with you, we may process your
+						personal information to fulfill the terms of our contract.
+					</li>
+					<li>
+						<b>Legal obligations</b>: We may disclose your information where we are legally required to do so in order
+						to comply with applicable law, governmental requests, a judicial proceeding, court order, or legal process,
+						such as in response to a court order or a subpoena (including in response to public authorities to meet
+						national security or law enforcement requirements).
+					</li>
+					<li>
+						<b>Vital interests</b>: We may disclose your information where we believe it is necessary to investigate,
+						prevent, or take action regarding potential violations of our policies, suspected fraud, situations
+						involving potential threats to the safety of any person and illegal activities, or as evidence in litigation
+						in which we are involved.
+					</li>
+				</ol>
+				<p>
+					More specifically, we may need to process your data or share your personal information in the following
+					situations:
+				</p>
+				<ol class="legal-ol-nested">
+					<li>
+						<b>Vendors, Consultants and Other Third-Party Service Providers</b>: We may share your data with third party
+						vendors, service providers, contractors or agents who perform services for us or on our behalf and require
+						access to such information to do that work. Examples include: payment processing, data analysis, email
+						delivery, hosting services, customer service and marketing efforts. We may allow selected third parties to
+						use tracking technology on the Services, which will enable them to collect data about how you interact with
+						the Services over time. This information may be used to, among other things, analyze and track data,
+						determine the popularity of certain content and better understand online activity. Unless described in this
+						Policy, we do not share, sell, rent or trade any of your information with third parties for their
+						promotional purposes.
+					</li>
+					<li>
+						<b>Business Transfers</b>: We may share or transfer your information in connection with, or during
+						negotiations of, any merger, sale of company assets, financing, or acquisitions of all or a portion of our
+						business to another company.
+					</li>
+					<li>
+						<b>Third Party Advertisers</b>: We may use third-party advertising companies to serve ads when you visit the
+						Services. These companies may use information about your visits to out Website(s) and other websites that
+						are contained in web cookies and other tracking technologies in order to provide advertisements about goods
+						and services of interest to you.
+					</li>
+				</ol>
+			</li>
+
+			<li>
+				<h3 class="legal">Cookies and Tracking Technologies</h3>
+				<p>We do not use cookies for tracking beyond essential technical cookies required to operate the service.</p>
+				<p>
+					We classify cookies into categories including essential cookies, preference cookies, analytics cookies, and
+					advertising cookies. Essential cookies enable core functionality. Preference and analytics cookies support
+					personalization and performance. Advertising cookies enable targeted ads (only used if we operate ads or use
+					ad networks).
+				</p>
+				<p>
+					To manage cookies, you may use your browser settings or device controls. For mobile apps, permission prompts
+					and in-app settings may allow you to opt out of certain tracking.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Advertising and Analytics</h3>
+				<p>
+					We do not display advertisements from third-party networks that use tracking for ad targeting. We utilize
+					analytics tools to collect aggregated and anonymized usage statistics to improve the Platform. These tools may
+					collect information such as pages visited, time spent, device information, and general geographic data.
+					Analytics data is used internally for product improvements and troubleshooting.
+				</p>
+				<p>
+					Where third-party advertising or analytics vendors operate, their own privacy policies govern their data
+					practices. We recommend reviewing such policies for more details and opt-out tools.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Sharing and Disclosure</h3>
+				<p>
+					We do not sell your personal information. We disclose personal information only as described below or with
+					your consent:
+				</p>
+				<ol class="legal-ol-nested">
+					<li>
+						<p>
+							To service providers and contractors providing hosting, infrastructure, payment, and other services to
+							operate the Platform.
+						</p>
+					</li>
+					<li>
+						<p>To affiliates and partners for joint operations, where you have consented or where permitted by law.</p>
+					</li>
+					<li><p>To comply with legal processes, such as court orders, subpoenas, or government investigations.</p></li>
+					<li><p>To protect our rights, property, or safety, or the rights, property, or safety of others.</p></li>
+				</ol>
+				<p>
+					We may share data with third parties. These service providers assist with hosting, payment processing,
+					customer support, analytics, communication, and other necessary operations.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">International Data Transfers</h3>
+				<p>
+					Our operations may involve transferring personal information to countries outside your country of residence.
+					When we transfer data internationally, we implement appropriate safeguards, such as standard contractual
+					clauses or other mechanisms permitted by law, to protect the data.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Data Retention and Deletion</h3>
+				<p>
+					We retain personal information for as long as necessary to provide services, comply with legal obligations,
+					resolve disputes, enforce agreements, and for legitimate business purposes. Retention periods vary by data
+					type and legal requirements. Where possible, we will honor deletion requests, subject to verification and
+					legal exceptions. At present, deletion requests will be evaluated and handled on a case-by-case basis. We will
+					respond to deletion inquiries and provide guidance; some data may need to be retained for legal, tax,
+					accounting, or legitimate business reasons.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Security Measures</h3>
+				<p>
+					We use administrative, technical, and physical controls designed to protect personal information from
+					unauthorized access, disclosure, alteration, and destruction. Controls include access controls, encryption in
+					transit and at rest (where applicable), secure data centers, vulnerability scanning, and internal security
+					policies. While we strive to use reasonable safeguards, no system can be guaranteed to be 100% secure.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Children’s Privacy</h3>
+				<p>
+					Our Platform is not directed to children under the age of 13 (or the minimum age in your jurisdiction). We do
+					not knowingly collect personal information from children without parental consent. If a parent or guardian
+					believes we have collected information from a child under the applicable age without consent, please contact
+					us and we will take steps to delete such data.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Your Privacy Rights</h3>
+				<p>
+					Depending on where you reside, you may have rights including the right to access, correct, or delete your
+					personal data, the right to portability, the right to restrict or object to processing, and the right to
+					withdraw consent. You may also have the right to opt-out of certain data uses or profiling, and to opt-out of
+					the sale or sharing of personal information where applicable. To exercise these rights, contact us at the
+					email address listed above. We will verify requests consistent with applicable law and respond within
+					applicable timeframes.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Rights for European Residents (GDPR)</h3>
+				<p>
+					This Privacy Policy is written to be consistent with the rights provided under the European Union General Data
+					Protection Regulation (GDPR). If you are located in the European Economic Area (EEA), you may have additional
+					rights under the GDPR (described below). Under GDPR, you may request access to your personal data,
+					rectification, erasure, restriction of processing, data portability, and to object to processing. In some
+					cases, you can lodge a complaint with a supervisory authority where you believe your rights have been
+					violated.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Rights for California Residents (CCPA/CPRA)</h3>
+				<p>
+					If you are a California resident, you may have rights under the California Consumer Privacy Act (CCPA) and
+					California Privacy Rights Act (CPRA). This policy contains sections describing how to exercise those rights,
+					including access, deletion, and opt-out of sale/sharing (if applicable). If you are a California resident, you
+					can request details about the categories of personal data we collect, the categories of sources, the
+					categories of recipients, and the business purposes for collection. You may request deletion and opt-out of
+					sale or sharing where applicable. We do not knowingly sell the personal information of minors under 16 without
+					affirmative authorization. For more about your rights under CCPA, visit: <a
+						href="https://oag.ca.gov/privacy/ccpa"
+						rel="noopener noreferrer"
+						target="_blank"
+						aria-label="California CCPA Information">California CCPA Information</a
+					>.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Third-Party Links and Integrations</h3>
+				<p>
+					The Platform may contain links to third-party websites or integrate with third-party services. We are not
+					responsible for their privacy practices. Review their privacy policies before providing personal information
+					to third parties.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Data Breach Response</h3>
+				<p>
+					In the event of a security breach that affects personal information, we will follow our incident response
+					plan, take reasonable steps to mitigate harm, and notify affected individuals and regulators as required by
+					applicable law. We maintain processes for evaluating and responding to security incidents.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Automated Decision-Making and Profiling</h3>
+				<p>
+					We may use automated systems, including algorithms and machine learning, to analyze data for product
+					improvements, fraud detection, personalization, and other operational purposes. Where applicable, you have
+					rights regarding automated decisions about you; contact us to learn whether automated processing applies to
+					your data and how to exercise any rights.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">International Users</h3>
+				<p>
+					If you are accessing the Platform from outside our primary operating country, your data will be processed
+					under the laws of the country where our servers or subprocessors operate, while respecting the protections
+					described in this Policy. Transfers are made in compliance with applicable safeguards and legal mechanisms for
+					cross-border data flows.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Retention, Anonymization and Archiving</h3>
+				<p>
+					When data is no longer necessary for the purposes for which it was collected, we delete or anonymize it. In
+					some cases we may retain information for historical, statistical, or legal compliance reasons. Anonymized or
+					aggregated data may be retained indefinitely and used for analytics and research.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">How to Exercise Your Rights</h3>
+				<p>
+					To exercise your rights, or to inquire about our privacy practices, please contact us via the email address
+					provided above. We will attempt to respond within applicable statutory timelines and may require verification
+					of identity to protect your information and the rights of others.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Complaint Mechanisms and Supervisory Authorities</h3>
+				<p>
+					If you are in the EU/EEA, you may lodge a complaint with a data protection authority. If you are in another
+					jurisdiction and wish to file a complaint, contact your local supervisory body or our designated contact for
+					privacy matters.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Additional Disclosures</h3>
+				<p>
+					We may provide additional privacy disclosures in context (for example, within the App privacy settings,
+					account pages, or terms for specific features). Those supplemental notices are incorporated into this Policy
+					where applicable.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Data Security and Third-Party Subprocessors</h3>
+				<p>
+					We vet our subprocessors and require them to adhere to contractual obligations to protect personal data. We
+					may update our list of subprocessors and will provide notice of material changes where required by law.
+				</p>
+			</li>
+			<li>
+				<h3 class="legal">Miscellaneous</h3>
+				<p>
+					Where any provision of this Policy conflicts with applicable law, such provision will be interpreted to the
+					extent necessary to comply with the law. Headings are for convenience only and do not affect interpretation.
+					This Policy does not create contractual rights for third parties.
+				</p>
+			</li>
+			<li>
+				<h3 class="legal">Final Notes</h3>
+				<p>
+					We strive to maintain transparent and robust privacy practices. Thank you for trusting {siteInfo.url} with your
+					information. Please review this Policy periodically for updates. If you have questions or comments about this policy,
+					you may contact us via the contact information provided in the beginning of this policy.
+				</p>
+			</li>
+		</ol>
+	</section>
+</StandardLayout>

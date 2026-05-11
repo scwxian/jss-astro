@@ -1,0 +1,41 @@
+---
+import './bento-carousel.css';
+export interface TabData {
+	id: string;
+	label: string;
+}
+
+export interface Props {
+	tabs: TabData[];
+}
+
+const { tabs } = Astro.props;
+---
+
+<bento-carousel>
+	<div class="bento-carousel-wrapper">
+		{tabs.length > 0 && (
+			<nav class="bento-carousel-tabs" role="tablist" aria-label="Carousel navigation">
+				<div class="tabs-progress-fill"></div>
+				{tabs.map((tab, index) => (
+					<button
+						class={`tab-button ${index === 0 ? "active" : ""}`}
+						data-tab={tab.id}
+						role="tab"
+						aria-selected={index === 0 ? "true" : "false"}
+						aria-controls={`card-${tab.id}`}
+					>
+						{tab.label}
+					</button>
+				))}
+			</nav>
+		)}
+
+		<div class="bento-carousel-cards">
+			<slot />
+		</div>
+	</div>
+</bento-carousel>
+
+<script src="./bento-carousel.js"></script>
+

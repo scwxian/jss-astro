@@ -1,0 +1,122 @@
+---
+import { siteInfo, countryCodeMap } from "@shared/siteInfo.js";
+
+export interface Props {
+	title: string;
+	description: string;
+	url: string;
+	item?: Record<string, any>;
+	breadcrumbs?: { name: string; url: string }[];
+}
+
+const { title, description, url, item, breadcrumbs } = Astro.props;
+
+const siteUrl = siteInfo.url.endsWith("/") ? siteInfo.url : `${siteInfo.url}/`;
+const pageUrl = url.endsWith("/") ? url : `${url}/`;
+
+const orgNode = {
+	"@type": "LocalBusiness",
+	"@id": `${siteUrl}#organization`,
+	name: siteInfo.businessName,
+	url: siteUrl,
+	logo: {
+		"@type": "ImageObject",
+		"@id": `${siteUrl}#logo`,
+		url: siteInfo.logo,
+		contentUrl: siteInfo.logo,
+	},
+	image: { "@id": `${siteUrl}#logo` },
+	telephone: siteInfo.phone,
+	address: {
+		"@type": "PostalAddress",
+    streetAddress: siteInfo.address.streetAddress,
+		addressLocality: siteInfo.address.locality,
+    postalCode: siteInfo.address.postalCode,
+		addressRegion: siteInfo.address.region,
+		addressCountry: siteInfo.address.country,
+	},
+  areaServed: siteInfo.shippingDestinations
+		.map((code) => ({
+			"@type": "Country",
+			name: countryCodeMap[code] || code,
+		}))
+		.filter((c) => c.name),
+	sameAs: Object.values(siteInfo.socials),
+	priceRange: "$$",
+};
+
+const websiteNode = {
+	"@type": "WebSite",
+	"@id": `${siteUrl}#website`,
+	url: siteUrl,
+	name: siteInfo.name,
+	publisher: { "@id": `${siteUrl}#organization` },
+	potentialAction: {
+		"@type": "SearchAction",
+		target: {
+			"@type": "EntryPoint",
+			urlTemplate: `${siteUrl}search?q={search_term_string}`,
+		},
+		"query-input": "required name=search_term_string",
+	},
+};
+
+let pageNode: Record<string, any> = {
+	"@type": "WebPage",
+	"@id": `${pageUrl}#webpage`,
+	url: pageUrl,
+	name: title,
+	description: description,
+	isPartOf: { "@id": `${siteUrl}#website` },
+};
+
+const graphItems = [orgNode, websiteNode];
+
+if (breadcrumbs && breadcrumbs.length > 0) {
+	const breadcrumbNode = {
+		"@type": "BreadcrumbList",
+		"@id": `${pageUrl}#breadcrumb`,
+		itemListElement: breadcrumbs.map((crumb, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			name: crumb.name,
+			item: crumb.url,
+		})),
+	};
+	graphItems.push(breadcrumbNode);
+	pageNode.breadcrumb = { "@id": `${pageUrl}#breadcrumb` };
+}
+
+if (item) {
+	const itemType = item["@type"];
+	if (typeof itemType === "string" && itemType.endsWith("Page")) {
+		pageNode = {
+			...pageNode,
+			...item,
+			"@type": itemType,
+			"@id": `${pageUrl}#webpage`,
+			isPartOf: { "@id": `${siteUrl}#website` },
+		};
+		graphItems.push(pageNode);
+	} else {
+		const entityId = `${pageUrl}#mainentity`;
+
+		pageNode.mainEntity = { "@id": entityId };
+		const entityNode = {
+			...item,
+			"@id": entityId,
+		};
+		graphItems.push(pageNode);
+		graphItems.push(entityNode);
+	}
+} else {
+	graphItems.push(pageNode);
+}
+
+const schema = {
+	"@context": "https://schema.org",
+	"@graph": graphItems,
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

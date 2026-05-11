@@ -1,0 +1,88 @@
+---
+import VariantSelector from "@shop/VariantSelector/VariantSelector.astro";
+import type { PriceVariantGroup, OptionGroup } from "@shop/VariantSelector/VariantSelector.astro";
+import { formatPrice } from "@scripts/utils.js";
+
+export interface Props {
+	basePrice: number;
+	masterSku: string;
+	hasPriceVariants: boolean;
+	priceVariantGroups?: PriceVariantGroup[];
+	options?: OptionGroup[];
+	isOut: boolean;
+	isPre?: boolean;
+	submitBtnText: string;
+	includeSkuGroups?: string[];
+}
+
+const {
+	basePrice,
+	masterSku,
+	hasPriceVariants,
+	priceVariantGroups,
+	options,
+	isOut,
+	isPre = false,
+	submitBtnText,
+	includeSkuGroups,
+} = Astro.props;
+
+const formattedBasePrice = formatPrice(basePrice);
+---
+
+<div class="product-form-wrapper">
+  <div class="price-wrapper">
+    <p class="product-price m-0" data-dynamic-price>{formattedBasePrice}</p>
+  </div>
+	<form class="add-to-cart-form" data-form>
+		<VariantSelector
+			basePrice={basePrice}
+			masterSku={masterSku}
+			hasPriceVariants={hasPriceVariants}
+			priceVariantGroups={priceVariantGroups}
+			options={options}
+			includeSkuGroups={includeSkuGroups}
+		/>
+
+    <slot name="sub-info" />
+    <slot name="quantity-selector" />
+
+		<button type="submit" class="btn-submit" data-submit-btn disabled={isOut}>
+			{submitBtnText}
+		</button>
+
+		<div class="payment-methods-wrapper">
+			<slot name="payment-icons" />
+		</div>
+
+    <slot />
+
+	</form>
+</div>
+
+<style is:global>
+.product-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  --legend-gap: 0.25rem;
+  --group-options-gap: 1rem;
+}
+.product-form-wrapper .price-wrapper { margin: 2rem 0 1.5rem 0; }
+.product-price {
+	font-size: 1.5rem;
+	font-weight: var(--bold-font-weight);
+	color: var(--text);
+}
+.btn-submit { margin: 1.5rem 0 0 0.3rem; width: fit-content; }
+
+.payment-methods-wrapper {
+	display: flex;
+	margin-top: 15px;
+	flex-direction: row;
+	padding: 0 0.5rem;
+  border-radius: var(--standard-border-radius);
+	gap: 0.3rem;
+	background-color: color-mix(in srgb, white 95%, transparent);
+	width: fit-content;
+}
+</style>

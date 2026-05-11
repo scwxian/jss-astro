@@ -1,0 +1,51 @@
+/* Overlap section layout styles */
+.overlap-layout {
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	grid-template-rows: auto auto;
+}
+
+.overlap-layout-content:first-of-type,
+.overlap-layout-content:last-of-type {
+	grid-column: 1/10;
+	grid-row: 1;
+	z-index: 10;
+	position: relative;
+}
+
+.overlap-layout-content:last-of-type {
+	grid-row: 2;
+}
+
+.overlap-layout-image {
+	grid-column: 9 / -1;
+	grid-row: 1/-1;
+	z-index: 1;
+	max-width: 200px;
+	justify-self: center;
+	align-self: end;
+}
+
+.overlap-layout-image img {
+	opacity: 90%;
+}
+.overlap-layout.reverse .overlap-layout-content {
+	grid-column: 4 / -1;
+}
+.overlap-layout.reverse .overlap-layout-image {
+	grid-column: 1 / 4;
+}
+
+@media (max-width: 768px) {
+	.overlap-layout { display: block; position: relative; }
+	.overlap-layout-content:first-of-type,
+	.overlap-layout-content:last-of-type { z-index: 10; }
+	.overlap-layout-content:last-of-type { margin-top: 10rem; }
+	.overlap-layout-image {
+		position: absolute;
+		z-index: 1;
+		right: 0;
+		top: 150px;
+	}
+	.overlap-layout-image.lower { top: var(--top-px, 180px); }
+}

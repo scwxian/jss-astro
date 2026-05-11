@@ -1,0 +1,623 @@
+---
+export const prerender = false;
+import BlankLayout from "@layouts/BlankLayout.astro";
+import SimpleHeader from "@modules/SimpleHeader.astro";
+import StepProgressBar from "@components/StepProgressBar.astro";
+import CheckoutFallback from "@features/checkout/CheckoutFallback.astro";
+
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { siteInfo } from "@shared/siteInfo.js";
+import { isValidUUIDv4, getOrderById } from "@db/db.utils.ts";
+import { env } from "cloudflare:workers";
+import { formatPrice } from "@cart/cart.store.ts";
+
+
+const pageName = "Order Confirmed";
+const title = `${pageName} | ${siteInfo.name}`;
+const description = "Thank you for your order. Your payment has been received and is being processed.";
+
+interface DisplayItem {
+  name: string;
+  image: string;
+  slug: string;
+  quantity: number;
+  priceVariants?: Array<{ groupName: string; variantName: string }>;
+  nonPriceVariants: Array<{ groupName: string; choiceName: string }>;
+  lineTotal: number | null;
+}
+
+interface SubscriptionDisplayData {
+  nextBillingDate?: string | null;
+  nextDeliveryDate?: string | null;
+  billingInterval: string | null;
+  planName: string | null;
+}
+
+type PageState = "no_id" | "not_found" | "failed" | "success" | "pending";
+
+const HIDDEN_VARIANT_GROUPS: Record<string, string[]> = {
+  subscription: ["Schedule", "Weight"],
+};
+
+function mapCartItems(stateItems: any[]): DisplayItem[] {
+  return stateItems.map((item) => {
+    const slug = item.slug ?? "";
+    const image = item.heroImage
+      ? getAssetUrl("products", slug, item.heroImage)
+      : "";
+    return {
+      name: item.productName ?? "",
+      image,
+      slug,
+      quantity: item.quantity ?? 1,
+      priceVariants: (item.priceVariants ?? []).map((v: any) => ({
+        groupName: v.groupName ?? "",
+        variantName: v.variant?.name ?? "",
+      })),
+      nonPriceVariants: (item.nonPriceVariants ?? []).map((v: any) => ({
+        groupName: v.groupName ?? "",
+        choiceName: v.choice?.name ?? "",
+      })),
+      lineTotal: item.lineTotal ?? null,
+    };
+  });
+}
+
+function applyDisplayRules(items: DisplayItem[], orderType: string): DisplayItem[] {
+  const hidden = HIDDEN_VARIANT_GROUPS[orderType];
+  if (!hidden?.length) return items;
+  return items.map((item) => ({
+    ...item,
+    priceVariants: item.priceVariants?.filter((v) => !hidden.includes(v.groupName)),
+    nonPriceVariants: item.nonPriceVariants.filter((v) => !hidden.includes(v.groupName)),
+  }));
+}
+
+function extractSubscriptionData(cartState: any): SubscriptionDisplayData {
+  const metadata = cartState.subscriptionMetadata;
+  return {
+    nextBillingDate: metadata.nextBillingDate,
+    nextDeliveryDate: metadata.nextDeliveryDate,
+    planName: metadata.planName,
+    billingInterval: metadata.billingInterval,
+  };
+}
+
+let pageState: PageState = "no_id";
+let order: Awaited<ReturnType<typeof getOrderById>> = null;
+let orderType: "one_time" | "subscription" = "one_time";
+let subscriptionMeta: SubscriptionDisplayData | null = null;
+let totalDisplay = "";
+let deliveryMethod = "";
+let deliveryDays = 3;
+let shipping: Record<string, any> = {};
+let billing: Record<string, any> = {};
+let items: DisplayItem[] = [];
+
+const urlParamId = Astro.url.searchParams.get("id");
+if (!urlParamId) {
+  pageState = "no_id";
+} else if (!isValidUUIDv4.test(urlParamId)) {
+  pageState = "not_found";
+} else {
+  const db = env.DB;
+  if (db) {
+    order = await getOrderById(db, urlParamId);
+
+    if (order) {
+      const status = order.status;
+      if (status === "failed" || status === "cancelled") {
+        pageState = "failed";
+      } else {
+        pageState = status === "pending" ? "pending" : "success";
+        const checkoutPayload = JSON.parse(order.checkout_payload);
+        const cartState = JSON.parse(order.cart_state);
+        orderType = order.type as "one_time" | "subscription";
+
+        const stateItems = cartState.items ?? [];
+        items = applyDisplayRules(mapCartItems(stateItems), orderType);
+
+        subscriptionMeta = orderType === "subscription"
+          ? extractSubscriptionData(cartState)
+          : null;
+
+        deliveryMethod = checkoutPayload.deliveryMethod ?? "";
+        shipping = checkoutPayload.shipping ?? {};
+        billing = checkoutPayload.billing ?? {};
+        totalDisplay = formatPrice(order.total_amount);
+      }
+    } else {
+      pageState = "not_found";
+    }
+  }
+}
+
+const finalStepLabel = deliveryMethod === "ship" ? "shipping": "ready for pick up"
+const progressSteps = ["Order Received", "Roasting", finalStepLabel];
+const isPending = pageState === "pending";
+const isOrderPage = pageState === "success" || pageState === "pending";
+---
+
+<BlankLayout {title} {description} disableSchema={true} nofollow={true} noindex={true}>
+  <SimpleHeader />
+  <main>
+    {(pageState === "no_id" || pageState === "not_found") && (
+    <CheckoutFallback
+      title="Looking for your order?"
+      buttonText="Return to Shop"
+      buttonLink="/shop/"
+    >
+      It looks like this session has expired or the link is invalid.<br/>
+      If you recently placed an order, your payment is secure and a receipt has been sent to your email. We're on it to get your order to you.
+    </CheckoutFallback>
+    )}
+
+    {pageState === "failed" && (
+    <CheckoutFallback 
+      title="Payment Unsuccessful"
+      buttonText="Return to Checkout"
+      buttonLink="/checkout/"
+    >        
+      <p class="hero-body">
+        There was an issue processing your payment, this happens occasionally.<br/>
+        Don't worry, your cart is saved!<br/>Feel free to try again after a few minutes. </p>
+    </CheckoutFallback>
+    )}
+
+    {isOrderPage && (
+    <>
+    <section class="success-hero" id="status-container" data-status={pageState}>
+      <div class="hero-content">
+
+        <div class="spritesheet-container wholesale-oem-success animate-element fade-in-fast hide-on-failed">
+          <div
+            class="image-masker-overlay spritesheet wholesale-oem"
+            style={`--mask-url: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%228%22 fill=%22%23000%22/%3E%3C/svg%3E')`}
+          >
+            <div class="animated-artwork-container wholesale-oem">
+              <img
+                class="spritesheet-asset wholesale-oem"
+                src="https://placehold.co/116x67?text=Success"
+                alt="Order Success"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="show-on-failed fallback-error-image">
+          <img src="https://placehold.co/40x40?text=?" alt="Payment Error" width="40" height="40" />
+        </div>
+
+        <h1 id="status-heading">
+          {pageState === "failed" ? "There was an issue with your payment" : "Thank you for your order"}
+        </h1>
+        <p class="order-id hide-on-failed">Order #<span>{order!.order_id}</span></p>
+
+        <div class="pending-notice show-on-pending">
+          <svg id="spinner" class="spinner spin show-on-pending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+          </svg>
+          <p class="m-0" id="pending-text">Your payment is being processed. We're confirming right now<span class="loading-dots"></span></p>
+          <a
+            href="/contact"
+            class="text-link"
+            id="get-help-link"
+            style="display: none;"
+          >
+            Need help? Contact us
+          </a>
+        </div>
+
+        <div class="m-0 show-on-success">
+          <p class="m-0" style="color: var(--text);">We've received your payment and your order is confirmed. A detailed receipt was sent to your email. We're on it to get your order to you.</p>
+        </div>
+
+        <div class="pending-notice show-on-failed" style="margin-bottom: 3rem; border-color: var(--error);">
+          <p class="">
+            Don't worry, you weren't charged and your cart is saved!<br/>
+            Feel free to try again after a few minutes.
+          </p>
+          <a href="/checkout/" class="button" style="margin-top: 1rem;">Return to Checkout</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress-section" id="progress-section">
+      <div>
+        <StepProgressBar steps={progressSteps} activeStep={1} />
+      </div>
+    </section>
+
+    <section class="order-details-section" id="order-details-section">
+      <div class="order-details-wrapper">
+        <div class="order-details-header">
+          <p class="section-subtitle"><img width="25" height="25" src={deliveryMethod === "ship" ? "https://placehold.co/25x25?text=Ship" : "https://placehold.co/25x25?text=Pick"} alt="" class="section-icon" />&nbsp;&nbsp;{finalStepLabel} within {deliveryDays} days</p>
+          <h2>Order Details</h2>
+        </div>
+        <div class="address-cards">
+
+          {deliveryMethod === "ship" && (
+          <div class="address-card">
+            <h3>Delivery Address</h3>
+            <div class="address-content">
+              {shipping.firstName || shipping.lastName ? <p class="full-name"><strong>{[shipping.firstName, shipping.lastName].filter(Boolean).join(" ")}</strong></p> : null}
+              {shipping.company && <p class="company">{shipping.company}</p>}
+              {shipping.email && <p class="email"><strong>Email:</strong> {shipping.email}</p>}
+              {shipping.phone && <p class="phone"><strong>Phone:</strong> {shipping.phone}</p>}
+              {shipping.street1 && <p class="street1">{shipping.street1}</p>}
+              {shipping.street2 && <p class="street2">{shipping.street2}</p>}
+              <p class="location">{[shipping.city, shipping.state, shipping.postalCode].filter(Boolean).join(", ")}</p>
+              {shipping.country && <p class="country">{shipping.country}</p>}
+              {Object.keys(shipping).length === 0 && <p class="placeholder">Address details not available</p>}
+            </div>
+          </div>
+          )}
+
+          <div class="address-card">
+            <h3>Billing Address</h3>
+            <div class="address-content">
+              {billing.firstName || billing.lastName ? <p class="full-name"><strong>{[billing.firstName, billing.lastName].filter(Boolean).join(" ")}</strong></p> : null}
+              {billing.company && <p class="company">{billing.company}</p>}
+              {billing.email && <p class="email"><strong>Email:</strong> {billing.email}</p>}
+              {billing.phone && <p class="phone"><strong>Phone:</strong> {billing.phone}</p>}
+              {billing.street1 && <p class="street1">{billing.street1}</p>}
+              {billing.street2 && <p class="street2">{billing.street2}</p>}
+              <p class="location">{[billing.city, billing.state, billing.postalCode].filter(Boolean).join(", ")}</p>
+              {billing.country && <p class="country">{billing.country}</p>}
+              {Object.keys(billing).length === 0 && <p class="placeholder">Address details not available</p>}
+            </div>
+          </div>
+        </div>
+
+        <div class="order-items">
+          {items.map((item) => (
+          <div class="order-item">
+            <img class="order-item-image" src={item.image} alt={item.name} loading="lazy" />
+            <div class="order-item-details">
+              <div class="details-left">
+                <p class="order-item-name">{item.name}</p>
+                <div class="variants-container">
+                  {item.priceVariants?.map((v) => (
+                  <p class="order-item-variant"><span class="variant-name">{v.groupName}</span>: <span class="variant-choice">{v.variantName}</span></p>
+                  ))}
+                  {item.nonPriceVariants.map((v) => (
+                  <p class="order-item-variant"><span class="variant-name">{v.groupName}</span>: <span class="variant-choice">{v.choiceName}</span></p>
+                  ))}
+                  {orderType === "subscription" && (
+                  <>
+                    <p class="order-item-variant"><span class="variant-name">Plan</span>: <span class="variant-choice">{subscriptionMeta?.planName}</span></p>
+                    {subscriptionMeta?.nextDeliveryDate && (
+                    <p class="order-item-variant"><span class="variant-name">Next Delivery Date</span>: <span class="variant-choice">{subscriptionMeta.nextDeliveryDate}</span></p>
+                    )}
+                    {subscriptionMeta?.nextBillingDate && (
+                    <p class="order-item-variant"><span class="variant-name">Next Billing Date</span>: <span class="variant-choice">{subscriptionMeta.nextBillingDate}</span></p>
+                    )}
+                  </>
+                  )}
+                </div>
+              </div>
+              <p class="order-item-price">
+                {orderType === "subscription" && subscriptionMeta?.billingInterval
+                  ? `${totalDisplay} / ${subscriptionMeta.billingInterval}`
+                  : item.lineTotal !== null
+                    ? formatPrice(item.lineTotal)
+                    : ""}
+                {orderType === "one_time" && (<span>&nbsp;&times;&nbsp;{item.quantity}</span>)}
+              </p>
+            </div>
+          </div>
+          ))}
+        </div>
+
+        {orderType === "one_time" && (
+        <div class="order-total">
+          <span class="total-label">Total</span>
+          <span class="total-amount">{totalDisplay}</span>
+        </div>
+        )}
+      </div>
+    </section>
+
+    <section id="cta-section">
+      <p>Don't hesitate to reach out if you have any questions about your order.</p>
+      <a href="/#contact" class="button">Contact Us</a>
+    </section>
+  </>
+    )}
+  </main>
+</BlankLayout>
+
+{isOrderPage && (
+<div 
+  id="polling-data" 
+  data-transaction={order!.id} 
+  data-type={orderType} 
+  data-pending={isPending ? "true" : "false"} 
+  style="display:none"
+></div>
+)}
+
+<style>
+[data-status="pending"] .show-on-success,
+[data-status="pending"] .show-on-failed,
+[data-status="success"] .show-on-pending,
+[data-status="success"] .show-on-failed,
+[data-status="failed"] .show-on-success,
+[data-status="failed"] .show-on-pending {
+  display: none !important;
+}
+[data-status="failed"] .hide-on-failed {
+  display: none !important;
+}
+
+#status-container[data-status="failed"] ~ #progress-section,
+#status-container[data-status="failed"] ~ #cta-section {
+  display: none !important;
+}
+.success-hero { text-align: center; padding-bottom: 0;}
+.hero-content { max-width: 700px; margin: 0 auto; }
+.wholesale-oem {
+  --steps: 16;
+  --width: 116px;
+  --height: 67px;
+  --size: 2.5;
+  --timing: 6s;
+  --number-of-sprites: 1;
+  --position: 0;
+}
+
+.hero-content h1 {
+  font-family: var(--serif-font);
+  font-weight: var(--body-font-weight);
+  letter-spacing: -0.15rem;
+  font-size: var(--h3-fs);
+  margin-bottom: 0.25rem;
+}
+.hero-content p, #cta-section p { color: var(--text-light); line-height: 1.6rem; }
+
+.hero-content .order-id {
+  font-weight: var(--bold-font-weight);
+  margin: 1.2rem 0 2rem;
+  font-family: var(--sans-font);
+  font-size: 1.7rem;
+  letter-spacing: 0.1rem;
+  color: var(--accent);
+}
+
+.pending-notice { padding: 0.75rem 1rem; }
+.pending-notice p { color: var(--text-light); }
+.progress-section { padding: 3rem 0; }
+
+.text-link {
+  margin-top: 1.5rem;
+  display: block;
+  color: var(--text-light);
+  text-decoration: underline;
+  font-size: 0.95rem;
+  transition: color 0.2s ease-out;
+}
+.text-link:hover { color: var(--accent); }
+
+/* Customer Details Section */
+.order-details-section {
+  padding: 0;
+  --order-item-padding: 1rem 2rem;
+  @media (max-width: 768px) {
+    --order-item-padding: 1rem 1rem;
+  }
+}
+.order-details-wrapper {
+  background: var(--accent-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--standard-border-radius);
+  overflow: hidden;
+}
+.order-details-header {
+  padding: 1rem 1.5rem 1.5rem;
+  text-align: center;
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.order-details-header h2 {
+  font-family: var(--serif-font);
+  font-size: var(--h3-fs);
+  font-weight: var(--body-font-weight);
+  margin: 0;
+  color: var(--text);
+  letter-spacing: -0.10rem;
+  text-align: center;
+  line-height: 2rem;
+}
+
+.address-cards {
+  display: flex;
+  padding: 1.5rem;
+  justify-content: space-around;
+  justify-items: center;
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+.address-card { min-width: 240px;}
+.address-card h3 {
+  font-family: var(--sans-font);
+  font-size: 1.3rem;
+  margin: 0;
+  letter-spacing: 0.04rem;
+  font-weight: var(--bold-font-weight);
+  color: var(--text);
+}
+.placeholder { color: var(--text-light); font-style: italic; }
+.address-content { font-size: 0.9rem; line-height: 1.3; margin-top: 1rem; }
+.address-content p { margin: 0.25rem 0; letter-spacing: 0.03rem; }
+.address-content .full-name {font-size: 1.1rem; margin-bottom: 0.25rem;}
+.address-content .street1 {margin-top: 1rem;}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-width) solid var(--border);
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 2rem;
+  background: var(--accent-bg);
+  border-bottom: var(--border-width) solid var(--border);
+  align-items: center;
+  padding: var(--order-item-padding);
+  @media (max-width: 768px) { gap: 1rem;}
+}
+
+.order-item-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--image-overlay-color-less);
+}
+
+.order-item-details {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  justify-content: space-between;
+  @media (max-width: 768px) { flex-direction: column; }
+}
+.order-item-name {
+  font-weight: var(--bold-font-weight);
+  font-size: 1.1rem;
+  margin: 0 0 0.6rem;
+  line-height: 1.2rem;
+}
+.order-item-variant,
+.order-item-quantity{
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.2rem;
+}
+.variant-name { color: var(--text-light); }
+.variant-choice { color: var(--text); }
+.order-item-price, .order-total {
+  display: flex;
+  align-items: center;
+  font-weight: var(--bold-font-weight);
+  font-size: 1rem;
+  margin: 0;
+  letter-spacing: 0.03rem;
+}
+
+.order-total {
+  justify-content: space-between;
+  font-size: 1.2rem;
+  padding: var(--order-item-padding);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.total-amount { color: var(--accent); }
+#cta-section { text-align: center; max-width: 600px; margin: 0 auto; padding-top: 0; }
+
+@keyframes success-bounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.03) translateY(-10px); }
+  70%  { transform: scale(0.98) translateY(5px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+[data-status="success"] .wholesale-oem-success {
+  animation: success-bounce 0.6s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+}
+
+</style>
+
+<script>
+import { clearCart } from "@cart/cart.store";
+import { clearSubscriptionCart } from "@cart/sub-cart.store";
+import { logger } from "@log-alert/logger";
+import { actions } from "astro:actions";
+
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLLS = 5;
+
+document.addEventListener("astro:page-load", () => {
+  initSuccessPage();
+});
+
+function initSuccessPage() {
+  const dataEl = document.getElementById("polling-data");
+  if (!dataEl) return;
+  const transactionId = dataEl.dataset.transaction;
+  const orderType = dataEl.dataset.type as "one_time" | "subscription";
+  const isPending = dataEl.dataset.pending === "true";
+  if (!transactionId) return;
+  if (isPending) {
+    startPolling(transactionId, orderType);
+  } else {
+    clearCartByType(orderType);
+  }
+}
+
+async function startPolling(transactionId: string, orderType: "one_time" | "subscription") {
+  let polls = 0;
+  const poll = async (): Promise<void> => {
+    polls++;
+    try {
+      const { data, error } = await actions.getOrderStatus({ transactionId });
+      if (error) logger.error({ component: "SuccessPage" }, "Action error:", error);
+      if (data?.status === "success") return onPaymentConfirmed(orderType);
+      if (["failed", "cancelled", "not_found"].includes(data!.status)) return onPaymentFailed();
+    } catch (error) {
+      logger.error({ component: "SuccessPage" }, "Poll error:", error);
+    }
+    if (polls >= MAX_POLLS) {
+      onMaxPollsExceeded();
+      return;
+    }
+    setTimeout(poll, POLL_INTERVAL_MS);
+  };
+  setTimeout(poll, POLL_INTERVAL_MS);
+}
+
+function onPaymentConfirmed(orderType: "one_time" | "subscription") {
+  document.getElementById("status-container")!.dataset.status = "success";
+  clearCartByType(orderType);
+}
+
+function onPaymentFailed() {
+  const container = document.getElementById("status-container");
+  const heading = document.getElementById("status-heading");
+  const orderDetailsSection = document.getElementById("order-details-section");
+
+  if (container) container.dataset.status = "failed";
+  if (heading) heading.textContent = "There was an issue with your payment";
+  orderDetailsSection.style.paddingBottom = "5rem";
+}
+
+function onMaxPollsExceeded() {
+  const pendingText = document.getElementById("pending-text");
+  const pendingSpinner = document.getElementById("spinner");
+  const getHelpLink = document.getElementById("get-help-link");
+
+  if (pendingText) {
+    pendingText.textContent = "Your payment is still being processed. You will receive an email confirmation shortly once verified. If you don't receive an email confirmation by the next hour, contact us and we'd be happy to help!";
+    pendingText.style.color = "var(--error)"; 
+    pendingSpinner.style.display="none"; 
+    getHelpLink.style.display = "block";
+
+  }
+}
+
+function clearCartByType(orderType: "one_time" | "subscription") {
+  if (orderType === "subscription") {
+    clearSubscriptionCart();
+  } else {
+    clearCart();
+  }
+}
+</script>

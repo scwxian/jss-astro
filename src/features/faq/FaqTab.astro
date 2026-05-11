@@ -1,0 +1,53 @@
+---
+export interface Props {
+	id: string;
+	tabLabel: string;
+	isActive: boolean;
+}
+
+const { id, tabLabel, isActive } = Astro.props;
+---
+
+<div class={`faq-tab ${isActive ? "active" : ""}`} data-target={id}>
+	<!-- Optional category image — uncomment and set src when ready -->
+	<!-- <img class="faq-tab-image" src="https://placehold.co/80x80?text=icon" alt={tabLabel} loading="lazy" /> -->
+
+	<span class="faq-tab-label">{tabLabel}</span>
+</div>
+
+<style>
+	.faq-tab {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+	}
+
+	.faq-tab-image {
+		width: var(--tab-image-width);
+		max-width: 80px;
+		max-height: 80px;
+		object-fit: contain;
+	}
+
+	.faq-tab-label {
+		text-align: center;
+		font-family: var(--serif-font);
+		font-size: 1.3rem;
+		font-weight: var(--bold-font-weight);
+		letter-spacing: 0.04rem;
+		color: var(--text-light);
+		transition: color 0.2s ease-in-out;
+	}
+
+	.faq-tab:hover .faq-tab-label {
+		color: var(--accent);
+	}
+
+	.faq-tab.active .faq-tab-label {
+		color: var(--accent);
+	}
+</style>

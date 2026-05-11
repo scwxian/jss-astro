@@ -1,0 +1,121 @@
+---
+---
+<button
+	id="cart-button"
+	class="cart-button"
+	aria-label="Open Cart"
+	transition:animate="none"
+	transition:persist="cart-button"
+>
+	<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+		><path
+			stroke="currentColor"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			stroke-width="2"
+			d="M6.3 5H21l-2 7H7.377M20 16H8L6 3H3m6 17a1 1 0 1 1-2 0 1 1 0 0 1 2 0m11 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+		></path></svg
+	>
+	<span id="cart-badge" class="cart-badge"></span>
+</button>
+
+<style is:global>
+	::view-transition-group(cart-button) {
+		z-index: var(--z-nav-backdrop);
+	}
+</style>
+
+<style>
+	.cart-button {
+		position: fixed;
+		bottom: 90px;
+		right: 50px;
+		width: 60px;
+		height: 60px;
+		border-radius: calc(var(--standard-border-radius) * 2);
+		background-color: var(--accent);
+		border: none;
+		box-shadow: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: var(--z-nav-backdrop);
+		transition:
+			background-color 0.1s ease-in-out,
+			border-color 0.1s ease-in-out;
+		color: var(--text);
+		padding: 0;
+		/* Safe area for mobile */
+		@media (max-width: 768px) {
+			border-radius: calc(var(--standard-border-radius));
+			width: 50px;
+			height: 50px;
+			bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+			right: calc(30px + env(safe-area-inset-right, 0px));
+		}
+	}
+
+	.cart-button svg {
+		width: 28px;
+		height: 28px;
+		@media (max-width: 768px) {
+			width: 24px;
+			height: 24px;
+		}
+	}
+
+	.cart-button:hover {
+		background-color: var(--accent-hover);
+		border-color: var(--accent-hover);
+		transform: none;
+		box-shadow: none;
+	}
+
+	.cart-button:active {
+		background-color: var(--accent-hover);
+		border-color: var(--accent-hover);
+		transform: none;
+		box-shadow: none;
+	}
+
+	.cart-badge {
+		position: absolute;
+		top: -5px;
+		right: -5px;
+		background: var(--text-light);
+		color: var(--bg);
+		font-size: 0.75rem;
+		font-weight: var(--bold-font-weight);
+		font-family: var(--sans-font);
+		min-width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		display: none;
+		align-items: center;
+		justify-content: center;
+		padding-bottom: 2px;
+	}
+</style>
+
+<script>
+	import { $cartCount } from "./cart.store.ts";
+
+	document.addEventListener("astro:page-load", () => {
+		const fab = document.getElementById("cart-button");
+		fab?.addEventListener("click", () => {
+			if (typeof window.openCartPopover === "function") {
+				window.openCartPopover();
+			}
+		});
+
+		// Subscribe to cart count changes for badge updates
+		$cartCount.subscribe((count) => {
+			const badge = document.getElementById("cart-badge");
+			if (badge) {
+				badge.textContent = count > 0 ? count : "";
+				badge.style.display = count > 0 ? "flex" : "none";
+			}
+		});
+	});
+</script>

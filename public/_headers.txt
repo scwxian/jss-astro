@@ -1,0 +1,21 @@
+# =====================================================================
+# 1. GLOBAL RULE (Relaxed SPA Mode)
+# =====================================================================
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' https:; object-src 'none';
+
+# =====================================================================
+# 2. ASTRO ASSETS (Immutable Caching)
+# =====================================================================
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# =====================================================================
+# 3. CHECKOUT RULE (Strict MPA Mode)
+# =====================================================================
+/checkout/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://assets.yoursite.com; connect-src 'self' https://api.stripe.com; frame-src 'self' https://js.stripe.com; object-src 'none'; base-uri 'self';

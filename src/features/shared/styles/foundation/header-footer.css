@@ -1,0 +1,134 @@
+/* General Structure */
+body > site-header,
+body > footer {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: subgrid;
+}
+
+/* Shared Nav Link Styles */
+site-header nav ul,
+site-header nav ol,
+footer nav ul,
+footer nav ol {
+	align-content: space-around;
+	align-items: center;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	gap: 1rem;
+}
+
+site-header nav ul li,
+site-header nav ol li,
+footer nav ul li,
+footer nav ol li {
+	display: inline-block;
+}
+
+site-header nav a,
+site-header nav a:visited,
+footer nav a,
+footer nav a:visited {
+	color: var(--text);
+	display: inline-block;
+	padding: 0.3rem 0.5rem;
+	text-decoration: none;
+	transition: all 0.2s ease-in-out;
+	position: relative;
+}
+
+site-header nav a::after,
+footer nav a::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 0;
+	height: calc(var(--border-width) * 2);
+	background-color: var(--accent);
+	transition: all 0.2s ease-in-out;
+}
+
+site-header nav a:hover::after,
+footer nav a:hover::after {
+	width: 100%;
+}
+
+site-header nav a:hover,
+site-header nav a.current,
+site-header nav a[aria-current="page"],
+site-header nav a[aria-current="true"],
+footer nav a:hover,
+footer nav a.current,
+footer nav a[aria-current="page"],
+footer nav a[aria-current="true"] {
+	color: var(--accent);
+	cursor: pointer;
+}
+
+/* Shared Social Links */
+.nav-links {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	flex-direction: column;
+}
+
+.social-links,
+.social-links a {
+	display: flex;
+}
+.social-links {
+	gap: 1rem;
+	justify-content: center;
+}
+.social-links img {
+	border: none;
+	width: 28px;
+	transition: all 0.2s ease-in-out;
+}
+
+.social-links img:hover {
+	transform: scale(1.2);
+}
+.social-links img:active {
+	transform: scale(0.7);
+}
+.social-links-block {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+.social-links-block > p {
+	font-size: 0.8rem;
+}
+
+/* Accessibility */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+/* Shared Media Queries */
+@media (max-width: 1020px) {
+	site-header nav ul,
+	site-header nav ol,
+	footer nav ul,
+	footer nav ol {
+		flex-direction: column;
+	}
+	.social-links p {
+		display: block;
+	}
+}

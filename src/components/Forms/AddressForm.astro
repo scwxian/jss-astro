@@ -1,0 +1,138 @@
+---
+import InputTextField from './InputTextField.astro';
+import InputSelectField from './InputSelectField.astro';
+
+interface CountryOption {
+  value: string;
+  label: string;
+  states: string[];
+}
+
+interface Props {
+  prefix?: string;
+  countries: CountryOption[];
+  requireFields?: boolean;
+}
+
+const { 
+  prefix = "", 
+  countries = [], 
+  requireFields = true 
+} = Astro.props;
+
+const getId = (name: string) => {
+  if (!prefix) return name;
+  return `${prefix}${name.charAt(0).toUpperCase() + name.slice(1)}`;
+};
+
+const containerId = prefix ? `${prefix}-address-group` : 'address-group';
+
+const countryOptions = countries.map(c => ({ value: c.value, label: c.label }));
+const defaultStates = countries.length > 0 ? countries[0].states : [];
+---
+
+<dynamic-address-form class="address-fieldset" id={containerId} data-countries={JSON.stringify(countries)}>
+  <InputSelectField id={getId('country')} label="Country" options={countryOptions} autocomplete="country" />
+  <InputTextField id={getId('firstName')} label="First Name" cols="2" required={requireFields} autocomplete="given-name" />
+  <InputTextField id={getId('lastName')} label="Last Name" cols="2" required={false} autocomplete="family-name" />
+  <InputTextField id={getId('company')} label="Company (optional)" required={false} autocomplete="organization" />
+  <InputTextField id={getId('street1')} label="Address Line 1" placeholder="123 Main Street" required={requireFields} autocomplete="address-line1" />
+  <InputTextField id={getId('street2')} label="Address Line 2" placeholder='Apartment, suite, etc. (optional)' required={false} autocomplete="address-line2" />
+  <InputTextField id={getId('city')} label="City" required={requireFields} cols="3" autocomplete="address-level2" />
+  <InputTextField id={getId('postalCode')} pattern="[a-zA-Z0-9][a-zA-Z0-9 \\-]*[a-zA-Z0-9]" minlength={3} maxlength={12} label="Postcode" cols="3" required={requireFields} autocomplete="postal-code" />
+  <InputSelectField id={getId('state')} label="State" options={defaultStates} cols="3" required={requireFields} autocomplete="address-level1" />
+  <InputTextField id={getId('phone')} label="Phone Number" minlength={7} maxlength={16} type="tel" placeholder="+1 234 567 8900" required={requireFields} pattern="[0-9]*" inputmode="tel" autocomplete="tel" />
+</dynamic-address-form>
+
+<style>
+/* Target the custom element directly for layout */
+dynamic-address-form.address-fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 0.75rem;
+  column-gap: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  dynamic-address-form.address-fieldset {
+    row-gap: 1rem;
+  }
+}
+
+.address-title {
+  font-size: var(--h5-fs);
+  font-weight: var(--body-font-weight);
+}
+</style>
+
+<script>
+const AUTO_SELECT_STATE_THRESHOLD = 1;
+
+interface CountryOption {
+  value: string;
+  label: string;
+  states: string[];
+}
+
+class DynamicAddressForm extends HTMLElement {
+  countries: CountryOption[] = [];
+  countrySelect: HTMLSelectElement | null = null;
+  stateSelect: HTMLSelectElement | null = null;
+
+  connectedCallback() {
+    const countriesData = this.dataset.countries;
+    if (!countriesData) return;
+
+    this.countries = JSON.parse(countriesData);
+    if (this.countries.length <= 1) return;
+    this.countrySelect = this.querySelector('select[autocomplete="country"]') as HTMLSelectElement | null;
+    this.stateSelect = this.querySelector('select[autocomplete="address-level1"]') as HTMLSelectElement | null;
+    if (!this.countrySelect || !this.stateSelect) return;
+
+    const handleCountryChange = (e: Event) => {
+      const target = e.target as HTMLSelectElement;
+      this.updateStates(target.value);
+    };
+    this.countrySelect.addEventListener('change', handleCountryChange);
+    this.countrySelect.addEventListener('input', handleCountryChange);
+  }
+
+  updateStates(countryValue: string) {
+    const country = this.countries.find((c: CountryOption) => c.value === countryValue);
+    const states = country?.states || [];
+    const currentState = this.stateSelect!.value;
+    const savedState = this.stateSelect!.dataset.savedState;
+    this.stateSelect!.innerHTML = '';
+
+    if (states.length > AUTO_SELECT_STATE_THRESHOLD) {
+      const placeholderOption = document.createElement('option');
+      placeholderOption.value = "";
+      placeholderOption.textContent = "";
+      placeholderOption.disabled = true;
+      this.stateSelect!.appendChild(placeholderOption);
+    }
+
+    states.forEach((state: string) => {
+      const option = document.createElement('option');
+      option.value = state;
+      option.textContent = state;
+      this.stateSelect!.appendChild(option);
+    });
+
+    const targetState = savedState || currentState;
+    if (targetState && states.includes(targetState)) {
+      this.stateSelect!.value = targetState;
+      delete this.stateSelect!.dataset.savedState;
+    } else if (states.length <= AUTO_SELECT_STATE_THRESHOLD && states.length > 0) {
+      this.stateSelect!.value = states[0];
+    } else {
+      this.stateSelect!.value = "";
+    }
+  }
+}
+
+if (!customElements.get('dynamic-address-form')) {
+  customElements.define('dynamic-address-form', DynamicAddressForm);
+}
+</script>

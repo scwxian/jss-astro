@@ -1,0 +1,60 @@
+---
+import type { ExternalLink } from "@contentconfig"
+// Icon helper removed — link to external SVG or use inline SVG below
+
+export interface Props {
+	links: ExternalLink[]
+	size?: number
+	iconMap?: Record<string, string>
+}
+
+// Default icon map removed for generic template
+// const defaultIconMap: Record<string, string> = {
+// 	Shopee: "shopee.png",
+// 	Lazada: "lazada.png",
+// }
+
+const { links, size = 20, iconMap = {} } = Astro.props
+// Dynamic icon mapping disabled for generic template
+// const mergedMap = { ...defaultIconMap, ...iconMap }
+// const resolvedLinks = links
+// 	.map((link) => ({
+// 		...link,
+// 		iconFile: mergedMap[link.platform] || "",
+// 	}))
+// 	.filter((link) => link.iconFile !== "")
+const resolvedLinks = links // Pass through directly for generic template
+---
+{resolvedLinks.length > 0 && (
+		<div class="button-caption">
+			<p>Also available at</p>
+			{resolvedLinks.map((link) => (
+				<a
+					class="icon-links"
+					target="_blank"
+					rel="noopener noreferrer"
+					aria-label={`${link.platform} Store`}
+					href={link.url}>
+					<img
+						width={size}
+						height={size}
+						src={`https://placehold.co/${size}x${size}?text=${link.platform}`}
+            alt={link.platform}
+						class="section-icon mid-sentence"
+					/>
+				</a>
+			))}
+		</div>
+	)}
+<style>
+.button-caption > * { padding: 0; margin: 0; }
+.button-caption {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.7rem;
+	color: var(--text-light);
+	font-size: 0.9rem;
+	font-style: italic;
+}
+</style>

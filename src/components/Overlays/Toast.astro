@@ -1,0 +1,131 @@
+---
+
+interface Props {
+  overlayId: string;
+  campaignId: string;
+  title?: string;
+  icon?: string;
+  trigger: "immediate" | "delay" | "scroll";
+  delayMs?: number;
+  position?: "bottom-left" | "bottom-right";
+  showCloseBtn?: boolean;
+  isError?: boolean;
+}
+
+const {
+  overlayId,
+  campaignId,
+  title = "",
+  trigger,
+  delayMs,
+  position = "bottom-left",
+  showCloseBtn = true,
+  isError = false,
+  icon = ""
+} = Astro.props;
+
+const iconClass = icon === "cookie" ? "spin slow" : "";
+---
+
+<div 
+  id={overlayId} 
+  class=`overlay-toast ${position}` 
+  data-overlay-id={overlayId} 
+  data-campaign-id={campaignId} 
+  data-trigger={trigger} 
+  data-delay-ms={delayMs}
+  style={`border-color: ${isError ? 'var(--error)' : 'var(--border)'}`} 
+>
+  <div class="content-wrapper">
+    <div class="header">
+      <div class="toast-title" style={`color: ${isError ? 'var(--error)' : 'var(--accent)'}`}>{title}</div>
+      {icon && ( <img width="24" height="24" class={iconClass} src={`https://placehold.co/24x24?text=${icon}`} alt={icon} />)} // Replace with actual icon asset
+      {showCloseBtn && ( <button class="overlay-close-btn" aria-label="Close" data-overlay-close={overlayId}>&times;</button>)}
+    </div>
+    <div class="content">
+      <slot/>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.overlay-toast {
+  position: fixed;
+  width: min(90%, 400px);
+  background: var(--accent-bg);
+  border: var(--border-width) solid;
+  border-radius: var(--standard-border-radius);
+  padding: 1rem;
+  z-index: var(--z-toast);
+  opacity: 0;
+  transform: translateY(20px);
+  visibility: hidden;
+  transition: opacity 200ms ease-out, transform 200ms ease-out, visibility 200ms ease-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    width: 85%;
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
+.overlay-toast.bottom-left { bottom: 1rem; left: 1rem; }
+.overlay-toast.bottom-right { bottom: 1rem; right: 1rem; }
+.overlay-toast[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.overlay-toast .content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.5rem;
+  @media (max-width: 768px) { gap: 0.75rem; }
+}
+.overlay-toast .content-wrapper img {
+  flex-shrink: 0;
+  @media (max-width: 768px) { order:-1 ; }
+}
+
+.content-wrapper .header {display: flex; align-items: center; gap: 0.5rem; width: 100%;}
+.overlay-close-btn {
+  align-self: flex-start;
+  margin-left: auto;
+  margin-top: -14px;
+  @media (max-width: 768px) { margin-top: -10px; }
+}
+
+.overlay-toast .toast-title {
+  text-transform: uppercase;
+  line-height: 1.2;
+  font-size: 0.95rem;
+  font-family: var(--serif-font);
+  letter-spacing: -0.10rem;
+  @media (max-width: 768px) { padding-right: 0.4rem; }
+}
+.content-wrapper .content { margin: 0; color: var(--text-light); font-size: 0.90rem; line-height: 1.5; }
+</style>
+
+<script>
+import { register, dismiss } from "./overlay.ts";
+
+document.addEventListener("astro:page-load", () => {
+  document.querySelectorAll(".overlay-toast[data-overlay-id]").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    const id = el.dataset.overlayId;
+    const campaignId = el.dataset.campaignId;
+    const trigger = el.dataset.trigger as "immediate" | "delay" | "scroll";
+    const delayMs = el.dataset.delayMs ? parseInt(el.dataset.delayMs, 10) : undefined;
+    if (!id || !campaignId || !trigger) return;
+
+    register(id, el, campaignId, trigger, delayMs);
+
+    const closeBtn = document.querySelector(`[data-overlay-close="${id}"]`);
+    closeBtn?.addEventListener("click", () => dismiss(id));
+  });
+});
+</script>

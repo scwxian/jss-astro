@@ -1,0 +1,374 @@
+---
+import StandardLayout from "@layouts/StandardLayout.astro";
+import "@styles/others/legal-pages.css";
+import { siteInfo, countryCodeMap } from "@shared/siteInfo.js";
+const pageName = "Terms of Use";
+const pageTitle = `${pageName} | ${siteInfo.name}`;
+const pageDescription = `Read the official Terms of Use for accessing and using the ${siteInfo.name} website and services.`;
+const uppercaseDomain = siteInfo.domain.toUpperCase();
+const governingCountry = countryCodeMap[siteInfo.address.country] || siteInfo.address.country;
+const governingLocality = `${siteInfo.address.locality}, ${governingCountry}`;
+---
+
+<StandardLayout title={pageTitle} description={pageDescription}>
+	<h1 class="hidden-visually">{pageTitle}</h1>
+
+	<section class="center-layout">
+		<h2 class="section-title">{pageName}</h2>
+		<p><span id="last-updated">Last Updated:</span> 01 November 2025</p>
+		<p>
+			These Terms and Conditions ("Terms") govern your access to and use of our website. These Terms form a legally
+			binding agreement between you and {siteInfo.domain}. By accessing, browsing, registering for, or otherwise using
+			the Platform, you accept and agree to be bound by these Terms in full. If you do not agree to these Terms, you
+			must not access or use the Platform. Please read these Terms carefully and retain a copy for your records.
+		</p>
+
+		<ol class="legal-ol">
+			<li>
+				<h3 class="legal">Definitions</h3>
+				<p>For purposes of these Terms, the following definitions apply:</p>
+				<ol class="legal-ol-nested">
+					<li>
+						<p>
+							<b>"Platform"</b> means the website, mobile application, services, features, tools, content and functionality
+							made available by {siteInfo.domain} via its web domains and mobile applications.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>"User"</b> or <b>"You"</b> means any individual or entity that accesses, browses, registers for, or uses
+							the Platform.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>"Account"</b> means a user account registered on the Platform when account creation is required to access
+							certain features.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>"User Content"</b> means any content, materials, information, data, text, images, audio, video, feedback
+							or other materials that Users submit, post, upload, or otherwise make available through the Platform ("upload_content").
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>"Subscription Plan"</b> means any recurring paid plan, membership, or tier offered through the Platform ("subscription_plan").
+						</p>
+					</li>
+					<li>
+						<p><b>"Purchase"</b> means any one-time paid transaction or sale conducted on the Platform ("user_buy").</p>
+					</li>
+				</ol>
+			</li>
+
+			<li>
+				<h3 class="legal">Eligibility</h3>
+				<p>
+					Access to certain parts of the Platform may be limited to individuals who are of legal age to form binding
+					contracts in their jurisdiction (commonly 18 years or older). By accessing or using the Platform you represent
+					and warrant that you meet the eligibility requirements and you will comply with all applicable laws and
+					regulations. If you are accepting these Terms on behalf of an organization, you represent that you have the
+					authority to bind that organization.
+				</p>
+				<p>
+					If you are using the Platform on behalf of a company, organization, or other legal entity, you represent and
+					warrant that you have the authority to agree to these Terms on behalf of that entity. We may request proof of
+					identity, age, or authority prior to allowing access to certain features.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Use of the Platform and Acceptable Conduct</h3>
+				<p>
+					You agree to use the Platform only for lawful, authorized, and proper purposes. You will not use the Platform
+					to engage in deceptive, malicious, or illegal conduct, and you will not attempt to disrupt, interfere with, or
+					compromise the security, integrity, or performance of the Platform or its underlying infrastructure.
+					Prohibited activities include, but are not limited to: unauthorized access or data scraping, distribution of
+					malware, distribution of unsolicited promotional materials, spoofing or impersonation, and any activity that
+					violates the privacy or intellectual property rights of others.
+				</p>
+				<p>
+					We expressly prohibit any attempt to gain unauthorized access to restricted areas, systems, or data connected
+					to the Platform. You must not attempt to probe, scan, or test the vulnerability of the Platform or circumvent
+					authentication or security measures. If we determine, in our sole discretion, that you have engaged in
+					prohibited activities, we may immediately suspend or terminate your access and take appropriate legal action.
+				</p>
+				<p>
+					The Platform may provide features that enable interactions between Users. You are solely responsible for your
+					interactions with other Users. We do not endorse any User Content and do not assume responsibility for
+					User-to-User communications or transactions. You agree to exercise caution when interacting with others, and
+					you should never share sensitive personal or financial information with other Users.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Purchases and One-Time Payments (User Buy)</h3>
+				<p>
+					Where the Platform enables one-time purchases, you agree to provide current, complete and accurate purchase
+					information, including payment details, billing address and contact information. Payments may be processed
+					through third-party payment processors. By making a purchase you represent that you have the legal right to
+					use the chosen payment method and you authorize the Platform and its payment processors to charge the
+					applicable fees, taxes, and any other charges as disclosed at the time of purchase.
+				</p>
+				<p>
+					All transaction pricing, fees, and availability are subject to change at our discretion, and we shall not be
+					responsible for typographical errors in pricing or product descriptions. Receipts and order confirmations will
+					be provided in a manner specified at the point of sale. In the event of a billing discrepancy, you must notify
+					us promptly so we can investigate and attempt to resolve the issue.
+				</p>
+				<p>
+					Payment-related disputes may also be subject to the policies of the payment processor. We do not store full
+					payment card data unless explicitly stated; where payment card details are stored, they will be protected
+					using industry standard security measures and processors adhering to applicable security standards such as
+					PCI-DSS.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Subscription Plans and Recurring Billing (Subscription Plan)</h3>
+				<p>
+					If you subscribe to any Subscription Plan, you agree that you will be billed on a recurring basis for the
+					duration of your subscription. Subscription fees, billing intervals, and renewal terms will be clearly
+					disclosed at the time you enroll. Unless otherwise stated, subscriptions will automatically renew until you
+					cancel. You are responsible for cancelling your subscription prior to the renewal date to avoid charges for
+					the following billing period.
+				</p>
+				<p>
+					We may change subscription pricing, features, or terms from time to time. We will provide reasonable notice of
+					material changes and give subscribers the opportunity to cancel. Price changes will not affect any period you
+					have already paid for, but will apply at the time of the next renewal. Failure to pay may result in suspension
+					or termination of subscription services.
+				</p>
+				<p>
+					If you cancel your subscription, you may continue to have access to subscription features through the end of
+					the then-current billing period, but you will not receive prorated refunds unless our <a
+						href="/refund-return-policy/">Refund Policy</a
+					> specifies otherwise. Certain promotions or trial periods may have special terms – those terms will govern.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Ownership of Platform Content (Own Content)</h3>
+				<p>
+					All intellectual property rights in and to the Platform, including but not limited to software, designs, text,
+					graphics, logos, images, audio, video, data compilations and the selection and arrangement thereof
+					(collectively, "Platform Content"), are the exclusive property of {siteInfo.domain} or its licensors, and are protected
+					by copyright, trademark, patent and other intellectual property and unfair competition laws. Nothing in these Terms
+					transfers ownership of Platform Content to you.
+				</p>
+				<p>
+					Subject to your compliance with these Terms, {siteInfo.domain} grants you a limited, revocable, non-exclusive, non-transferable
+					license to access and use the Platform Content for your personal, non-commercial use only, unless otherwise agreed
+					in writing. Any other use, reproduction, distribution, public display, or commercial exploitation of Platform Content
+					is strictly prohibited without our prior written consent.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Feedback and Suggestions (Feedback Suggestion)</h3>
+				<p>
+					If you provide feedback, suggestions, ideas, or improvement proposals (Feedback) regarding the Platform, you
+					agree that such Feedback is non-confidential and non-proprietary. By submitting Feedback you grant {
+						siteInfo.domain
+					} a perpetual, irrevocable, worldwide, royalty-free, transferable license to use, reproduce, make, sell, modify,
+					and otherwise exploit such Feedback in any manner without compensation to you.
+				</p>
+				<p>
+					We appreciate your input and may incorporate Feedback into the Platform or product roadmap. You acknowledge
+					that other users or third parties may independently develop similar ideas and that we are free to use Feedback
+					without accounting to you.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Promotions, Offers and Contests (Promotion & Contest)</h3>
+				<p>
+					From time to time we may run promotions, offers, sweepstakes or contests. Each such promotion will be governed
+					by specific rules and eligibility criteria which will be published with the promotion. By participating, you
+					agree to be bound by those rules, as well as these Terms. Promos may have geographic, age, purchase, or other
+					restrictions.
+				</p>
+				<p>
+					We reserve the right to disqualify participants who engage in fraudulent or abusive behavior or who attempt to
+					manipulate a promotion. Winners may be required to provide proof of identity and eligibility. Prizes are
+					non-transferable, subject to availability, and winners are solely responsible for any taxes or other
+					liabilities associated with receiving prizes.
+				</p>
+				<p>
+					Any dispute relating to a promotion will be governed by the applicable promotion rules and these Terms. Where
+					promotions incorporate third-party platforms or services, additional terms of those third-party providers may
+					apply.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Privacy and Data Protection</h3>
+				<p>
+					Your privacy is important. Our <a href="/privacy-policy/" target="_blank">Privacy Policy</a> describes how we collect,
+					use, share and protect personal information collected via the Platform. By using the Platform you consent to such
+					processing and acknowledge that we may use service providers and subprocessors in different jurisdictions; appropriate
+					safeguards will be implemented in accordance with applicable law. You should read the Privacy Policy carefully to
+					understand how your personal information is handled.
+				</p>
+				<p>
+					Where you have rights under applicable privacy laws (such as rights to access, correct, delete, or port your
+					data), we will provide mechanisms to exercise those rights as described in the Privacy Policy. Requests may
+					require identity verification and may be subject to legal exceptions or retention obligations.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Warranties and Disclaimers</h3>
+				<p style="text-transform: uppercase;">
+					<b>WEBSITE DISCLAIMER</b>: THE PLATFORM IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES
+					OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY OR OTHERWISE. ALL INFORMATION PROVIDED IS FOR GENERAL
+					INFORMATIONAL PURPOSES ONLY. ALL INFORMATION ON THE SITE IS PROVIDED IN GOOD FAITH. TO THE MAXIMUM EXTENT
+					PERMITTED BY LAW, {uppercaseDomain} DISCLAIMS ALL WARRANTIES, INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY,
+					FITNESS FOR A PARTICULAR PURPOSE, TITLE, QUIET ENJOYMENT, AND NON-INFRINGEMENT. {uppercaseDomain} DOES NOT WARRANT
+					THAT THE PLATFORM WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE FROM HARMFUL COMPONENTS. WE DO NOT WARRANT THE ACCURACY,
+					COMPLETENESS OR USEFULNESS OF ANY INFORMATION MADE AVAILABLE ON THE PLATFORM.
+				</p>
+				<p style="text-transform: uppercase;">
+					<b>EXTERNAL LINKS DISCLAIMER</b>: The Site may contain (or you may be sent through the Site) links to other
+					websites or content belonging to or originating from third parties or links to websites and features in
+					banners or other advertising. Such external links are not investigated, monitored, or checked for accuracy,
+					adequacy, validity, reliability, availability or completeness by us. WE DO NOT WARRANT, ENDORSE, GUARANTEE, OR
+					ASSUME RESPONSIBILITY FOR THE ACCURACY OR RELIABILITY OF ANY INFORMATION OFFERED BY THIRD-PARTY WEBSITES
+					LINKED THROUGH THE SITE OR ANY WEBSITE OR FEATURE LINKED IN ANY BANNER OF OTHER ADVERTISING. WE WILL NOT BE A
+					PARTY TO OR IN ANY WAY BE RESPONSIBLE FOR MONITORING ANY TRANSACTION BETWEEN YOU AND THIRD-PARTY PROVIDERS OF
+					PRODUCTS OR SERVICES.
+				</p>
+				<p style="text-transform: uppercase;">
+					<b>PROFESSIONAL DISCLAIMER</b>: The Site cannot and does not contain any dietary and food-related advice. All
+					information is provided for general informational and educational purposes only and is not a substitute for
+					professional advice. Accordingly, before taking any actions based upon such information, we encourage you to
+					consult with the appropriate professionals. We do not provide any kind of dietary and food-related advice. THE
+					USE OR RELIANCE OF ANY INFORMATION CONTAINED ON THIS SITE IS SOLELY AT YOUR OWN RISK.
+				</p>
+				<p style="text-transform: uppercase;">
+					<b>TESTIMONIALS AND REVIEW DISCLAIMER</b>: The Site may contain testimonials or reviews by users of our
+					products and/or services in the form on statements. These statements reflect the real-life experiences and
+					opinions of such users. However, the experiences are personal to those particular users, and may not
+					necessarily be representative of all users of our products and/or services. We do not claim, and you should
+					not assume, that all users will have the same experience. YOUR INDIVIDUAL RESULTS MAY VARY. The statements on
+					the Site are submitted in various forms such as text, audio and/or video, and are reviewed by us before being
+					posted. They appear on the Site verbatim as given by the users, except for the correction of grammar or typing
+					errors. Some statements may have been shortened for the sake of brevity where the full testimonial or review
+					contained extraneous information not relevant to the general public. The views and opinions contained in the
+					statements belong solely to the individual user and do not reflect our views and opinions.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Limitation of Liability</h3>
+				<p>
+					TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL {uppercaseDomain} OR ITS AFFILIATES, OFFICERS,
+					DIRECTORS, EMPLOYEES OR AGENTS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY OR PUNITIVE
+					DAMAGES, OR FOR LOST PROFITS, REVENUE, DATA OR USE, ARISING OUT OF OR IN CONNECTION WITH THESE TERMS OR YOUR USE
+					OF THE PLATFORM, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. OUR AGGREGATE LIABILITY ARISING OUT OF OR RELATED
+					TO THESE TERMS SHALL NOT EXCEED THE AMOUNTS PAID BY YOU TO {siteInfo.domain} IN THE TWELVE (12) MONTHS PRECEDING
+					THE EVENT GIVING RISE TO THE CLAIM, OR IF NONE, ONE HUNDRED UNITS OF APPLICABLE CURRENCY (100.00) OR EQUIVALENT.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Indemnification</h3>
+				<p>
+					You agree to indemnify, defend and hold harmless {siteInfo.domain} and its affiliates, licensors, and service providers,
+					and each of their respective officers, directors, employees, contractors and agents from and against any claims,
+					damages, obligations, losses, liabilities, costs or debt, and expenses (including reasonable legal fees) arising
+					from (a) your violation of these Terms, (b) your User Content, (c) your use of the Platform, or (d) your violation
+					of any rights of a third party.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Termination and Suspension</h3>
+				<p>
+					We may suspend or terminate access to all or part of the Platform immediately, without prior notice or
+					liability, for any reason, including if you breach the Terms. Upon termination, your right to use the Platform
+					will immediately cease. We may retain and use information as permitted by applicable law and our policies to
+					enforce these Terms, prevent fraud, resolve disputes and comply with legal obligations.
+				</p>
+				<p>
+					Where reasonable, we will attempt to provide notice of termination and an opportunity to cure a breach, but
+					nothing in this section shall limit our right to take immediate action where necessary to protect Users,
+					property, or the Platform.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Governing Law and Dispute Resolution</h3>
+				<p>
+				These Terms shall be governed by and construed in accordance with the laws of {governingCountry}, without regard to its
+				conflict of law provisions. You agree that any dispute, claim or controversy arising out of or related to
+				these Terms or your use of the Platform shall be resolved by the competent courts located in {governingLocality},
+				unless otherwise required by applicable law.
+				</p>
+				<p>
+					Before initiating formal legal proceedings, you agree to first attempt to resolve any dispute informally by
+					contacting us at {siteInfo.email} (if provided). Many issues can be resolved quickly and without the expense of
+					litigation when brought promptly to our attention.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Force Majeure</h3>
+				<p>
+					Neither party shall be liable for any failure or delay in performance of its obligations hereunder where such
+					failure or delay is due to causes beyond its reasonable control, including acts of God, labor disputes,
+					pandemics, riots, acts of war, governmental actions, or failures of internet infrastructure. In such an event,
+					the affected party shall be excused from performance to the extent of such cause and shall use commercially
+					reasonable efforts to resume performance.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Third-Party Services and Links</h3>
+				<p>
+					The Platform may contain links to third-party websites, products, and services, or may enable interactions
+					that are facilitated by third parties. Such links and integrations are provided for convenience only and do
+					not constitute an endorsement by {siteInfo.domain}. We are not responsible for the content, accuracy, legality
+					or policies of third-party services. Your interactions with third parties are solely between you and the third
+					party, and you should review their terms and privacy policies prior to engaging.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Changes to These Terms</h3>
+				<p>
+					We may update these Terms from time to time to reflect changes to the law, the Platform, or our business
+					practices. When we make material changes, we will take reasonable steps to provide notice, such as posting a
+					prominent notice on the Platform or sending an email to the address associated with your Account. Continued
+					use of the Platform after changes are posted constitutes acceptance of the revised Terms.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Miscellaneous</h3>
+				<p>
+					If any provision of these Terms is held to be unenforceable or invalid, that provision will be limited or
+					eliminated to the minimum extent necessary so that these Terms will otherwise remain in full force and effect
+					and enforceable. No waiver of any provision will be deemed a further or continuing waiver of such provision or
+					any other provision.
+				</p>
+				<p>
+					These Terms, together with our Privacy Policy and any other legal notices published by us on the Platform,
+					constitute the entire agreement between you and {siteInfo.domain} concerning the Platform, and supersede all prior
+					or contemporaneous agreements, representations, warranties and understandings, whether written or oral.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Contact Information</h3>
+				<p>
+					For questions about these Terms, to report violations, or to contact our legal department, please email: {
+						siteInfo.email
+					}.
+				</p>
+			</li>
+		</ol>
+	</section>
+</StandardLayout>

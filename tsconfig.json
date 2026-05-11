@@ -1,0 +1,28 @@
+{
+	"extends": "astro/tsconfigs/strict",
+	"include": [".astro/types.d.ts", "**/*", "./worker-configuration.d.ts"],
+	"exclude": ["dist"],
+	"compilerOptions": {
+		"paths": {
+			"@layouts/*": ["./src/layouts/*"],
+			"@modules/*": ["./src/layouts/modules/*"],
+			"@components/*": ["./src/components/*"],
+			"@scripts/*": ["./src/features/shared/scripts/*"],
+			"@assets/*": ["./src/assets/*"],
+			"@styles/*": ["./src/features/shared/styles/*"],
+			"@cart/*": ["./src/features/cart/*"],
+			"@collections/*": ["./src/features/collections/*"],
+			"@features/*": ["./src/features/*"],
+			"@log-alert/*": ["./src/features/log-alert/*"],
+			"@shared/*": ["./src/features/shared/*"],
+			"@shop/*": ["./src/features/shop/*"],
+			"@users/*": ["./src/features/users/*"],
+			"@calc-engine/*": ["./src/features/calc-engine/*"],
+			"@checkout/*": ["./src/features/checkout/*"],
+			"@payment-gateways/*": ["./src/features/payment-gateways/*"],
+			"@pp/*": ["./src/features/post-purchase/*"],
+			"@db/*": ["./src/db/*"],
+			"@contentconfig": ["./src/content.config.ts"]
+		}
+	}
+}

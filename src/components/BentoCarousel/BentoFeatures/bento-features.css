@@ -1,0 +1,92 @@
+bento-features {
+	display: block;
+	width: 100%;
+}
+
+bento-features article h2.bento-card-subtitle {
+	font-size: 1.2rem;
+	font-weight: var(--body-font-weight);
+	margin: 0.5rem 0;
+	color: var(--text-light);
+}
+
+.field-label {
+	font-family: var(--sans-font);
+	font-size: 0.7rem;
+	font-weight: var(--bold-font-weight);
+	text-transform: uppercase;
+	letter-spacing: 0.05rem;
+	color: var(--text-light);
+	opacity: 0.7;
+}
+
+.field-data,
+.stat-value {
+	font-size: 0.95rem;
+	font-family: var(--sans-font);
+	font-weight: var(--body-font-weight);
+	color: var(--card-text);
+	line-height: 1.3;
+	letter-spacing: 0.02rem;
+}
+
+/* Feature Card */
+.features-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.feature-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1rem;
+	padding: 0.75rem;
+	background-color: var(--bg);
+	border-radius: calc(var(--card-radius) * 0.5);
+	border: var(--border-width) solid var(--card-border);
+}
+
+/* Stats Card */
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.75rem;
+}
+
+.stat-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 0.75rem;
+	background-color: var(--bg);
+	border-radius: calc(var(--card-radius) * 0.5);
+	border: var(--border-width) solid var(--card-border);
+}
+
+.stat-value {
+	font-size: 1.5rem;
+	font-weight: var(--bold-font-weight);
+	letter-spacing: 0.05rem;
+}
+
+/* Media Card */
+.media-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.media-image {
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	border-radius: calc(var(--card-radius) * 0.5);
+	border: var(--border-width) solid var(--card-border);
+}
+
+.media-caption {
+	font-size: 0.85rem;
+	color: var(--text-light);
+	font-style: italic;
+}

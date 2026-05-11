@@ -1,0 +1,44 @@
+---
+import { siteInfo, shopHubSEO } from "@shared/siteInfo.js";
+import CollectionHubWrapper from "@collections/CollectionHubWrapper.astro";
+import ProductCard from "@shop/ProductCard.astro";
+import ShopLayout from "@layouts/ShopLayout.astro";
+import { getPaginatedCategoryPaths } from "@collections/collection-route-helpers.js";
+import { buildCollectionSchema } from "@collections/collection-schema.ts";
+
+export async function getStaticPaths({ paginate }) {
+	return await getPaginatedCategoryPaths("products", paginate, 12);
+}
+
+const { category } = Astro.params;
+const { page } = Astro.props;
+const categoryName = category
+	.split("-")
+	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+	.join(" ");
+const schemaItem = buildCollectionSchema(page);
+const seo = shopHubSEO[category] || {
+  title: `${categoryName} | ${siteInfo.name} Shop`,
+  description: `Shop our ${categoryName} collection.`,
+  hiddenH1: `Shop and Buy ${categoryName} by ${siteInfo.name}`,
+  moreInfo: [],
+}
+---
+
+<ShopLayout
+	title={seo.title}
+	description={seo.description}
+  hiddenH1={seo.hiddenH1}
+  moreInfo={seo.moreInfo}
+	heading={categoryName}
+	currentCategory={category}
+	{schemaItem}
+>
+	<Fragment slot="head">
+		{page.url.prev && <link rel="prev" href={page.url.prev} />}
+		{page.url.next && <link rel="next" href={page.url.next} />}
+	</Fragment>
+	<CollectionHubWrapper {page}>
+		{page.data.map((product, i) => <ProductCard product={product} index={i} />)}
+	</CollectionHubWrapper>
+</ShopLayout>

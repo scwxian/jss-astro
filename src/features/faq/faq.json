@@ -1,0 +1,81 @@
+[
+	{
+		"id": "orders-shipping",
+		"category": "Orders & Shipping",
+		"tabLabel": "Orders & Shipping",
+		"questions": [
+			{
+				"q": "How long does shipping take?",
+				"a": "Delivery times depend on your location. Domestic orders typically arrive in 3–7 business days. International orders may take 7–21 business days depending on customs processing."
+			},
+			{
+				"q": "Can I track my order?",
+				"a": "Yes. Once your order ships, you will receive a tracking number via email. You can use this to monitor your delivery status on the courier's website."
+			},
+			{
+				"q": "What if my order arrives damaged?",
+				"a": "Contact us at <a href=\"mailto:hello@example.com\">your support email</a> with your order number and photos of the damage. We'll arrange a replacement or refund as quickly as possible."
+			}
+		]
+	},
+
+	{
+		"id": "products",
+		"category": "Products",
+		"tabLabel": "Products",
+		"questions": [
+			{
+				"q": "Are your products covered by a warranty?",
+				"a": "Yes, all our products come with a standard manufacturer warranty. Warranty length varies by product type — check the product listing for specifics."
+			},
+			{
+				"q": "Can I return a product if I don't like it?",
+				"a": "We accept returns on most non-perishable items within 14 days of delivery. Items must be unused and in original packaging. See our <a href=\"/refund-return-policy/\">Refund & Return Policy</a> for full details."
+			},
+			{
+				"q": "How do I know which product is right for me?",
+				"a": "Check the product descriptions and specifications on each listing. If you're still unsure, <a href=\"/contact\">contact us</a> and we'll help you find the best fit."
+			}
+		]
+	},
+
+	{
+		"id": "subscriptions",
+		"category": "Subscriptions",
+		"tabLabel": "Subscriptions",
+		"questions": [
+			{
+				"q": "How do subscriptions work?",
+				"a": "Choose a plan, set your preferred schedule, and we'll deliver on a recurring basis. You can pause, modify, or cancel anytime from your account settings."
+			},
+			{
+				"q": "Can I cancel my subscription anytime?",
+				"a": "Yes. Cancel anytime from your account page. You'll continue to receive orders through the end of your current billing period. No cancellation fees."
+			},
+			{
+				"q": "When will I be billed for my subscription?",
+				"a": "You are billed on the same date each billing cycle starting from your initial sign-up date. You'll receive an email reminder a few days before each charge."
+			}
+		]
+	},
+
+	{
+		"id": "account-billing",
+		"category": "Account & Billing",
+		"tabLabel": "Account & Billing",
+		"questions": [
+			{
+				"q": "What payment methods do you accept?",
+				"a": "We accept major credit cards (Visa, Mastercard, American Express), debit cards, and digital wallets. All payments are processed securely through our payment partners."
+			},
+			{
+				"q": "How do I reset my password?",
+				"a": "Click 'Forgot Password' on the login page, enter your email address, and follow the instructions sent to your inbox. If you don't receive the email within a few minutes, check your spam folder."
+			},
+			{
+				"q": "Is my payment information secure?",
+				"a": "Absolutely. We use industry-standard encryption (SSL/TLS) and never store full payment card details on our servers. All transactions are processed by PCI-compliant payment providers."
+			}
+		]
+	}
+]

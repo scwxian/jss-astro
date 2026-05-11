@@ -1,0 +1,74 @@
+---
+import Toast from "./Toast.astro";
+import { overlayConfig } from "./overlay.store.ts";
+
+const title = "We use cookies"
+const cfg = overlayConfig.cookieToast;
+---
+
+{
+	cfg.active && (
+		<Toast
+			overlayId="cookieToast"
+			campaignId={cfg.campaignId}
+			trigger={cfg.trigger}
+			delayMs={cfg.delayMs}
+			position="bottom-left"
+      showCloseBtn={true}
+      title={title}
+      icon="info"
+		>
+      <span>This site uses cookies to improve your experience. <a href="/privacy-policy/">Learn more</a>.</span>
+			<div class="cookie-actions">
+				<button class="cookie-btn secondary" data-cookie-action="essential">Essential Only</button>
+				<button class="cookie-btn" data-cookie-action="all">Accept All</button>
+			</div>
+		</Toast>
+	)
+}
+
+<style>
+	.cookie-actions {
+		display: flex;
+		gap: 0.75rem;
+		margin-top: 0.75rem;
+		justify-content: flex-end;
+	}
+
+	.cookie-btn {
+		font-size: 0.85rem;
+		padding: 0.4rem 0.8rem;
+    line-height: 1.3;
+    box-shadow: none;
+		transform: none;
+		color: var(--text);
+    letter-spacing: -0.03rem;
+	}
+  .cookie-btn:enabled:hover,
+  .cookie-btn:enabled:active { box-shadow: none; transform: none; }
+
+	.cookie-btn.secondary { background: transparent; border: calc(var(--border-width)*2) solid var(--border); }
+  .cookie-btn.secondary:enabled:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    transform: none;
+    box-shadow: none;
+  }
+</style>
+
+<script>
+	import { dismiss } from "./overlay.ts";
+	import { setCookieConsent } from "./overlay.store.ts";
+
+	document.addEventListener("astro:page-load", () => {
+		document.querySelectorAll("[data-cookie-action]").forEach((btn) => {
+			btn.addEventListener("click", (e) => {
+				const action = (e.currentTarget as HTMLElement).dataset.cookieAction;
+				if (action === "all" || action === "essential") {
+					setCookieConsent(action);
+					dismiss("cookieToast");
+				}
+			});
+		});
+	});
+</script>

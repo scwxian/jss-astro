@@ -1,0 +1,234 @@
+---
+import { Image } from "astro:assets";
+import logo from "@assets/images/logo.png";
+import ImageCarousel from "@components/Carousel/ImageCarousel.astro";
+import BlankLayout from "@layouts/BlankLayout.astro";
+import "@styles/others/decorative-floats.css";
+import { siteInfo } from "@shared/siteInfo.js";
+// Icon imports removed - replace with actual SVG assets or icon library
+const pageName = "Links & Bio";
+const title = `${pageName} | ${siteInfo.name}`;
+const description = siteInfo.description;
+
+const productSlugs = [
+	"generic-physical",
+	"generic-subscription-recurring",
+	"generic-subscription-rolling",
+	"generic-membership",
+	"generic-digital",
+];
+
+function buildProductCarousel(slugs: string[]) {
+	return slugs.map((slug) => ({
+		href: `/products/${slug}/`,
+		src: `https://placehold.co/400x400?text=${encodeURIComponent(slug.replace(/-/g, " "))}`,
+		alt: slug
+			.split("-")
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(" "),
+	}));
+}
+
+const currentRoasts = buildProductCarousel(productSlugs);
+
+// Simple inline SVG data URIs as placeholders — swap for real icons
+const genericIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' rx='4' fill='%23333'/%3E%3C/svg%3E";
+
+const buyLinks = [
+	{
+		href: "/",
+		icon: genericIcon,
+		label: "Our Shop",
+		isWebsite: true,
+	},
+	// Niche marketplace link removed for generic template
+	// {
+	// 	href: "https://my.shp.ee/aVEQA7Sw",
+	// 	icon: getBase64("shopee.png"),
+	// 	label: "Shopee",
+  // },
+];
+
+const followLinks = [
+	{
+		href: siteInfo.socials.instagram,
+		icon: genericIcon,
+		label: "Instagram",
+	},
+	{
+		href: "/",
+		icon: genericIcon,
+		label: "Website",
+		isWebsite: true,
+	},
+	// Niche map link removed for generic template
+	// {
+	// 	href: "https://maps.app.goo.gl/jqTB9FYEPnnhdgW59",
+	// 	icon: getBase64("maps.png"),
+	// 	label: "Google Maps",
+	// 	isMap: true,
+	// },
+];
+---
+
+<BlankLayout {title} {description} disableSchema={true} noindex={true}>
+	<div class="bio-container float-frame">
+		<section>
+			<a href="/">
+				<Image src={logo} alt={siteInfo.name} class="bio-avatar" />
+			</a>
+
+				<h1 class="bio-title section-title">{siteInfo.name}</h1>
+				<p class="bio-subtitle section-body">
+					{siteInfo.description}
+				</p>
+
+				<div class="float-container avatar-float pos-left pos-top animate-element fade-in-faster">
+					<img
+						src="https://placehold.co/67x100?text=Avatar"
+						alt="Decorative avatar"
+						width="67"
+						height="100"
+					/>
+				</div>
+
+				<div class="social-links-block">
+					<div class="social-links">
+						<a href={siteInfo.socials.instagram} target="_blank" rel="noopener noreferrer">
+							<img width="28" height="28" src="https://placehold.co/28x28?text=IG" alt="Instagram" />
+						</a>
+						<a href={`https://wa.me/${siteInfo.whatsapp}`} target="_blank" rel="noopener noreferrer">
+							<img width="28" height="28" src="https://placehold.co/28x28?text=WA" alt="Whatsapp" />
+						</a>
+						<a href={`mailto:${siteInfo.email}`} target="_blank" rel="noopener noreferrer">
+							<img width="28" height="28" src="https://placehold.co/28x28?text=@" alt="Email" />
+						</a>
+					</div>
+				</div>
+
+			<section>
+				<h2 class="section-title bio-section-heading">Shop</h2>
+				<div class="bio-links">
+					{
+						buyLinks.map((link) => (
+            <a 
+            href={link.href}
+            class="button highlight-btn" 
+            target={link.isWebsite ? "" : "_blank"} 
+            rel={link.isWebsite ? "" : "noopener noreferrer"}>
+								<img src={link.icon} class="bio-button-icon" alt={`${link.label} icon`} width="24" height="24" />
+								{link.label}
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			<hr class="bio-divider" />
+
+			<section>
+				<h2 class="section-title bio-section-heading">Our Products</h2>
+				<ImageCarousel slides={currentRoasts} interval={3000} imageClass="square-thumb" />
+			</section>
+
+			<hr class="bio-divider" />
+
+			<section>
+				<h2 class="section-title bio-section-heading">Follow Us</h2>
+				<div class="bio-links">
+					{
+						followLinks.map((link) => (
+							<a
+								href={link.href}
+								class="button highlight-btn"
+								target={link.isWebsite ? "" : "_blank"}
+								rel={link.isWebsite ? "" : "noopener noreferrer"}
+							>
+							<img
+								src={link.icon}
+								class="bio-button-icon"
+								alt={`${link.label} icon`}
+								width="24"
+								height="24"
+								loading="lazy"
+							/>
+								{link.label}
+							</a>
+						))
+					}
+				</div>
+			</section>
+		</section>
+		<style>
+			section { padding: 0; width: 100%; }
+			.bio-container {
+				max-width: 500px;
+				justify-self: center;
+				width: 100%;
+				padding: 3rem 1.5rem;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				text-align: center;
+			}
+
+			.bio-avatar { width: 90px; margin-bottom: 0.5rem; }
+			.bio-title { font-size: 1.8rem; margin: 0 0 0.5rem; }
+			.bio-subtitle {
+				margin: 1rem 0 1.5rem 0;
+				color: var(--text-light);
+				font-size: 0.9rem;
+				line-height: 1.3rem;
+			}
+			.social-links-block { justify-self: center; gap: 1.3rem; margin: 3rem 0; }
+			.avatar-float {
+				--offset-y: 16%;
+				--offset-x: -29%;
+				@media (max-width: 768px) {
+					--offset-y: 19%;
+					--offset-x: -20%;
+				}
+			}
+
+			.avatar-float img {
+				border-radius: 8px;
+				opacity: 0.7;
+			}
+
+			/* Buttons & Lists */
+			.bio-section-heading {
+				font-size: 1.4rem;
+				margin: 0rem 0 2rem;
+				text-transform: uppercase;
+			}
+
+			.bio-links {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+				width: 100%;
+			}
+
+			.bio-links a.button {
+				width: 100%;
+				text-align: center;
+				padding: 1rem;
+				position: relative;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.bio-links a.button.highlight-btn { border-color: var(--text); }
+			.bio-button-icon { position: absolute; left: 1.5rem; width: 24px; }
+			.bio-button-icon.maps { margin-left: 2px; width: 20px; }
+
+			.bio-divider {
+				border: none;
+				border-top: 2px dashed var(--border);
+				width: 60%;
+				margin: 3.2rem auto 3rem;
+				opacity: 0.7;
+			}
+		</style>
+	</div>
+</BlankLayout>

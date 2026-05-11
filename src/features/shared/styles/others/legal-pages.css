@@ -1,0 +1,42 @@
+.section-title {
+	margin: 3rem 0 5rem 0;
+}
+#last-updated {
+	color: var(--accent);
+	font-weight: var(--bold-font-weight);
+}
+p {
+	font-size: 0.85rem;
+	margin: 0 0 0.7rem 0;
+	letter-spacing: 0;
+	line-height: 1.5rem;
+}
+.legal-ol {
+	font-size: 1rem;
+}
+.legal-ol > li:first-of-type {
+	margin-top: 1rem;
+}
+.legal-ol > li {
+	margin-top: 3rem;
+}
+.legal-ol-nested,
+.legal-ul-nested {
+	font-size: 0.85rem;
+	margin-bottom: 1rem;
+}
+.legal-ol-nested > li,
+.legal-ul-nested > li {
+	margin-top: 0.7rem;
+}
+.legal-ol-nested {
+	list-style: lower-latin;
+}
+h3.legal {
+	font-family: var(--sans-font);
+	font-size: 1.1rem;
+	font-weight: var(--bold-font-weight);
+	text-transform: uppercase;
+	letter-spacing: 0.05rem;
+	margin: 0 0 1rem 0;
+}

@@ -1,0 +1,87 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  name?: string;
+  checked?: boolean;
+  required?: boolean;
+}
+
+const { 
+  id, 
+  label, 
+  name, 
+  checked = false, 
+  required = false 
+} = Astro.props;
+
+const inputName = name || id;
+---
+
+<label class="checkbox-label" for={id}>
+  <input 
+    type="checkbox" 
+    id={id} 
+    name={inputName} 
+    checked={checked} 
+    required={required} 
+  />
+  <span class="checkbox-custom"></span>
+  <span class="checkbox-text">{label}</span>
+</label>
+
+<style>
+  /* Checkbox Styles */
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: calc(var(--border-width) * 2) solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    position: relative;
+    transition: all 0.2s ease-out;
+    flex-shrink: 0;
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--text);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .checkbox-label input[type="checkbox"]:focus-visible + .checkbox-custom {
+    outline: calc(var(--border-width) * 2) solid var(--text);
+    outline-offset: 2px;
+  }
+
+  .checkbox-text {
+    line-height: 1.4;
+  }
+</style>

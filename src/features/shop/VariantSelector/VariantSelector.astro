@@ -1,0 +1,165 @@
+---
+import Tooltip from "@components/Tooltips/Tooltip.astro";
+export interface PriceVariant {
+	name: string;
+	skuSuffix: string;
+	price: number;
+}
+
+export interface PriceVariantGroup {
+	name: string;
+	tooltip?: string;
+	variants: PriceVariant[];
+}
+
+export interface OptionChoice {
+	name: string;
+	skuSuffix: string;
+}
+
+export interface OptionGroup {
+	name: string;
+	tooltip?: string;
+	choices: OptionChoice[];
+}
+
+export interface Props {
+	basePrice: number;
+	masterSku: string;
+	hasPriceVariants: boolean;
+	priceVariantGroups?: PriceVariantGroup[];
+	options?: OptionGroup[];
+	includeSkuGroups?: string[];
+}
+
+const { basePrice, masterSku, hasPriceVariants, priceVariantGroups, options, includeSkuGroups } = Astro.props;
+---
+
+<variant-selector data-base-price={basePrice} data-master-sku={masterSku} data-include-sku-groups={includeSkuGroups?.join(",")}>
+	{
+		hasPriceVariants &&
+			priceVariantGroups &&
+			priceVariantGroups.map((group, groupIndex) => (
+				<fieldset class="variant-group" data-group-index={groupIndex} data-group-name={group.name}>
+          <div class="legend-group">
+            <legend>{group.name}</legend>
+            {group.tooltip && <Tooltip icon content={group.tooltip} class="label-tooltip" />}
+          </div>
+					<div class="radio-grid">
+						{group.variants.map((variant, variantIndex) => (
+							<label class="radio-label">
+								<input
+									type="radio"
+									name={`price_variant_group_${groupIndex}`}
+									value={variant.skuSuffix}
+									data-price={variant.price}
+									data-variant-name={variant.name}
+									data-group-index={groupIndex}
+									checked={variantIndex === 0}
+								/>
+								<span class="radio-btn">{variant.name}</span>
+							</label>
+						))}
+					</div>
+				</fieldset>
+			))
+	}
+
+	{
+		options &&
+			options.map((optionGroup) => (
+				<fieldset class="variant-group" data-group-name={optionGroup.name}>
+          <div class="legend-group">
+            <legend>{optionGroup.name}</legend>
+            {optionGroup.tooltip && <Tooltip icon content={optionGroup.tooltip} class="label-tooltip" />}
+          </div>
+					<div class="radio-grid">
+						{optionGroup.choices.map((choice, index) => (
+							<label class="radio-label">
+								<input
+									type="radio"
+									name={optionGroup.name.toLowerCase().replace(/\s+/g, "-")}
+									value={choice.name}
+									data-sku-suffix={choice.skuSuffix}
+									checked={index === 0}
+								/>
+								<span class="radio-btn">{choice.name}</span>
+							</label>
+						))}
+					</div>
+				</fieldset>
+			))
+	}
+
+	<slot />
+</variant-selector>
+
+<style>
+variant-selector {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--group-options-gap);
+}
+.variant-group {
+	border: none;
+	padding: 0;
+	margin: 0;
+  min-width: 0;
+}
+.variant-group legend {
+	font-weight: var(--bold-font-weight);
+	margin-bottom: var(--legend-gap);
+	font-size: 0.95rem;
+	letter-spacing: 0.03rem;
+  padding-right: 0;
+	color: var(--text);
+}
+
+.legend-group {display: flex;}
+
+.radio-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+  min-width: 0;
+}
+
+/* stupid safari fix for weird fieldset sizing on QVM */
+.radio-label { position: relative; display: inline-flex; }
+
+.radio-label input[type="radio"] {
+	/* Visually hide native radio button, keep accessible */
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.radio-btn {
+	display: inline-block;
+	padding: 0.4rem 0.8rem;
+	border: calc(var(--border-width) * 2) solid var(--border);
+	border-radius: calc(var(--standard-border-radius) / 2);
+	cursor: pointer;
+	transition: all 0.2s ease-out;
+	font-size: 0.9rem;
+	letter-spacing: 0.02rem;
+	color: var(--text);
+	font-weight: var(--bold-font-weight);
+}
+
+.radio-label input[type="radio"]:checked + .radio-btn,
+.radio-label input[type="radio"]:hover + .radio-btn {
+	background: var(--accent);
+	border-color: var(--accent);
+	font-weight: var(--bold-font-weight);
+}
+
+.radio-label input[type="radio"]:focus-visible + .radio-btn {
+	outline: calc(var(--border-width) * 2) solid var(--text);
+	outline-offset: 2px;
+}
+
+</style>
+

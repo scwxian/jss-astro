@@ -1,0 +1,31 @@
+---
+import StandardLayout from "@layouts/StandardLayout.astro";
+import { siteInfo } from "@shared/siteInfo.js";
+const pageName = "404 - Page Not Found";
+const pageTitle = `${pageName} | ${siteInfo.name}`;
+const pageDescription = "The page you're looking for doesn't exist.";
+---
+
+<StandardLayout title={pageTitle} description={pageDescription} noindex={true} nofollow={true} disableSchema={true}>
+	<section>
+		<h1 class="section-title" style="font-size: 3rem; margin-bottom: 0.8rem;">{pageName}</h1>
+		<h3 style="font-weight:var(--body-font-weight); font-size: 1.8rem; margin-top: 0; margin-bottom: 2rem;">
+			Oops! Page not found
+		</h3>
+		<p>The page you're looking for either doesn't exist or something probably broke.</p>
+		<div class="section-cta">
+			<a href="/" class="button" style="margin-top:1rem;">Return to Home</a>
+		</div>
+	</section>
+
+	<style>
+		section {
+			padding: 10rem 0 20rem;
+		}
+		@media (max-width: 768px) {
+			section {
+				padding: 6rem 0;
+			}
+		}
+	</style>
+</StandardLayout>

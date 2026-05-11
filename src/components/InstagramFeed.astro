@@ -1,0 +1,233 @@
+---
+const { class: className } = Astro.props;
+---
+
+<div class={`insta-feed-container ${className || ""}`}>
+	<div class="insta-feed-grid">
+		<div class="skeleton-post"></div>
+		<div class="skeleton-post"></div>
+		<div class="skeleton-post"></div>
+		<div class="skeleton-post"></div>
+		<div class="skeleton-post"></div>
+		<div class="skeleton-post"></div>
+	</div>
+</div>
+
+<style is:global>
+	.insta-feed-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.5rem;
+	}
+
+	@media (max-width: 768px) {
+		.insta-feed-grid {
+			gap: 0.1rem;
+		}
+	}
+
+	.skeleton-post {
+		aspect-ratio: 4 / 5;
+		border-radius: var(--standard-border-radius);
+	}
+
+	.insta-feed-container {
+		padding: 2rem 0 3rem;
+	}
+
+	.insta-post {
+		display: block;
+		position: relative;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background-color: var(--accent-bg);
+	}
+
+	.insta-post img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	}
+
+	/* The main hover overlay (for the heart) */
+	.insta-post .overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.insta-post:hover .overlay {
+		opacity: 1;
+	}
+	.insta-post:hover img {
+		transform: scale(1.05);
+	}
+
+	.overlay-icon {
+		width: 32px;
+		height: 32px;
+	}
+
+	.video-icon-overlay {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		width: 24px;
+		height: 24px;
+		color: white;
+		filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+	}
+
+	.video-icon-overlay svg {
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+<script>
+import { siteInfo } from "@features/shared/siteInfo";
+
+
+  const BEHOLD_JSON_URL = "https://feeds.behold.so/<customcode>";
+
+	const truncate = (str = "", len = 125) => {
+		const cleanStr = str.replace(/\s+/g, " ").trim();
+		if (cleanStr.length <= len) return cleanStr;
+		const lastSpace = cleanStr.lastIndexOf(" ", len - 3);
+		if (lastSpace === -1) {
+			return cleanStr.substring(0, len - 3) + "...";
+		}
+		return cleanStr.substring(0, lastSpace) + "...";
+	};
+
+	async function fetchInstagramFeed(feedContainer) {
+		if (!feedContainer.querySelector(".insta-feed-grid .skeleton-post")) {
+			return;
+		}
+
+    const cacheKey = `${siteInfo.domain}_insta_feed`;
+		const cacheDuration = 24 * 60 * 60 * 1000;
+		let feedData = null;
+
+		try {
+			const cached = localStorage.getItem(cacheKey);
+			if (cached) {
+				const { data, timestamp } = JSON.parse(cached);
+				if (Date.now() - timestamp < cacheDuration) {
+					feedData = data;
+				}
+			}
+			if (!feedData) {
+				const response = await fetch(BEHOLD_JSON_URL);
+				if (!response.ok) throw new Error(`Network error: ${response.status}`);
+
+				feedData = await response.json();
+				if (!feedData.posts || feedData.posts.length === 0) throw new Error("No posts returned from feed");
+
+				localStorage.setItem(
+					cacheKey,
+					JSON.stringify({
+						data: feedData,
+						timestamp: Date.now(),
+					})
+				);
+			}
+
+			// --- Success: Build the Feed ---
+			let data = feedData;
+			feedContainer.innerHTML = "";
+			const grid = document.createElement("div");
+			grid.className = "insta-feed-grid";
+
+			data.posts.forEach((post) => {
+				const permalink = post.permalink;
+				const imageUrl = post.sizes?.medium?.mediaUrl || post.mediaUrl;
+				const caption = post.caption;
+				const mediaType = post.mediaType;
+        const altText = truncate(caption, 125) || `Instagram post by ${siteInfo.name}`;
+				const postLink = document.createElement("a");
+
+				postLink.className = "insta-post";
+				postLink.href = permalink;
+				postLink.target = "_blank";
+				postLink.rel = "noopener noreferrer";
+				postLink.setAttribute("aria-label", `View Instagram post: ${altText}`);
+
+				const img = document.createElement("img");
+				img.src = imageUrl;
+				img.alt = altText;
+				img.loading = "lazy";
+				postLink.appendChild(img);
+
+				const overlay = document.createElement("div");
+				overlay.className = "overlay";
+				overlay.innerHTML = `
+                <span class="overlay-text">
+                    <svg class="overlay-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </span>
+                              `;
+				postLink.appendChild(overlay);
+
+				if (mediaType === "VIDEO") {
+					const videoIcon = document.createElement("div");
+					videoIcon.className = "video-icon-overlay";
+					videoIcon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5.14v13.72L19.25 12 8 5.14z"/>
+                    </svg>
+                              `;
+					postLink.appendChild(videoIcon);
+				}
+
+				grid.appendChild(postLink);
+			});
+
+			feedContainer.appendChild(grid);
+		} catch (error) {
+			// Error loading Instagram feed - silent fail, show user message
+			if (feedContainer) {
+				feedContainer.innerHTML = `
+                    <p class="section-body center-text" style="opacity: 0.7;">
+                        Could not load the feed. <br>
+                        Check out our latest posts on
+                        <a href=${siteInfo.socials.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>.
+                    </p>
+                `;
+			}
+		}
+	}
+
+	document.addEventListener("astro:page-load", () => {
+		const feedContainers = document.querySelectorAll(".insta-feed-container");
+
+		if (feedContainers.length > 0) {
+			const observer = new IntersectionObserver(
+				(entries, observerInstance) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							fetchInstagramFeed(entry.target);
+							observerInstance.unobserve(entry.target);
+						}
+					});
+				},
+				{ threshold: 0.2 }
+			);
+
+			feedContainers.forEach((container) => observer.observe(container));
+		}
+	});
+</script>

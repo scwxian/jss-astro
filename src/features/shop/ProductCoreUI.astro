@@ -1,0 +1,203 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import ProductCarousel from "@components/Carousel/ProductCarousel.astro";
+import AddToCartForm from "./AddToCartForm/AddToCartForm.astro";
+import PurchaseSubscriptionForm from "./PurchaseSubscriptionForm/PurchaseSubscriptionForm.astro";
+import AdditionalInfo from "./AdditionalInfo/AdditionalInfo.astro";
+import RelatedProducts from "./RelatedProducts.astro";
+import AlsoAvailableIcons from "@components/AlsoAvailableIcons.astro";
+import "@components/BentoCarousel/bento-carousel.css"
+
+export interface Props { product: CollectionEntry<"products">; }
+
+const { product } = Astro.props;
+const { data, id } = product;
+const { Content } = await render(product);
+const productTags = data.tags.join(" // ");
+const productImageUrl = data.images[0] ? getAssetUrl("products", id, data.images[0]) : "";
+const isOut = data.status === "out-of-stock";
+const isPre = data.status === "pre-order";
+const isBestSeller = data.isFeatured === true;
+const isSub = data.type === "subscription";
+const showQuantity = data.showQuantitySelector !== false; 
+const maxQuantity = data.maxQuantity;
+const hasPriceVariants = "priceVariantGroups" in data && data.priceVariantGroups && data.priceVariantGroups.length > 0;
+
+const altContext = (data.seo?.title ?? "")
+	.replaceAll(data.name, "")
+	// .replaceAll("YourKeyword", "") // Replace with your own SEO text filters
+	.replaceAll("|", "")
+	.trim()
+	.replace(/\s+/g, " ");
+---
+
+<div class="product-core-ui">
+	<section class="grid-layout product-top-section p-0">
+		<ProductCarousel
+			images={data.images}
+			video={data.video}
+			productName={data.name}
+			collection="products"
+			slug={id}
+			imageClass="product-gallery-image"
+			altContext={altContext}
+		/>
+
+    <div class="badge-container">
+      {isOut && <span class="badge out-of-stock">Out of Stock</span>}
+      {isPre && <span class="badge pre-order">Pre-Order</span>}
+      {isBestSeller && <span class="badge best-seller">Best Seller</span>}
+    </div>
+
+		<div class="product-details">
+			{productTags && <span class="product-tags section-subtitle">{productTags}</span>}
+      <h1 class="product-title">{data.name}<span class="hidden-visually">- {altContext}</span></h1>
+			<p class="product-desc">{data.shortDescription}</p>
+
+      {isSub ? (
+        <PurchaseSubscriptionForm
+          masterSku={data.masterSku}
+          slug={id}
+          name={data.name}
+          image={productImageUrl}
+          basePrice={data.basePrice}
+          isOut={isOut}
+          hasPriceVariants={hasPriceVariants}
+          priceVariantGroups={data.priceVariantGroups}
+          options={data.options}
+          hasDeliverySchedule={data.hasDeliverySchedule}
+          billingAlignment={data.billingAlignment}
+        />
+      ) : (
+        <AddToCartForm
+          masterSku={data.masterSku}
+          slug={id}
+          name={data.name}
+          image={productImageUrl}
+          basePrice={data.basePrice}
+          maxQuantity={maxQuantity}
+          showQuantity={showQuantity}
+          isOut={isOut}
+          isPre={isPre}
+          hasPriceVariants={hasPriceVariants}
+          priceVariantGroups={data.priceVariantGroups}
+          options={data.options}
+        >
+        </AddToCartForm>
+      )}
+
+      {data.externalLinks && data.externalLinks.length > 0 && (
+        <AlsoAvailableIcons links={data.externalLinks} size={26} />
+      )}
+		</div>
+	</section>
+
+	<section class="product-description">
+		<Content />
+		<AdditionalInfo items={data.additionalInfo} />
+		<RelatedProducts relatedProductIds={data.relatedProductIds} />
+	</section>
+</div>
+
+<style is:global>
+.product-gallery-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	aspect-ratio: 1 / 1;
+	border-radius: var(--standard-border-radius);
+	background: var(--accent-bg);
+}
+.product-core-ui .carousel { max-width: 100%; }
+.product-core-ui .carousel-track { padding: 0; }
+.product-core-ui .carousel-nav { margin-top: 1rem; }
+
+.button-caption { padding-top: 0.5rem;}
+
+.product-description {
+	margin-top: 4rem;
+	padding-top: 3rem;
+	border-top: var(--border-width) solid var(--border);
+	color: var(--text);
+}
+
+.product-description h2:first-of-type { margin-top: 0; }
+.product-description h2 {
+	font-size: var(--h4-fs);
+	letter-spacing: -0.1rem;
+	font-weight: var(--body-font-weight);
+	padding: 0;
+	margin-top: 2.5rem;
+	margin-bottom: 1.5rem;
+	font-family: var(--serif-font);
+	color: var(--text);
+}
+.product-description p { line-height: 1.6; margin: 0; }
+</style>
+
+<style>
+.product-core-ui .product-title {
+	font-family: var(--sans-font);
+	font-size: var(--h3-fs);
+	margin: 0;
+	letter-spacing: 0.02rem;
+}
+
+.product-top-section {
+  position: relative;
+	padding: 0;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	width: 100%;
+	--grid-gap-x: 2rem;
+	--grid-gap-y: 0rem;
+	@media (max-width: 768px) {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+}
+
+.product-details { display: flex; flex-direction: column; }
+
+.badge-container {position: absolute; left: 1%; top: 1%;}
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.badge.out-of-stock { background-color: var(--disabled); color: var(--text-light); }
+.badge.pre-order { background-color: var(--accent-bg); color: var(--text); }
+.badge.best-seller {
+  background-color: var(--accent);
+  color: var(--text);
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--accent-hover);
+    color: var(--bg);
+  }
+}
+
+.section-subtitle.product-tags {
+	font-family: var(--serif-font);
+	font-weight: var(--body-font-weight);
+	letter-spacing: 0rem;
+	margin: 0;
+	max-width: 300px;
+	line-height: 1.1rem;
+	padding-bottom: 5px;
+}
+
+.product-desc {
+	color: var(--text-light);
+	line-height: 1.6;
+	margin: 0.5rem 0 0 0;
+}
+</style>
+
+<script src="@shop/shop-init.js"></script>

@@ -1,0 +1,58 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  cols?: "1" | "2" | "3";
+}
+
+const { id, label, cols = "1" } = Astro.props;
+const layoutClass = cols === "1" ? "form-row" :
+                    cols === "2" ? "form-2col-row" :
+                    "form-3col-row";
+---
+<div class={`input-wrapper ${layoutClass}`}>
+  <label for={id} class="form-label">{label}</label>
+  <slot />
+  <p class="error-message m-0" id={`${id}-error`}></p>
+</div>
+
+<style>	
+.input-wrapper { position: relative; width: 100%; }
+.form-row { width: 100%; }
+.form-2col-row { width: calc(50% - 0.5rem); }
+.form-3col-row { width: calc(33.333% - 0.5rem); }
+@media (max-width: 768px) {
+  .form-2col-row { width: calc(50% - 0.3rem); }
+  .form-3col-row { width: 100%; }
+}
+
+.form-label {
+  position: absolute;
+  left: 1rem;
+  top: 1.4rem;
+  height: 1.2rem;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #666; 
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+  z-index: 10;
+  letter-spacing: 0.03rem;
+}
+  .input-wrapper:has(input:focus) .form-label,
+  .input-wrapper:has(input:not(:placeholder-shown)) .form-label,
+  .input-wrapper:has(select) .form-label {
+    top: 0.3rem;
+    transform: none;
+    font-size: 0.7rem;
+    color: var(--text-light);
+  }
+
+.error-message {
+  color: var(--error);
+  font-size: 0.85rem;
+  top: 100%;
+  display: none;
+  line-height: 1rem;
+}
+</style>

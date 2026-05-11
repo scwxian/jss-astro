@@ -1,0 +1,41 @@
+---
+import '../bento-carousel.css';
+import '../BentoFeatures/bento-features.css';
+import BentoCarousel from "../BentoCarousel.astro";
+import FeatureCard from "../BentoFeatures/FeatureCard.astro";
+import StatsCard from "../BentoFeatures/StatsCard.astro";
+import MediaCard from "../BentoFeatures/MediaCard.astro";
+
+const tabs = [
+	{ id: "features", label: "Details" },
+	{ id: "stats", label: "Highlights" },
+	{ id: "media", label: "Gallery" },
+];
+
+const features = [
+	{ label: "Material", value: "Premium cotton blend" },
+	{ label: "Origin", value: "Designed in studio" },
+	{ label: "Care", value: "Machine wash cold" },
+];
+
+const stats = [
+	{ label: "Weight", value: "280g" },
+	{ label: "Rating", value: "4.8" },
+	{ label: "Reviews", value: "124" },
+	{ label: "Ships in", value: "2 days" },
+];
+
+const media = {
+	src: "https://placehold.co/600x400?text=Product+Image",
+	alt: "Example product showcase",
+	caption: "A sample image for your product gallery.",
+};
+---
+
+<bento-showcase>
+	<BentoCarousel tabs={tabs}>
+		<FeatureCard data={features} style="--col-start: 1; --col-end: 3; --row-start: 1; --row-end: 3;" />
+		<StatsCard data={stats} style="--col-start: 3; --col-end: 4; --row-start: 1; --row-end: 3;" />
+		<MediaCard data={media} style="--col-start: 4; --col-end: 5; --row-start: 1; --row-end: 3;" />
+	</BentoCarousel>
+</bento-showcase>

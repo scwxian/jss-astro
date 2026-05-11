@@ -1,0 +1,31 @@
+---
+export interface Props {
+	id: string;
+	isActive: boolean;
+	questions: { q: string; a: string }[];
+}
+
+const { id, isActive, questions } = Astro.props;
+---
+
+<div class={`faq-category-content ${isActive ? "active" : ""}`} {id}>
+	{
+		questions.map((qa) => (
+			<details>
+				<summary>{qa.q}</summary>
+				<div class="details-content">
+					<p set:html={qa.a} />
+				</div>
+			</details>
+		))
+	}
+</div>
+
+<style>
+	.faq-category-content {
+		display: none;
+	}
+	.faq-category-content.active {
+		display: block;
+	}
+</style>

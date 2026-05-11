@@ -1,0 +1,237 @@
+---
+
+import Tooltip from "@components/Tooltips/Tooltip.astro";
+import CollectionCategoryNav from "@collections/CollectionCategoryNav.astro";
+import CollectionSubCategoryNav from "@collections/CollectionSubCategoryNav.astro";
+import QuickViewModal from "@shop/QuickViewModal/QuickViewModal.astro";
+import StandardLayout from "./StandardLayout.astro";
+import "@styles/others/decorative-floats.css";
+
+export interface Props {
+	title: string;
+	description: string;
+  hiddenH1?: string;
+  moreInfo?: Array<{ q: string; a: string }>;
+	heading: string;
+	subheading?: string;
+	currentCategory: string;
+	currentSubCategory?: string;
+	mobileCols?: number;
+	desktopCols?: number;
+	schemaItem?: Record<string, any>;
+}
+
+const {
+	title,
+	description,
+  hiddenH1,
+  moreInfo,
+	heading,
+	subheading,
+	currentCategory,
+	currentSubCategory,
+	mobileCols = 2,
+	desktopCols = 3,
+	schemaItem,
+} = Astro.props;
+
+const infoTitle = heading === "Shop All" ? "Shop Info" : `${heading} Info`;
+---
+
+<StandardLayout {title} {description} {schemaItem} transition:animate="none">
+	<slot name="head" slot="head" />
+	<section class="shop-intro break-section" transition:name="shop-intro" transition:animate="none">
+		<div class="image-masker-overlay" transition:persist="shop-banner">
+			<img
+				src="https://placehold.co/800x300?text=Shop+Banner"
+				alt="Shop Banner"
+				width="800"
+				height="300"
+				fetchpriority="high"
+			/>
+		</div>
+
+		<div class="break-section-content">
+			<div class="shop-heading-wrapper">
+				{hiddenH1 && <h1 class="hidden-visually">{hiddenH1}</h1>}
+				<h2 transition:name="shop-heading" transition:animate="fade">
+					{heading}
+					{subheading && <span class="shop-subheading">{subheading}</span>}
+				</h2>
+			</div>
+		</div>
+	</section>
+
+	<section class="shop-main">
+		<div class="shop-nav-section" transition:name="shop-nav-wrapper" transition:animate="none">
+			<h2 class="category-label section-subtitle">Filter by category</h2>
+			<CollectionCategoryNav collection="products" basePath="/shop" {currentCategory} />
+			<CollectionSubCategoryNav collection="products" basePath="/shop" {currentCategory} {currentSubCategory} />
+		</div>
+		<div
+			class="variable-provider collection-wrapper"
+			data-active-category={currentCategory}
+			data-active-subcategory={currentSubCategory}
+			transition:name="shop-grid"
+			style={`--mobile-cols: ${mobileCols}; --desktop-cols: ${desktopCols};`}
+		>
+			<slot />
+		</div>
+	</section>
+
+  <QuickViewModal />
+
+  {moreInfo && moreInfo.length > 0 && (
+  <section class="hub-more-info p-t-0">
+    <h2 class="section-title">{infoTitle}</h2>
+    {moreInfo.map((item) => (
+      <details>
+        <summary><h3 class="m-0">{item.q}</h3></summary>
+        <div class="details-content">
+          <p set:html={item.a} />
+        </div>
+      </details>
+    ))}
+  </section>
+  )}
+
+	<script>
+		import { initAccordionAnimations } from "@scripts/utils.js";
+
+		// Preserve scroll when navigating categories
+		let preserveScroll = false;
+		let savedScrollY = 0;
+		let savedCategoryScrollX = 0;
+
+		document.addEventListener("astro:before-preparation", (event) => {
+			const isShopNavigation = event.from.pathname.startsWith("/shop") && event.to.pathname.startsWith("/shop");
+
+			if (isShopNavigation) {
+				preserveScroll = true;
+				savedScrollY = window.scrollY;
+				// Save horizontal scroll position of category nav
+				const categoryNav = document.querySelector(".category-nav");
+				if (categoryNav) {
+					savedCategoryScrollX = categoryNav.scrollLeft;
+				}
+			} else {
+				preserveScroll = false;
+			}
+		});
+
+		document.addEventListener("astro:after-swap", () => {
+			if (preserveScroll) {
+				window.scrollTo({ top: savedScrollY, behavior: "instant" });
+				// Restore horizontal scroll position of category nav
+				const categoryNav = document.querySelector(".category-nav");
+				if (categoryNav) {
+					categoryNav.scrollLeft = savedCategoryScrollX;
+				}
+			}
+			const hubFaq = document.querySelector(".hub-more-info");
+			if (hubFaq) initAccordionAnimations(hubFaq);
+		});
+
+		document.addEventListener("astro:page-load", () => {
+			const hubFaq = document.querySelector(".hub-more-info");
+			if (hubFaq) initAccordionAnimations(hubFaq);
+		});
+	</script>
+</StandardLayout>
+
+<style>
+	.break-section {
+		padding-top: 5rem;
+		padding-bottom: 5.5rem;
+		@media (max-width: 768px) { padding-bottom: 4.5rem; }
+	}
+
+	.break-section-content .image-masker-overlay.spritesheet {
+		position: relative;
+		top: auto;
+		left: auto;
+		width: fit-content;
+		height: auto;
+		z-index: 0;
+		display: block;
+	}
+	.break-section-content .image-masker-overlay.spritesheet::after {
+		background-color: var(--image-overlay-color);
+		@media (prefers-color-scheme: dark) { background-color: var(--image-overlay-color-less); }
+	}
+	.break-section-content {
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.shop-heading-wrapper {
+		position: absolute;
+		top: 67%;
+		@media (max-width: 768px) { top: 76%; }
+	}
+
+	.shop-intro h2 {
+		font-weight: var(--body-font-weight);
+		font-size: var(--h2-fs);
+		position: relative;
+		z-index: 3;
+		margin: 0;
+		color: #000;
+		text-align: center;
+		@media (prefers-color-scheme: dark) { color: var(--text); }
+		@media only screen and (max-width: 768px) { font-size: calc(var(--h2-fs) * 0.9); margin: -25px 0 0 0; }
+	}
+
+	.shop-subheading {
+		display: block;
+		font-size: 0.6em;
+		font-weight: 400;
+		color: var(--text-light);
+		margin-top: -5px;
+	}
+
+	.shop-nav-section {
+		margin-bottom: 1.5rem;
+		justify-self: flex-start;
+		width: 100%;
+		@media (max-width: 768px) { margin-bottom: 2rem; }
+	}
+
+	.category-label {
+    font-family: var(--sans-font);
+		color: var(--text);
+		font-weight: 500;
+		margin-bottom: 10px;
+		@media (max-width: 768px) { margin-bottom: 10px; }
+	}
+
+	.shop-main { padding-top: 2rem; }
+
+	.collection-wrapper {
+		width: 100%;
+		margin: 0 auto;
+		--grid-gap-x: 1.2rem;
+		--grid-gap-y: 2rem;
+		@media (max-width: 768px) { --grid-gap-x: 1rem; --grid-gap-y: 1rem; }
+	}
+  .hub-more-info .section-title {
+    font-size: var(--h4-fs);
+    letter-spacing: -0.1rem;
+    padding: 0;
+  }
+
+  .hub-more-info summary h3 {
+    font-size: 1rem;
+    font-weight: var(--accordion-font-weight);
+    font-family: var(--sans-font);
+    letter-spacing: 0.04rem;
+    line-height: 1.4;
+    padding: 0;
+  }
+</style>
+
+<style is:global>
+	::view-transition-group(shop-heading) { z-index: 50; }
+</style>

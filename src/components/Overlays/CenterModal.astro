@@ -1,0 +1,94 @@
+---
+interface Props {
+  overlayId: string;
+  campaignId: string;
+  trigger: "immediate" | "delay" | "scroll";
+  delayMs?: number;
+  scrollThreshold?: number;
+}
+
+const { overlayId, campaignId, trigger, delayMs, scrollThreshold } = Astro.props;
+---
+
+<div id={`${overlayId}-backdrop`} class="overlay-backdrop" data-overlay-backdrop={overlayId}></div>
+<div id={overlayId} class="center-modal" data-overlay-id={overlayId} data-campaign-id={campaignId} data-trigger={trigger} data-delay-ms={delayMs} data-scroll-threshold={scrollThreshold}>
+  <button class="overlay-close-btn" aria-label="Close" data-overlay-close={overlayId}>&times;</button>
+  <div class="content">
+    <slot />
+  </div>
+</div>
+
+<style>
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: var(--z-modal-backdrop);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease-out, visibility 200ms ease-out;
+}
+
+.overlay-backdrop[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.center-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(90%, 550px);
+  max-height: 60vh;
+  background: var(--accent-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--standard-border-radius);
+  padding: 2rem;
+  z-index: var(--z-modal);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9);
+  visibility: hidden;
+  transition: opacity 250ms ease-out, transform 250ms ease-out, visibility 250ms ease-out;
+  overflow-y: scroll;
+}
+
+.center-modal[data-visible="true"] {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  visibility: visible;
+}
+
+.overlay-close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+}
+</style>
+
+<script>
+import { register, dismiss } from "./overlay.ts";
+
+document.addEventListener("astro:page-load", () => {
+  document.querySelectorAll(".center-modal[data-overlay-id]").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    const id = el.dataset.overlayId;
+    const campaignId = el.dataset.campaignId;
+    const trigger = el.dataset.trigger as "immediate" | "delay" | "scroll";
+    const delayMs = el.dataset.delayMs ? parseInt(el.dataset.delayMs, 10) : undefined;
+    const scrollThreshold = el.dataset.scrollThreshold ? parseInt(el.dataset.scrollThreshold, 10) : undefined;
+    if (!id || !campaignId || !trigger) return;
+
+    const backdrop = document.querySelector(`[data-overlay-backdrop="${id}"]`) as HTMLElement | null;
+
+    register(id, el, campaignId, trigger, delayMs, scrollThreshold, backdrop);
+
+    // Close button.
+    const closeBtn = document.querySelector(`[data-overlay-close="${id}"]`);
+    closeBtn?.addEventListener("click", () => dismiss(id));
+
+    // Backdrop click.
+    backdrop?.addEventListener("click", () => dismiss(id));
+  });
+});
+</script>

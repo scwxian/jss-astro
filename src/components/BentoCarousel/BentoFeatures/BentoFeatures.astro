@@ -1,0 +1,60 @@
+---
+import './bento-features.css';
+import type { BentoFeaturesData } from "./bento-features-types.ts";
+import BentoCarousel from "@components/BentoCarousel/BentoCarousel.astro";
+import FeatureCard from "./FeatureCard.astro";
+import StatsCard from "./StatsCard.astro";
+import MediaCard from "./MediaCard.astro";
+
+export interface Props {
+	data: BentoFeaturesData;
+}
+
+const { data } = Astro.props;
+
+const hasFeatures = data.features && data.features.length > 0;
+const hasStats = data.stats && data.stats.length > 0;
+const hasMedia = data.media && data.media.src;
+
+const cardCount = [hasFeatures, hasStats, hasMedia].filter(Boolean).length;
+if (cardCount === 0) return;
+
+interface GridPosition { colStart: number; colEnd: number; rowStart: number; rowEnd: number; }
+interface LayoutPreset { features: GridPosition; stats: GridPosition; media: GridPosition; }
+
+const LAYOUT_PRESETS: Record<number, LayoutPreset> = {
+	1: {
+		features: { colStart: 1, colEnd: 5, rowStart: 1, rowEnd: 2 },
+		stats: { colStart: 1, colEnd: 5, rowStart: 1, rowEnd: 2 },
+		media: { colStart: 1, colEnd: 5, rowStart: 1, rowEnd: 2 },
+	},
+	2: {
+		features: { colStart: 1, colEnd: 3, rowStart: 1, rowEnd: 3 },
+		stats: { colStart: 3, colEnd: 5, rowStart: 1, rowEnd: 2 },
+		media: { colStart: 3, colEnd: 5, rowStart: 2, rowEnd: 3 },
+	},
+	3: {
+		features: { colStart: 1, colEnd: 3, rowStart: 1, rowEnd: 3 },
+		stats: { colStart: 3, colEnd: 4, rowStart: 1, rowEnd: 3 },
+		media: { colStart: 4, colEnd: 5, rowStart: 1, rowEnd: 3 },
+	},
+};
+
+const preset = LAYOUT_PRESETS[Math.min(3, Math.max(1, cardCount))];
+
+const getPositionStyle = (pos: GridPosition) =>
+	`--col-start: ${pos.colStart}; --col-end: ${pos.colEnd}; --row-start: ${pos.rowStart}; --row-end: ${pos.rowEnd};`;
+
+const tabs = [];
+if (hasFeatures) tabs.push({ id: "features", label: "Details" });
+if (hasStats) tabs.push({ id: "stats", label: "Highlights" });
+if (hasMedia) tabs.push({ id: "media", label: "Gallery" });
+---
+
+<bento-features>
+	<BentoCarousel tabs={tabs}>
+		{hasFeatures && <FeatureCard data={data.features!} style={getPositionStyle(preset.features)} />}
+		{hasStats && <StatsCard data={data.stats!} style={getPositionStyle(preset.stats)} />}
+		{hasMedia && <MediaCard data={data.media!} style={getPositionStyle(preset.media)} />}
+	</BentoCarousel>
+</bento-features>

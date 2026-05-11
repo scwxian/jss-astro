@@ -1,0 +1,113 @@
+---
+import StandardLayout from "@layouts/StandardLayout.astro";
+import "@styles/others/legal-pages.css";
+import { siteInfo } from "@shared/siteInfo.js";
+const pageName = "Refund & Return Policy";
+const pageTitle = `${pageName} | ${siteInfo.name}`;
+const pageDescription = `${siteInfo.name}'s refund and return policy for perishable goods, non-perishable items, and subscription cancellations.`;
+---
+
+<StandardLayout title={pageTitle} description={pageDescription}>
+	<h1 class="hidden-visually">{pageTitle}</h1>
+
+	<section class="center-layout left">
+		<h2 class="section-title">{pageName}</h2>
+		<p><span id="last-updated">Last Updated:</span> 01 March 2026</p>
+		<p>
+			At {siteInfo.name}, we want you to be completely satisfied with your purchase. Because our catalog includes a mix
+			of consumables, equipment, and digital goods, our return policies vary depending on the type of item you ordered.
+		</p>
+
+		<ol class="legal-ol">
+			<li>
+				<h3 class="legal">Perishable Goods</h3>
+				<p>
+					Because perishable items (such as food, beverages, or other consumable products) have a limited shelf life,
+					<b>we do not accept returns or offer refunds on these items.</b> However, we stand by the quality of our
+					products. If there is a physical defect with your order, or if you received the wrong item, please contact us within
+					<b>7 days</b> of receiving your package. Include your order number and a photo of the issue, and we will do our
+					best to make it right by sending a replacement.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Non-Perishable Items</h3>
+				<p>
+					We accept returns and offer refunds on non-perishable items such as equipment, accessories, and merchandise
+					(including apparel) within <b>14 days</b> of the purchase date.
+				</p>
+				<p>To be eligible for a refund, the item must meet the following conditions:</p>
+				<ul class="legal-ul-nested">
+					<li>
+						<p>It must be unused, unwashed (for apparel), and in the exact same condition that you received it.</p>
+					</li>
+					<li><p>It must be in its original, undamaged packaging, with all manuals and accessories included.</p></li>
+				</ul>
+				<p>
+					<b>Note on Return Shipping:</b> You will be responsible for paying your own shipping costs for returning your item
+					unless the item was defective or damaged upon arrival. Shipping costs are non-refundable.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Subscriptions</h3>
+				<p>Our subscription plans are billed on a recurring basis.</p>
+				<ul class="legal-ul-nested">
+					<li>
+						<p>
+							<b>Non-Refundable:</b> If the order for a specific subscription period has already
+							been processed or shipped, that specific charge is non-refundable.
+						</p>
+					</li>
+					<li>
+						<p>
+							<b>Refundable:</b> If you have been charged for an upcoming subscription cycle but the order has <b
+								>not yet</b
+							> been processed, you are eligible for a full refund for that period.
+						</p>
+					</li>
+				</ul>
+				<p>
+					You can pause, modify, or cancel your subscription at any time through your account settings or by contacting
+					us to prevent future charges.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">Gift Cards & Sale Items</h3>
+				<ul class="legal-ul-nested">
+					<li><p><b>Gift Cards:</b> All gift cards and digital downloads are final sale and non-refundable.</p></li>
+					<li>
+						<p>
+							<b>Sale Items:</b> Only regular-priced items may be refunded. Items purchased on sale, clearance, or with a
+							specific "Final Sale" discount cannot be refunded.
+						</p>
+					</li>
+				</ul>
+			</li>
+
+			<li>
+				<h3 class="legal">Damaged or Defective Items</h3>
+				<p>
+					If any item arrives damaged or defective, please contact us immediately. Send us your order number, a
+					description of the defect, and photos of the damaged item and packaging. We will evaluate the issue and
+					arrange for a replacement or refund where applicable.
+				</p>
+			</li>
+
+			<li>
+				<h3 class="legal">How to Request a Return or Refund</h3>
+				<p>To initiate a return or request a refund, please reach out to us at:</p>
+				<ul class="legal-ul-nested">
+					<li><p><b>Email:</b> {siteInfo.email}</p></li>
+					<li><p><b>Phone:</b> {siteInfo.phone}</p></li>
+				</ul>
+				<p>
+					Please include your order number and the reason for your request. Once your return is received and inspected,
+					we will notify you of the approval or rejection of your refund. Approved refunds will automatically be applied
+					to your original method of payment within 5–10 business days.
+				</p>
+			</li>
+		</ol>
+	</section>
+</StandardLayout>

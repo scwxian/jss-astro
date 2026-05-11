@@ -1,0 +1,50 @@
+---
+
+interface Props {
+  title: string;
+  icon?: string;
+  buttonText: string;
+  buttonLink: string;
+}
+const {
+  title,
+  icon = "question",
+  buttonText,
+  buttonLink,
+} = Astro.props;
+---
+<section class="hero-container center-layout" id="fallback-ui">
+  <div class="hero-content">
+    <div class="error-icon">
+      <img src={`https://placehold.co/40x40?text=${icon}`} alt={title} width="40" height="40" />
+    </div>
+    <h1>{title}</h1>
+    <div class="hero-body">
+      <slot />
+    </div>
+    <a href={buttonLink} class="button primary-cta">{buttonText}</a>
+    <a
+      href="/contact"
+      class="text-link"
+    >
+      Need help? Contact us
+    </a>
+  </div>
+</section>
+
+<style>
+.hero-container { justify-content: center; min-height: 60vh; justify-self: center;}
+.hero-content { text-align: center; max-width: 700px; }
+.hero-content h1 { font-family: var(--serif-font); font-weight: var(--body-font-weight); font-size: var(--h3-fs); margin-bottom: 1rem; }
+.hero-body { color: var(--text-light); margin-bottom: 2rem; line-height: 1.5; }
+.text-link {
+  margin-top: 1.5rem;
+  display: block;
+  color: var(--text-light);
+  text-decoration: underline;
+  font-size: 0.95rem;
+  transition: color 0.2s ease-out;
+}
+.text-link:hover { color: var(--accent); }
+</style>
+

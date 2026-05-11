@@ -1,0 +1,212 @@
+---
+import StandardLayout from "@layouts/StandardLayout.astro";
+import "@styles/section-layouts/card.css";
+import "@styles/section-layouts/tab.css";
+import { siteInfo } from "@shared/siteInfo.js";
+import InstagramFeed from "@components/InstagramFeed.astro";
+
+
+const title = `About Us | ${siteInfo.name}`;
+const description = `Learn about ${siteInfo.name} — our values, team, and commitment to quality products and great service.`;
+
+const teamMembers = [
+	{
+		name: "Alex Chen",
+		role: "Founder",
+		image: "https://placehold.co/166x326?text=Team+1",
+		sameAs: ["https://www.linkedin.com/in/example-1/"],
+		knowsAbout: ["Operations", "Product Sourcing", "Customer Experience"],
+		bio: "Alex started the company with a simple goal: make quality products accessible to everyone. With a background in operations and a passion for great design, they oversee everything from sourcing to delivery.",
+	},
+	{
+		name: "Jordan Lee",
+		role: "Co-founder",
+		image: "https://placehold.co/166x326?text=Team+2",
+		sameAs: ["https://www.linkedin.com/in/example-2/", "https://www.instagram.com/example/"],
+		knowsAbout: ["Marketing", "Content Strategy", "Community Building"],
+		bio: "Jordan handles the creative side of the business — from brand storytelling to community engagement. They believe a great product deserves a great story behind it.",
+	},
+];
+
+const teamSchema = teamMembers.map((member) => ({
+	"@type": "Person",
+	name: member.name,
+	jobTitle: member.role,
+	description: member.bio,
+	image: member.image,
+	url: siteInfo.url,
+	sameAs: member.sameAs,
+	knowsAbout: member.knowsAbout,
+	worksFor: { "@id": `${siteInfo.url}#organization` },
+}));
+
+const aboutSchema = {
+	"@type": "AboutPage",
+	name: title,
+	description: description,
+	about: teamSchema,
+};
+---
+
+<StandardLayout {title} {description} schemaItem={aboutSchema}>
+	<h1 class="hidden-visually">{title}</h1>
+
+	<section class="break-section inverted">
+		<div class="break-section-content">
+			<div class="center-layout">
+				<div class="section-subtitle">
+					Our Approach <img
+						width="22"
+						height="22"
+						src="https://placehold.co/22x22?text=*"
+						alt="Star icon"
+						class="section-icon mid-sentence"
+					/>
+				</div>
+				<h2 class="section-title">What We Stand For</h2>
+				<p class="section-body">
+					We're driven by one simple belief: <b>great products and great service go hand in hand.</b> Every item we offer is carefully selected, and every customer interaction matters.
+				</p>
+				<div class="tab-layout inverted">
+					<div class="tab-wrapper">
+						<nav class="tab-nav">
+							<button class="tab-button active" data-tab="quality-tab">// 1. Quality</button>
+							<button class="tab-button" data-tab="service-tab">// 2. Service</button>
+							<button class="tab-button" data-tab="community-tab">// 3. Community</button>
+						</nav>
+
+						<div class="tab-content">
+							<div class="tab-pane active" id="quality-tab">
+								<div class="tab-pane-content">
+									<div class="section-subtitle">
+										Curated products, tested standards
+									</div>
+									<p class="section-body">
+										We don't just list products — we vet them. Every item in our catalog meets our quality bar before it reaches your cart.
+									</p>
+									<p class="section-body">
+										From materials to manufacturing, we partner with suppliers who share our commitment to excellence and consistency.
+									</p>
+								</div>
+							</div>
+
+							<div class="tab-pane" id="service-tab">
+								<div class="tab-pane-content">
+									<div class="section-subtitle">
+										Fast, transparent, human
+									</div>
+									<p class="section-body">Real people, real support. No chatbots, no runarounds.</p>
+									<p class="section-body">
+										We ship quickly, communicate clearly, and stand behind every order. If something goes wrong, we make it right — no hassle.
+									</p>
+								</div>
+							</div>
+
+							<div class="tab-pane" id="community-tab">
+								<div class="tab-pane-content">
+									<div class="section-subtitle">
+										More than transactions
+									</div>
+									<p class="section-body">We believe a business should give back. That's why we support local initiatives and listen to the people who use our products every day.</p>
+									<p class="section-body">Your feedback shapes what we do next. Tag us, message us, or just say hi — we're here for the long run.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="section-cta inverted animate-element slide-from-bottom text-center">
+					<a href="/shop/" class="button">Browse Our Collection</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="center-layout" id="team">
+		<div class="section-subtitle">
+			The people behind <img
+				loading="lazy"
+				width="22"
+				height="22"
+				src="https://placehold.co/22x22?text=Team"
+				alt="Team icon"
+				class="section-icon mid-sentence"
+			/> the brand
+		</div>
+		<h2 class="section-title">Meet the Team</h2>
+
+		<div class="card-layout">
+			{
+				teamMembers.map((member, index) => {
+					const isEven = index % 2 === 0;
+					const positionClass = isEven ? "left" : "right";
+					const animationClass = isEven ? "slide-from-left" : "slide-from-right";
+
+					return (
+						<div
+							class={`card-layout-wrapper ${positionClass} animate-element ${animationClass}`}
+						>
+							<div class="card-layout-image">
+								<img
+									loading="lazy"
+									src={member.image}
+									alt={`${member.name} — ${member.role} at ${siteInfo.name}`}
+									width="166"
+									style="border-radius: 8px;"
+								/>
+							</div>
+							<div class="card-layout-content">
+								<p class="section-subtitle highlight">{member.role}</p>
+								<h3 class="section-title">{member.name}</h3>
+								<details>
+									<summary>Bio</summary>
+									<div class="details-content">
+										<p>{member.bio}</p>
+									</div>
+								</details>
+							</div>
+						</div>
+					);
+				})
+			}
+		</div>
+	</section>
+
+	<section class="center-layout">
+		<div class="section-subtitle">
+			The Daily
+			<img
+				loading="lazy"
+				width="22"
+				height="22"
+				src="https://placehold.co/22x22?text=IG"
+				alt="Instagram icon"
+				class="section-icon mid-sentence"
+			/>
+		</div>
+
+		<h2 class="section-title">Follow Along</h2>
+		<InstagramFeed class="animate-element slide-from-bottom" />
+		<div class="section-cta animate-element slide-from-bottom delay-animation-small">
+			<a href={siteInfo.socials.instagram} class="button" target="_blank" rel="noopener noreferrer">
+				Follow Us on Instagram
+			</a>
+		</div>
+	</section>
+
+	<style>
+		/* scoped styles if needed — currently using shared card.css and tab.css */
+	</style>
+
+	<script>
+		import { initAccordionAnimations, initTabLayout } from "@scripts/utils.js";
+
+		document.addEventListener("astro:page-load", () => {
+			const contentContainer = document.querySelector("main");
+			if (!contentContainer) return;
+
+			initTabLayout(contentContainer);
+			initAccordionAnimations(contentContainer);
+		});
+	</script>
+</StandardLayout>

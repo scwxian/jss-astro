@@ -1,0 +1,19 @@
+---
+import type { MediaItem } from "./bento-features-types.ts";
+
+export interface Props {
+	data: MediaItem;
+	cardId?: string;
+	style?: string;
+}
+
+const { data, cardId = "media", style } = Astro.props;
+---
+
+<article id={`card-${cardId}`} class="bento-card card-media" data-card-id={cardId} style={style}>
+	<h2 class="bento-card-subtitle">Gallery</h2>
+	<div class="media-wrapper">
+		<img src={data.src} alt={data.alt} class="media-image" loading="lazy" />
+		{data.caption && <span class="media-caption">{data.caption}</span>}
+	</div>
+</article>

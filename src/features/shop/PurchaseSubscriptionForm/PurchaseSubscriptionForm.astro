@@ -1,0 +1,103 @@
+---
+import ProductFormWrapper from "@components/Forms/ProductFormWrapper.astro";
+
+import type { PriceVariantGroup, OptionGroup } from "../VariantSelector/VariantSelector.astro";
+
+export interface Props {
+  masterSku: string;
+  slug: string;
+  name: string;
+  image: string;
+  basePrice: number;
+  isOut: boolean;
+  hasPriceVariants: boolean;
+  priceVariantGroups?: PriceVariantGroup[];
+  options?: OptionGroup[];
+  hasDeliverySchedule: boolean;
+  billingAlignment: "anchored" | "rolling";
+}
+
+const {
+  masterSku,
+  slug,
+  name,
+  image,
+  basePrice,
+  isOut,
+  hasPriceVariants,
+  priceVariantGroups,
+  options,
+  hasDeliverySchedule,
+  billingAlignment,
+} = Astro.props;
+
+const submitBtnText = isOut ? "Currently Unavailable" : "Subscribe Now";
+const showBillingInfo = billingAlignment === "anchored";
+---
+
+<purchase-subscription-form
+  data-master-sku={masterSku}
+  data-slug={slug}
+  data-name={name}
+  data-image={image}
+  data-base-price={basePrice}
+  data-variants={JSON.stringify(priceVariantGroups)}
+  data-show-billing-info={showBillingInfo}
+  data-billing-alignment={billingAlignment}
+  data-has-delivery-schedule={hasDeliverySchedule}
+>
+  <ProductFormWrapper
+    basePrice={basePrice}
+    masterSku={masterSku}
+    hasPriceVariants={hasPriceVariants}
+    priceVariantGroups={priceVariantGroups}
+    options={options}
+    isOut={isOut}
+    submitBtnText={submitBtnText}
+    includeSkuGroups={["Schedule"]}
+  >
+
+    <Fragment slot="sub-info">
+      <p class="sub-billing-header m-b-0"><u><b>How it Works</b></u></p>
+      {showBillingInfo ? (
+        hasDeliverySchedule ? (
+            <p class="sub-billing-info m-0">Our monthly cutoff date is the <b>last day of the month</b>. This means you'll be charged <b>today</b>, then...</p>
+            <ul class="sub-billing-list m-0">
+              <li><p class="sub-billing-info m-0"><span class="sub-billing-label">Your first shipment will be delivered next month between</span> <span class="sub-billing-value" data-next-delivery></span></p></li>
+        <li><p class="sub-billing-info m-0"><span class="sub-billing-label">Then, your card will be charged on the <b>First day of</b></span> <span class="sub-billing-value" data-next-billing></span></p></li>
+              <li><p class="sub-billing-info m-0"><span class="sub-billing-label">And you'll receive your order every</span> <span class="sub-billing-value" data-delivery-frequency></span></p></li>
+            </ul>
+        ):(
+        <p class="sub-billing-info m-0">This subscription is fixed to charge on the <b>first day of the month</b>. This means you'll be charged <b>today at a pro-rated rate, calculated by Stripe</b>. Then, in full <span class="sub-billing-value" data-next-billing></span></p>
+        )
+      ) : (
+        <p class="sub-billing-info m-0"><span class="sub-billing-label">You'll be charged today, and renews</span> <span class="sub-billing-value"  data-rolling-text></span></p>
+      )}
+    </Fragment>
+
+    <div class="sub-info-text">
+      <p>No "contract" or strings attached. No "setup" or "cancellation" fees. Cancel anytime easily via a provided link after payment <i>(hosted by Stripe)</i>.</p>
+      {hasDeliverySchedule && (
+        <p><b>Regularly scheduled deliveries until you decide to cancel. Simple and transparent.</b></p>
+      )}
+      <p>We aim to be as transparent as possible about billing. <a href="/contact">Contact us</a> if you have any questions!</p>
+    </div>
+    <Fragment slot="payment-icons">
+      <img width="30" height="30" src="https://placehold.co/30x30?text=Visa" alt="Visa" class="section-icon mid-sentence" />
+      <img width="30" height="30" src="https://placehold.co/30x30?text=MC" alt="Mastercard" class="section-icon mid-sentence" />
+    </Fragment>
+  </ProductFormWrapper>
+</purchase-subscription-form>
+
+<script src="./purchase-subscription.js"></script>
+
+<style>
+/* stupid safari fix for weird fieldset sizing on QVM */
+purchase-subscription-form { display: block; width: 100%; }
+.sub-info-text p:first-of-type() { margin: 1rem 0 0.75rem 0; }
+.sub-info-text p { margin: 0 0 0.75rem 0; }
+.sub-billing-info,.sub-billing-header, .sub-info-text { color: var(--text-light)}
+.sub-billing-value {font-weight: var(--bold-font-weight);}
+.sub-billing-header { font-size: 0.95rem; }
+.sub-billing-info, .sub-info-text { font-size: 0.85rem; }
+</style>

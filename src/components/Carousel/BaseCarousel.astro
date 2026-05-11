@@ -1,0 +1,204 @@
+---
+export interface Props {
+	slideCount: number;
+	interval?: number;
+	class?: string;
+	showButtons?: boolean;
+}
+
+const { slideCount, interval, class: className = "", showButtons = true } = Astro.props;
+---
+
+<base-carousel class={`carousel ${className}`} data-interval={interval}>
+	{
+		showButtons && slideCount > 1 && (
+			<button class="carousel-button prev" aria-label="Previous slide">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="3"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<polyline points="9 18 15 12 9 6" />
+				</svg>
+			</button>
+		)
+	}
+
+	<div class="carousel-track">
+		<slot />
+	</div>
+
+	{
+		showButtons && slideCount > 1 && (
+			<button class="carousel-button next" aria-label="Next slide">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="3"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<polyline points="9 18 15 12 9 6" />
+				</svg>
+			</button>
+		)
+	}
+
+	{
+		slideCount > 1 && (
+			<div class="carousel-nav">
+				{Array.from({ length: slideCount }).map((_, index) => (
+					<button class={`carousel-indicator ${index === 0 ? "active" : ""}`} aria-label={`Go to slide ${index + 1}`} />
+				))}
+			</div>
+		)
+	}
+</base-carousel>
+
+<style>
+	.carousel {
+		display: block;
+		position: relative;
+		width: 100%;
+		max-width: 800px;
+		margin: 0 auto;
+		min-width: 0;
+	}
+
+	.carousel-track {
+		display: flex;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-behavior: smooth;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+		gap: 1rem;
+		padding: 0.5rem 0;
+	}
+
+	.carousel-track::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Navigation Buttons */
+	.carousel-button {
+		position: absolute;
+		padding: 0;
+		top: 45%;
+		transform: translateY(-50%);
+		z-index: 10;
+		background-color: var(--text);
+		color: var(--bg);
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		border: none;
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+		/* box-shadow: 0 4px 6px rgba(0,0,0,0.1); */
+		box-shadow: none;
+		transition:
+			transform 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.carousel-button svg {
+		width: 14px;
+		height: 14px;
+		display: block;
+	}
+
+	.carousel-button.prev svg {
+		transform: scaleX(-1);
+	}
+	.carousel-button.prev {
+		left: 0;
+	}
+	.carousel-button.next {
+		right: 0;
+	}
+
+	.carousel-button:enabled:hover {
+		background-color: var(--accent);
+		transform: translateY(-50%) scale(1.1);
+		box-shadow: none;
+	}
+
+	.carousel-button:enabled:active {
+		transform: translateY(-50%) scale(0.95);
+		box-shadow: none;
+	}
+
+	/* Dot Indicators */
+	.carousel-nav {
+		display: flex;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 1.5rem;
+	}
+
+	.carousel-indicator {
+		width: 10px;
+		height: 10px;
+		padding: 0;
+		border: var(--border-width) solid var(--border);
+		border-radius: 50%;
+		background-color: var(--disabled);
+		cursor: pointer;
+		transition:
+			background-color 0.3s ease,
+			transform 0.3s ease;
+		box-shadow: none;
+	}
+
+	.carousel-indicator.active {
+		background-color: var(--accent);
+		transform: scale(1.2);
+	}
+
+	.carousel-indicator:enabled:active,
+	.carousel-indicator:enabled:hover {
+		box-shadow: none;
+		transform: scale(1.2);
+	}
+
+	@media (max-width: 768px) {
+		.carousel-button {
+			width: 26px;
+			height: 26px;
+		}
+		.carousel-button.prev {
+			left: 0;
+		}
+		.carousel-button.next {
+			right: 0;
+		}
+
+		.carousel-button svg {
+			width: 11px;
+			height: 12px;
+		}
+	}
+</style>
+
+<style is:global>
+	.carousel-slide {
+		flex: 0 0 85%;
+		scroll-snap-align: center;
+		scroll-snap-stop: always;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+	}
+	@media (max-width: 768px) {
+	}
+</style>
+
+<script src="./base-carousel.js"></script>

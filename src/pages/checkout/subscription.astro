@@ -1,0 +1,21 @@
+---
+import CheckoutLayout from "@features/checkout/CheckoutLayout.astro";
+import { siteInfo } from "@shared/siteInfo.js";
+
+const title = `Subscription Checkout | ${siteInfo.name}`;
+const description = "Complete your subscription";
+---
+<CheckoutLayout
+  title={title}
+  description={description}
+  showDeliveryToggle={false}
+  isSubscription={true}
+  fallbackIcon="brain"
+  fallbackTitle="No subscription selected"
+  buttonText="Browse Subscriptions"
+  buttonLink="/shop/subscriptions/"
+>
+  <p slot="fallback-content">Choose a subscription plan to get started.<br/>Need help? <a href="/contact">Contact us</a> and we'd be happy to assist.</p>
+</CheckoutLayout>
+
+<script src="@checkout/subscription.logic.js"></script>

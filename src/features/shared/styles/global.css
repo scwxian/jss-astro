@@ -1,0 +1,16 @@
+/* Site's Theme, Fonts, Colors, Borders, Bg, etc */
+@import "custom/theme.css";
+
+/* Base & Structure Styles, almost never need to touch */
+@import "foundation/base.css"; /* Generic browser resets and base page foundation structure */
+
+/* Websites Overall UI */
+@import "foundation/header-footer.css"; /* Header and Footer Styles */
+@import "foundation/sections.css"; /* Section styles like padding between and main core looks */
+@import "foundation/ui-elements.css"; /* Buttons, Typography, Images, and more */
+@import "foundation/animations.css"; /* Global Animations */
+@import "foundation/utility.css"; /* Utility Classes For Easy Minor Adjustments */
+
+/* Project Specific (Clear on new project) */
+/* Note: Page-specific styles are loaded last and have priority over custom-styles */
+@import "custom/custom-styles.css";

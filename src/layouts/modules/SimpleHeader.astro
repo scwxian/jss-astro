@@ -1,0 +1,132 @@
+---
+import { Image } from "astro:assets";
+import logoImg from "@assets/images/logo.png";
+import { siteInfo } from "@shared/siteInfo.js";
+---
+<simple-header>
+    <div class="header-content">
+      <a href="/">
+      <Image src={logoImg} alt=`${siteInfo.name} Logo` class="logo"/>
+      </a>
+      <button type="button" class="back-btn" id="back-btn" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges"><path d="M12 17h-1v-2H9v-2h12v-2H9V9h2V7h1V5H9v2H7v2H5v1H4v1H3v2h1v1h1v1h2v2h2v2h3z"/></svg>
+        Back
+      </button>
+    </div>
+	</simple-header>
+
+<script>
+  class SimpleHeader extends HTMLElement {
+    connectedCallback() {
+      const backButton = this.querySelector(".back-btn");
+      if (backButton) {
+        backButton.addEventListener("click", () => {
+          const currentPath = window.location.pathname;
+
+          if (currentPath.includes("/success")) {
+            window.location.href = "/";
+            return;
+          }
+          if (currentPath.includes("/failure")) {
+            window.location.href = "/checkout/";
+            return;
+          }
+          const referrer = document.referrer;
+          if (referrer) {
+            try {
+              const refUrl = new URL(referrer);
+              if (refUrl.hostname.includes("stripe.com") || refUrl.hostname.includes("paypal.com")) {
+                window.location.href = "/";
+                return;
+              }
+			} catch (e) {
+				// Invalid referrer URL - silent fail
+			}
+          }
+          if (window.history.length <= 1) {
+            window.location.href = "/";
+            return;
+          }
+          window.history.back();
+        });
+      }
+    }
+  }
+  customElements.define("simple-header", SimpleHeader);
+</script>
+
+
+ <style>
+  simple-header {
+    padding: 1rem 0.5rem;
+    padding-top: calc(1.5rem + env(safe-area-inset-top));
+    top: 0;
+    width: 100%;
+    z-index: var(--z-header);
+    box-shadow: var(--header-shadow);
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    @media only screen and (max-width: 768px) {
+      padding: 1rem 0.5rem;
+      padding-top: calc(1rem + env(safe-area-inset-top));
+      background-color: var(--bg);
+    }
+  }
+
+  .header-content {
+    grid-column: 2;
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+  }
+  
+  simple-header .logo {
+    max-width: 70px;
+    max-height: 60px;
+    vertical-align: middle;
+    @media only screen and (max-width: 768px) {
+      max-width: 50px;
+      max-height: 60px;
+    }
+  }
+
+  .back-btn {
+    display: flex;
+    height: stretch;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--serif-font);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    line-height: 1rem;
+    border-radius: var(--standard-border-radius);
+    transition: all 0.2s ease-out;
+    box-shadow: none;
+    transform: none;
+    gap: 0.25rem;
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+
+  .back-btn:enabled:hover,
+	.back-btn:enabled:active {
+		background: none;
+		color: var(--accent);
+    transform: none;
+    box-shadow: none;
+	}
+
+  .back-btn svg {
+    width: 20px;
+    height: 20px;
+    @media (max-width: 768px) {
+      width: 16px;
+      height: 16px;
+    }
+  }
+ </style>

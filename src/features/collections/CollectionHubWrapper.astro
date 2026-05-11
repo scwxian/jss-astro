@@ -1,0 +1,47 @@
+---
+import type { Page } from "astro";
+import "@styles/section-layouts/grid.css";
+export interface Props {
+	page: Page<any>;
+}
+
+const { page } = Astro.props;
+---
+
+<ul data-collection-grid class="grid-layout collection-grid">
+	<slot />
+</ul>
+
+{
+	page.url.next && (
+		<nav class="pagination-nav">
+			<a href={page.url.next} data-infinite-scroll-trigger class="button load-more-button">
+				Load More
+			</a>
+		</nav>
+	)
+}
+
+<style>
+	.collection-grid {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		grid-template-columns: repeat(var(--mobile-cols, 2), 1fr);
+		@media (min-width: 769px) {
+			grid-template-columns: repeat(var(--desktop-cols, 4), 1fr);
+		}
+	}
+
+	.pagination-nav {
+		display: flex;
+		justify-content: center;
+		margin-top: 4rem;
+		margin-bottom: 2rem;
+	}
+
+	.load-more-button {
+	}
+</style>
+
+<script src="./infinite-scroller.js"></script>

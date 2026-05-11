@@ -1,0 +1,263 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { formatPrice } from "@scripts/utils.js";
+
+export interface Props {
+	product: CollectionEntry<"products">;
+	useQuickView?: boolean;
+	index?: number;
+}
+
+const { product, useQuickView = true, index } = Astro.props;
+const { data, id } = product;
+const loading = index !== undefined && index < 4 ? "eager" : "lazy";
+const fetchpriority = index !== undefined && index < 4 ? "high" : "auto";
+
+const formattedPrice = formatPrice(data.basePrice);
+
+const isOut = data.status === "out-of-stock";
+const isPre = data.status === "pre-order";
+const isBestSeller = data.isFeatured === true;
+
+const displayTags = data.tags.slice(0, 3);
+const thumbnailUrl = getAssetUrl("products", id, data.images[0]);
+---
+
+<li class="product-card-wrapper">
+	<a
+		class="product-card"
+		href={`/products/${id}/`}
+		data-quick-view-trigger={useQuickView ? id : undefined}
+		data-status={data.status}
+	>
+		<div class="image-wrapper">
+      <Image
+        src={thumbnailUrl}
+        alt={data.name}
+        inferSize
+        class="product-image"
+        widths={[200, 400, 600, 800]}
+        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
+        loading={loading}
+        fetchpriority={fetchpriority}
+      />
+
+		{isOut && <span class="badge out-of-stock">Out of Stock</span>}
+		{isPre && <span class="badge pre-order">Pre-Order</span>}
+		{isBestSeller && <span class="badge best-seller">Best Seller</span>}
+
+		<span class="quick-view-trigger" aria-hidden="true"> Learn More </span>
+	</div>
+
+	<div class="product-info">
+		{
+			displayTags && (
+				<div class="product-tags-wrapper">
+					<span class="product-tags">{displayTags.join(" // ")}</span>
+				</div>
+			)
+		}
+		<div class="product-meta">
+			<h3 class="product-card-title">{data.name}</h3>
+			<p class="product-short-desc">{data.shortDescription}</p>
+		</div>
+		<div class="product-price-wrapper">
+			<p class="product-price-pre">From&nbsp;&nbsp;</p><p class="format-price">{formattedPrice}</p>
+		</div>
+	</div>
+	</a>
+</li>
+
+<style>
+li.product-card-wrapper {height: 100%;}
+	.product-card {
+		--card-bg-color: var(--accent-bg);
+		--tag-color: var(--accent);
+		--title-color: var(--text);
+		--short-desc-color: color-mix(in srgb, var(--text) 80%, transparent);
+		--price-pre-color: color-mix(in srgb, var(--text) 50%, transparent);
+		--price-color: var(--text);
+		--hover-shadow: 0 12px 24px rgb(0, 0, 0, 0.05);
+
+		@media (prefers-color-scheme: dark) {
+			--card-bg-color: var(--text);
+			--tag-color: var(--accent);
+			--title-color: var(--bg);
+			--short-desc-color: color-mix(in srgb, var(--bg) 80%, transparent);
+			--price-pre-color: var(--disabled);
+			--price-color: var(--bg);
+			--hover-shadow: 0 12px 24px rgb(0, 0, 0, 0.2);
+		}
+	}
+
+	.product-card {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+		text-decoration: none;
+		color: inherit;
+  height: 100%;
+	}
+
+	.product-card[data-status="out-of-stock"] {
+		opacity: 0.5;
+	}
+
+	.product-card:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--hover-shadow);
+
+		@media (max-width: 768px) {
+			transform: none;
+		}
+	}
+
+	.product-card:hover .product-image {
+		transform: scale(1.05);
+	}
+
+	.product-card:hover .quick-view-trigger {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+
+	.image-wrapper {
+		position: relative;
+		aspect-ratio: 1 / 1;
+		overflow: hidden;
+		border-radius: 6px 6px 0px 0px;
+		background-color: var(--image-overlay-color-less);
+	}
+
+	.product-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	}
+
+	.badge {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		padding: 0.25rem 0.75rem;
+		font-size: 0.75rem;
+		font-weight: bold;
+		text-transform: uppercase;
+		border-radius: 4px;
+		z-index: 2;
+	}
+
+.badge.out-of-stock { background-color: var(--disabled); color: var(--text-light); }
+.badge.pre-order { background-color: var(--accent-bg); color: var(--text); }
+.badge.best-seller {
+  background-color: var(--accent);
+  color: var(--text);
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--accent-hover);
+    color: var(--bg);
+  }
+}
+
+	.quick-view-trigger {
+		position: absolute;
+		bottom: 20px;
+		left: 50%;
+		transform: translateX(-50%) translateY(20px);
+		opacity: 0;
+		background-color: color-mix(in srgb, var(--bg) 95%, transparent);
+		color: var(--text);
+		border: none;
+		letter-spacing: 0.03rem;
+		font-size: 0.9rem;
+		padding: 0.4rem 1.2rem;
+		border-radius: 25px;
+		font-weight: var(--bold-font-weight);
+		cursor: pointer;
+		transition: all 0.2s ease;
+		z-index: 2;
+		width: max-content;
+		pointer-events: none;
+		@media (max-width: 768px) {
+			display: none;
+		}
+	}
+
+	.quick-view-trigger:hover {
+		background-color: var(--text);
+		color: var(--bg);
+	}
+
+	.product-info {
+		padding: 0.8rem;
+		background-color: var(--card-bg-color);
+		display: grid;
+		grid-template-rows: auto 1fr auto;
+		border-radius: 0px 0px 6px 6px;
+		flex: 1;
+	}
+
+	.product-meta {
+		display: flex;
+		flex-direction: column;
+    justify-content: flex-start;
+		gap: 0.6rem;
+	}
+
+	.product-tags-wrapper {
+		display: flex;
+		align-items: end;
+    margin-bottom: 5px;
+	}
+
+	.product-tags {
+		text-transform: uppercase;
+		font-size: 0.8rem;
+		letter-spacing: -0.08rem;
+		color: var(--tag-color);
+		line-height: 1.2;
+		font-family: var(--serif-font);
+	}
+
+	.product-card-title {
+		color: var(--title-color);
+		font-size: 1.2rem;
+		margin: 0;
+		letter-spacing: 0.03rem;
+		font-family: var(--sans-font);
+	}
+
+	.product-short-desc {
+		font-size: 0.85rem;
+		color: var(--short-desc-color);
+		line-height: 1.2rem;
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.product-price-wrapper {
+		padding-top: 10px;
+		font-weight: bold;
+	}
+
+	.product-price-pre {
+		color: var(--price-pre-color);
+		font-size: 0.8rem;
+		text-transform: capitalize;
+		margin: 0 0 -7px 0;
+	}
+
+	.format-price {
+		padding: 0;
+		margin: 0;
+		color: var(--price-color);
+	}
+</style>

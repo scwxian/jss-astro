@@ -1,0 +1,280 @@
+---
+import faqData from "@features/faq/faq.json";
+import { siteInfo } from "@shared/siteInfo.js";
+import FaqCategory from "@features/faq/FaqCategory.astro";
+import FaqTab from "@features/faq/FaqTab.astro";
+import StandardLayout from "@layouts/StandardLayout.astro";
+
+
+const pageName = "FAQ";
+const title = `${pageName} | ${siteInfo.name}`;
+const description =
+	"Frequently asked questions about orders, shipping, products, subscriptions, and account management.";
+
+const allQuestions = faqData.flatMap((category) =>
+	category.questions.map((qa) => ({
+		"@type": "Question",
+		name: qa.q,
+		acceptedAnswer: {
+			"@type": "Answer",
+			text: qa.a,
+		},
+	}))
+);
+
+const faqSchema = {
+	"@type": "FAQPage",
+	name: title,
+	description: description,
+	mainEntity: allQuestions,
+};
+
+const enrichedFaqData = faqData.map((category, index) => ({
+	...category,
+	isActive: index === 0,
+}));
+---
+
+<StandardLayout {title} {description} schemaItem={faqSchema}>
+	<h1 class="hidden-visually">{title}</h1>
+
+	<section class="faq-section center-layout">
+		<div class="section-subtitle">
+			Frequently asked questions
+		</div>
+		<h2 class="section-title">FAQ</h2>
+
+		<div class="faq-tabs-wrapper">
+			<button id="scroll-left" class="carousel-arrow" aria-label="Scroll left">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="-5.5 0 26 26"
+					fill="currentColor"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path
+						fill-rule="evenodd"
+						d="m5.1 13 9.3-8.4c.8-.8.8-2.2 0-3-.9-.8-2.2-.8-3 0L.6 11.4c-.5.4-.7 1-.6 1.6 0 .6.1 1.2.6 1.6l10.8 9.8c.8.8 2.1.8 3 0 .8-.8.8-2.2 0-3L5 13"
+					></path>
+				</svg>
+			</button>
+
+			<div class="faq-tabs-inner">
+				<div id="faq-tabs-container" class="faq-tabs" role="tablist" aria-label="FAQ Categories">
+					{
+						enrichedFaqData.map((category) => (
+							<FaqTab
+								id={category.id}
+								tabLabel={category.tabLabel}
+								isActive={category.isActive}
+							/>
+						))
+					}
+				</div>
+			</div>
+
+			<button id="scroll-right" class="carousel-arrow right" aria-label="Scroll right">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="-5.5 0 26 26"
+					fill="currentColor"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<g transform="scale(-1 1) translate(-15 0)">
+						<path
+							fill-rule="evenodd"
+							d="m5.1 13 9.3-8.4c.8-.8.8-2.2 0-3-.9-.8-2.2-.8-3 0L.6 11.4c-.5.4-.7 1-.6 1.6 0 .6.1 1.2.6 1.6l10.8 9.8c.8.8 2.1.8 3 0 .8-.8.8-2.2 0-3L5 13"
+						></path>
+					</g>
+				</svg>
+			</button>
+		</div>
+
+		<div id="faq-content" class="faq-container">
+			{
+				enrichedFaqData.map((category) => (
+					<FaqCategory id={category.id} isActive={category.isActive} questions={category.questions} />
+				))
+			}
+		</div>
+	</section>
+	<style>
+		.faq-section {
+			--tabs-inner-width: 35rem;
+			--tab-image-width: 80px;
+			--arrow-button-size: 18px;
+			--carousel-arrow-gap: 2rem;
+			--tab-gap: 3rem;
+			--carousel-mask: linear-gradient(
+				to right,
+				transparent 0%,
+				var(--theme-color) 10%,
+				var(--theme-color) 90%,
+				transparent 100%
+			);
+		}
+
+		@media (max-width: 768px) {
+			.faq-section {
+				--tabs-inner-width: 100%;
+				--arrow-button-size: 14px;
+				--carousel-arrow-gap: 0rem;
+				--tab-gap: 1.5rem;
+				--carousel-mask: linear-gradient(
+					to right,
+					transparent 0%,
+					var(--theme-color) 2%,
+					var(--theme-color) 98%,
+					transparent 100%
+				);
+			}
+		}
+
+		.faq-section > .section-title {
+			margin-bottom: 0;
+		}
+
+		.faq-tabs-wrapper {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			gap: var(--carousel-arrow-gap);
+			align-items: center;
+			margin-bottom: 3rem;
+			margin-top: 2rem;
+		}
+
+		.faq-tabs-inner {
+			overflow-x: hidden;
+			max-width: var(--tabs-inner-width);
+			-webkit-mask-image: var(--carousel-mask);
+			mask-image: var(--carousel-mask);
+		}
+
+		.carousel-arrow {
+			padding: 0.8rem;
+			display: flex;
+			cursor: pointer;
+			transition: all 0.1s ease-in-out;
+		}
+
+		.carousel-arrow svg {
+			width: var(--arrow-button-size);
+			color: var(--text);
+			flex-shrink: 0;
+		}
+
+		.faq-tabs {
+			display: flex;
+			gap: var(--tab-gap);
+			overflow-x: scroll;
+			padding: 1rem calc(calc(var(--tabs-inner-width)/2) - 40px) 1rem;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+			scroll-behavior: smooth;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.faq-tabs::-webkit-scrollbar {
+			display: none;
+		}
+		.faq-category-content {
+			display: none;
+		}
+		.faq-category-content.active {
+			display: block;
+		}
+	</style>
+
+	<script>
+		import { initAccordionAnimations } from "@scripts/utils.js";
+
+		document.addEventListener("astro:page-load", () => {
+			const tabsContainer = document.getElementById("faq-tabs-container");
+			const contentContainer = document.getElementById("faq-content");
+			const scrollLeftButton = document.getElementById("scroll-left");
+			const scrollRightButton = document.getElementById("scroll-right");
+
+			if (!tabsContainer || !contentContainer || !scrollLeftButton || !scrollRightButton) {
+				return;
+			}
+
+			const tabs = tabsContainer.querySelectorAll(".faq-tab");
+			if (tabs.length === 0) {
+				initAccordionAnimations(contentContainer);
+				return;
+			}
+
+			let currentIndex = 0;
+
+			tabs.forEach((tab, index) => {
+				const isActive = tab.classList.contains("active");
+				tab.setAttribute("role", "tab");
+				tab.setAttribute("aria-selected", isActive.toString());
+				tab.setAttribute("tabindex", isActive ? "0" : "-1");
+			});
+
+			function setActiveTab(index) {
+				currentIndex = index;
+				const targetTab = tabs[index];
+				if (!targetTab) return;
+
+				const targetId = targetTab.dataset.target;
+
+				tabs.forEach((tab, i) => {
+					const isActive = i === index;
+					tab.classList.toggle("active", isActive);
+					tab.setAttribute("aria-selected", isActive.toString());
+					tab.setAttribute("tabindex", isActive ? "0" : "-1");
+				});
+
+				contentContainer.querySelectorAll(".faq-category-content").forEach((content) => {
+					const isContentActive = content.id === targetId;
+					content.classList.toggle("active", isContentActive);
+					if (isContentActive) content.setAttribute("role", "tabpanel");
+				});
+
+				targetTab.scrollIntoView({
+					behavior: "smooth",
+					inline: "center",
+					block: "nearest",
+				});
+			}
+
+			tabsContainer.addEventListener("click", (e) => {
+				const targetTab = e.target.closest(".faq-tab");
+				if (!targetTab) return;
+				const index = Array.from(tabs).indexOf(targetTab);
+				if (index !== -1) setActiveTab(index);
+			});
+
+			tabsContainer.addEventListener("keydown", (e) => {
+				let newIndex = currentIndex;
+				if (e.key === "ArrowRight") {
+					newIndex = (currentIndex + 1) % tabs.length;
+				} else if (e.key === "ArrowLeft") {
+					newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+				} else {
+					return;
+				}
+				e.preventDefault();
+				setActiveTab(newIndex);
+				tabs[newIndex].focus();
+			});
+
+			scrollLeftButton.addEventListener("click", () => {
+				const newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+				setActiveTab(newIndex);
+			});
+
+			scrollRightButton.addEventListener("click", () => {
+				const newIndex = (currentIndex + 1) % tabs.length;
+				setActiveTab(newIndex);
+			});
+
+			initAccordionAnimations(contentContainer);
+		});
+	</script>
+</StandardLayout>

@@ -1,0 +1,57 @@
+---
+import { getCollection } from "astro:content";
+import "@styles/section-layouts/grid.css";
+import type { CollectionEntry } from "astro:content";
+import ProductCard from "./ProductCard.astro";
+
+export interface Props {
+	relatedProductIds?: string[] | { id: string; collection: string }[];
+}
+
+const { relatedProductIds } = Astro.props;
+if (!relatedProductIds || relatedProductIds.length === 0) {
+	return;
+}
+
+const productIds = relatedProductIds.map((item) => (typeof item === "string" ? item : item.id));
+const allProducts = await getCollection("products");
+const relatedProducts = productIds
+	.map((id) => allProducts.find((p) => p.id === id))
+	.filter((p): p is CollectionEntry<"products"> => p !== undefined && p.data.status !== "draft");
+---
+
+{
+	relatedProducts.length > 0 && (
+		<div class="related-products">
+			<h2>Related Products</h2>
+			<ul class="related-products-grid grid-layout">
+				{relatedProducts.map((product) => (
+					<ProductCard product={product} useQuickView={false} />
+				))}
+			</ul>
+		</div>
+	)
+}
+
+<style>
+	.related-products {
+		margin-top: 3.5rem;
+		border-top: var(--border-width) solid var(--border);
+		--mobile-cols: 2;
+		--desktop-cols: 4;
+		--grid-gap-x: 1.2rem;
+		--grid-gap-y: 2rem;
+		@media (max-width: 768px) { --grid-gap-x: 1rem; --grid-gap-y: 1rem; }
+	}
+
+	.related-products-grid {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		grid-template-columns: repeat(var(--mobile-cols), 1fr);
+		@media (min-width: 769px) { grid-template-columns: repeat(var(--desktop-cols), 1fr); }
+	}
+
+  .related-products h2 {margin-top: 2.5rem;}
+
+</style>

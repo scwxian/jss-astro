@@ -1,0 +1,425 @@
+{
+	"files": [
+
+		{
+			"filename": "standards/astro-components-rules.md",
+			"source": "Local Project",
+			"library": "standards",
+			"package": "ecom-boilerplate",
+			"topic": "Astro Components & Web Components Rules",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Building interactive Astro components with Web Components for QVM injection. Covers co-location patterns, CSS scoping, and critical constraints for innerHTML-compatible components."
+		},
+		{
+			"filename": "standards/backend-tests.md",
+			"source": "Local Project",
+			"library": "standards",
+			"package": "ecom-boilerplate",
+			"topic": "Backend Testing Standards",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Writing backend tests with Vitest. Covers integer cents enforcement, pure function testing, AAA pattern, MSW mocking for external APIs, and coverage targets."
+		},
+		{
+			"filename": "standards/assets-handling-rules.md",
+			"source": "Local Project",
+			"library": "standards",
+			"package": "ecom-boilerplate",
+			"topic": "Assets Handling Rules",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Handling static assets, image optimization, and import patterns in Astro. Covers image CDN configuration, asset co-location, and performance best practices."
+		},
+		{
+			"filename": "ref/astro/astro-components.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Astro Components",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/basics/astro-components",
+			"when_to_use": "Creating reusable .astro components with frontmatter, props, and scoped styles"
+		},
+		{
+			"filename": "ref/astro/layouts.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Astro Layouts",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/basics/layouts",
+			"when_to_use": "Building shared page layouts with <slot /> for content"
+		},
+		{
+			"filename": "ref/astro/content-collections.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Content Collections",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/content-collections",
+			"when_to_use": "Managing Markdown/MDX content with type-safe schemas and loaders"
+		},
+		{
+			"filename": "ref/astro/astro-actions.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Astro Actions",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/actions",
+			"when_to_use": "Defining server actions for form submissions and API calls"
+		},
+		{
+			"filename": "ref/astro/routing.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "File-based Routing",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/routing",
+			"when_to_use": "Setting up file-based routing and dynamic routes with [param]"
+		},
+		{
+			"filename": "ref/astro/endpoints.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "API Endpoints",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/endpoints",
+			"when_to_use": "Creating API endpoints (.ts files in src/pages/api/)"
+		},
+		{
+			"filename": "ref/astro/middleware.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Astro Middleware",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/middleware",
+			"when_to_use": "Intercepting requests for auth, logging, or modifying request/response"
+		},
+		{
+			"filename": "ref/astro/view-transitions.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "View Transitions",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/view-transitions",
+			"when_to_use": "Enabling smooth SPA-like page transitions with <ClientRouter />"
+		},
+		{
+			"filename": "ref/astro/images-assets.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Images & Assets",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/images",
+			"when_to_use": "Using <Image /> component, optimizing assets, and importing images"
+		},
+		{
+			"filename": "ref/astro/environment-variables.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Environment Variables",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/environment-variables",
+			"when_to_use": "Accessing import.meta.env and process.env for public/private vars"
+		},
+		{
+			"filename": "ref/astro/hybrid-rendering.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Hybrid Rendering",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/hybrid-rendering",
+			"when_to_use": "Mixing static pages with on-demand SSR (prerender = false)"
+		},
+		{
+			"filename": "ref/astro/configuration.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Astro Configuration",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/reference/configuration-reference",
+			"when_to_use": "Setting up astro.config.mjs with adapters, integrations, and options"
+		},
+		{
+			"filename": "ref/astro/environment-detection.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "astro",
+			"topic": "Environment Detection",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/environment-variables",
+			"when_to_use": "Detecting build vs runtime environment, SSR vs prerender context, and Cloudflare Workers runtime"
+		},
+		{
+			"filename": "ref/cloudflare/workers.md",
+			"source": "Context7 API",
+			"library": "developers_cloudflare_workers",
+			"package": "@cloudflare/workers-types",
+			"topic": "Cloudflare Workers",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workers",
+			"when_to_use": "Deploying to Cloudflare, wrangler config, env vars, CLI commands"
+		},
+		{
+			"filename": "ref/cloudflare/cloudflare-adapter.md",
+			"source": "Context7 API",
+			"library": "astro_build",
+			"package": "@astrojs/cloudflare",
+			"topic": "Cloudflare Adapter",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://docs.astro.build/guides/integrations-guide/cloudflare",
+			"when_to_use": "Configuring Astro for Cloudflare SSR, session storage, accessing bindings"
+		},
+		{
+			"filename": "ref/cloudflare/kv.md",
+			"source": "Context7 API",
+			"library": "developers_cloudflare_workers",
+			"package": "@cloudflare/workers-types",
+			"topic": "KV Key-Value Storage",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workers/wrangler/commands",
+			"when_to_use": "Key-value storage: put/get operations, TTL, metadata, Rust examples"
+		},
+		{
+			"filename": "ref/cloudflare/d1.md",
+			"source": "Context7 API",
+			"library": "developers_cloudflare_workers",
+			"package": "@cloudflare/workers-types",
+			"topic": "D1 Database",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workers/runtime-apis/bindings/d1",
+			"when_to_use": "SQLite database: typed queries, D1 API methods (run, raw, first, batch)"
+		},
+		{
+			"filename": "ref/cloudflare/durable-objects.md",
+			"source": "Context7 API",
+			"library": "developers_cloudflare_workers",
+			"package": "@cloudflare/workers-types",
+			"topic": "Durable Objects",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workers/best-practices/workers-best-practices",
+			"when_to_use": "Real-time WebSockets with hibernation, stateful workers"
+		},
+		{
+			"filename": "ref/cloudflare/queues.md",
+			"source": "Context7 API",
+			"library": "developers_cloudflare_workers",
+			"package": "@cloudflare/workers-types",
+			"topic": "Cloudflare Queues",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workers/runtime-apis/handlers/queue",
+			"when_to_use": "Message queues: producer/consumer patterns, batch processing"
+		},
+		{
+			"filename": "ref/cloudflare/workflows.md",
+			"source": "Context7 API",
+			"library": "developers_cloudflare_workflows",
+			"package": "@cloudflare/workers-types",
+			"topic": "Cloudflare Workflows",
+			"fetched": "2026-03-26T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workflows",
+			"when_to_use": "Long-running multi-step workflows with retries, sleeps, state persistence"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-api.md",
+			"source": "Context7 API",
+			"library": "cloudflare_workflows",
+			"package": "cloudflare-workflows",
+			"topic": "Workflows API Reference",
+			"fetched": "2026-04-18T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workflows/build/workers-api",
+			"when_to_use": "Implementing workflow classes, defining steps, understanding the core Workflows API"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-types.md",
+			"source": "Context7 API",
+			"library": "cloudflare_workflows",
+			"package": "cloudflare-workflows",
+			"topic": "Workflows TypeScript Types",
+			"fetched": "2026-04-18T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workflows/build/workers-api",
+			"when_to_use": "Type definitions for TypeScript development with Workflows"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-configuration.md",
+			"source": "Context7 API",
+			"library": "cloudflare_workflows",
+			"package": "cloudflare-workflows",
+			"topic": "Workflows Configuration",
+			"fetched": "2026-04-18T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workflows/build/workers-api",
+			"when_to_use": "Configuring workflow instances, class options, and runtime parameters"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-triggering.md",
+			"source": "Context7 API",
+			"library": "cloudflare_workflows",
+			"package": "cloudflare-workflows",
+			"topic": "Workflows Triggering",
+			"fetched": "2026-04-18T00:00:00Z",
+"official_docs": "https://developers.cloudflare.com/workflows/build/workers-api",
+			"when_to_use": "Starting workflows, passing parameters, handling trigger responses"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-bindings.md",
+			"source": "Context7 API",
+			"library": "cloudflare_workflows",
+			"package": "cloudflare-workflows",
+			"topic": "Workflows Bindings",
+			"fetched": "2026-04-18T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workflows/build/workers-api",
+			"when_to_use": "Accessing KV, D1, R2 and other bindings from within workflow steps"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-astro-integration.md",
+			"source": "Local Project",
+			"library": "cloudflare_workflows",
+			"package": "ecom-boilerplate",
+			"topic": "Workflows Astro Integration",
+			"fetched": "2026-04-18T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Integrating Cloudflare Workflows with Astro SSR pages, passing step results to frontend"
+		},
+		{
+			"filename": "ref/cloudflare/workflows-error-handling.md",
+			"source": "Context7 API",
+			"library": "cloudflare_workflows",
+			"package": "cloudflare-workflows",
+			"topic": "Workflows Error Handling",
+			"fetched": "2026-04-18T00:00:00Z",
+			"official_docs": "https://developers.cloudflare.com/workflows/build/workers-api",
+			"when_to_use": "Retries, error boundaries, and handling failures in workflow steps"
+		},
+		{
+			"filename": "ref/stripe/README.md",
+			"source": "Local Project",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe API Overview",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api",
+			"when_to_use": "Stripe authentication, base URL, key types, and checkout flow overview"
+		},
+		{
+			"filename": "ref/stripe/authentication.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Authentication",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/authentication",
+			"when_to_use": "API key authentication, header formats, and key management"
+		},
+		{
+			"filename": "ref/stripe/customers.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Customers API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/customers",
+			"when_to_use": "Creating and managing customer objects, retrieval, updates"
+		},
+		{
+			"filename": "ref/stripe/webhooks.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Webhooks",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/webhooks",
+			"when_to_use": "Webhook registration, signature verification, event handling patterns"
+		},
+		{
+			"filename": "ref/chip-in/README.md",
+			"source": "Local Project",
+			"library": "chip_in",
+			"package": "chip-in",
+			"topic": "Chip-in API Overview",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://gate.chip-in.asia/api/v1",
+			"when_to_use": "Chip-in authentication, base URL, key concepts, and purchase flow overview"
+		},
+		{
+			"filename": "ref/chip-in/authentication.md",
+			"source": "Official Docs",
+			"library": "chip_in",
+			"package": "chip-in",
+			"topic": "Chip-in Authentication",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://portal.chip-in.asia/collect/developers/api-keys",
+			"when_to_use": "Bearer token authentication, Brand ID setup, signature verification"
+		},
+		{
+			"filename": "ref/chip-in/clients.md",
+			"source": "Official Docs",
+			"library": "chip_in",
+			"package": "chip-in",
+			"topic": "Chip-in Clients API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://gate.chip-in.asia/api/v1",
+			"when_to_use": "Client object management, retrieval, updates"
+		},
+		{
+			"filename": "ref/chip-in/purchases.md",
+			"source": "Official Docs",
+			"library": "chip_in",
+			"package": "chip-in",
+			"topic": "Chip-in Purchases API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://gate.chip-in.asia/api/v1",
+			"when_to_use": "Creating purchases, checkout flow, status tracking"
+		},
+		{
+			"filename": "ref/chip-in/schemas.md",
+			"source": "Local Project",
+			"library": "chip_in",
+			"package": "ecom-boilerplate",
+			"topic": "Chip-in Schemas & Types",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "TypeScript type definitions for Chip-in API responses, status enums, and request shapes"
+		},
+		{
+			"filename": "ref/chip-in/webhooks.md",
+			"source": "Official Docs",
+			"library": "chip_in",
+			"package": "chip-in",
+			"topic": "Chip-in Webhooks",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://gate.chip-in.asia/api/v1",
+			"when_to_use": "Webhook registration, RSA signature verification, event handling patterns"
+		},
+		{
+			"filename": "ref/email-integration.md",
+			"source": "Local Project",
+			"library": "notifications",
+			"package": "ecom-boilerplate",
+			"topic": "Email Integration Setup",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Setting up team notifications via Gmail and Google Apps Script webhook for Cloudflare Workers"
+		},
+		{
+			"filename": "ref/console-migration-assessment.md",
+			"source": "Local Project",
+			"library": "maintenance",
+			"package": "ecom-boilerplate",
+			"topic": "Console to Logger Migration Assessment",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Tracking migration from console.* to logger utility. Lists all console calls, their current state, and required actions."
+		}
+	]
+}

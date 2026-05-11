@@ -1,0 +1,22 @@
+---
+import CheckoutLayout from "@features/checkout/CheckoutLayout.astro";
+
+import { siteInfo } from "@shared/siteInfo.js";
+
+const title = `Checkout | ${siteInfo.name}`;
+const description = "Complete your purchase";
+---
+<CheckoutLayout
+  title={title}
+  description={description}
+  showDeliveryToggle={true}
+  fallbackIcon="brain"
+  fallbackTitle="Your cart is empty"
+  buttonText="Return to Shop"
+  buttonLink="/shop/"
+>
+  <p slot="fallback-content">  You'll need to have items in your cart to checkout.<br/>
+  Have a look at our shop for some good stuff. If you need help deciding, don't hesitate to reach out!</p>
+</CheckoutLayout>
+
+<script src="@checkout/onetime.logic.js"></script>

@@ -1,0 +1,39 @@
+---
+import { siteInfo, shopHubSEO } from "@shared/siteInfo.js";
+import CollectionHubWrapper from "@collections/CollectionHubWrapper.astro";
+import ProductCard from "@shop/ProductCard.astro";
+import ShopLayout from "@layouts/ShopLayout.astro";
+import { getPaginatedCollectionPaths } from "@collections/collection-route-helpers.js";
+import { buildCollectionSchema } from "@collections/collection-schema.ts";
+
+export async function getStaticPaths({ paginate }) {
+	return await getPaginatedCollectionPaths("products", paginate, 12);
+}
+
+const { page } = Astro.props;
+const schemaItem = buildCollectionSchema(page);
+const seo = shopHubSEO["all"] || {
+  title:`Shop All Products | ${siteInfo.name}`,
+  description: "Browse our full collection of products. Secure checkout and fast delivery.",
+  hiddenH1: "Shop All Products",
+  moreInfo: [],
+}
+---
+
+<ShopLayout 
+  title={seo.title} 
+  description={seo.description} 
+  hiddenH1={seo.hiddenH1} 
+  moreInfo={seo.moreInfo}
+  heading="Shop All" 
+  currentCategory="all" 
+  {schemaItem}
+>
+	<Fragment slot="head">
+		{page.url.prev && <link rel="prev" href={page.url.prev} />}
+		{page.url.next && <link rel="next" href={page.url.next} />}
+	</Fragment>
+	<CollectionHubWrapper {page}>
+		{page.data.map((product, i) => <ProductCard product={product} index={i} />)}
+	</CollectionHubWrapper>
+</ShopLayout>

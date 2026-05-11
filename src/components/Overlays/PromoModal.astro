@@ -1,0 +1,20 @@
+---
+import CenterModal from "./CenterModal.astro";
+import { overlayConfig } from "./overlay.store.ts";
+
+const cfg = overlayConfig.promoModal;
+---
+
+{ cfg.active && (
+<CenterModal
+  overlayId="promoModal"
+  campaignId={cfg.campaignId}
+  trigger={cfg.trigger}
+  delayMs={cfg.delayMs}
+>
+  <div>
+    <h2>Special Offer</h2>
+    <p>Use code <strong>WELCOME10</strong> for 10% off your first order.</p>
+  </div>
+</CenterModal>
+)}

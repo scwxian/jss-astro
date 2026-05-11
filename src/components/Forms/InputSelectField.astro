@@ -1,0 +1,92 @@
+---
+import InputWrapper from './InputWrapper.astro';
+
+interface Option {
+  value?: string;
+  label: string;
+}
+
+interface Props {
+  id: string;
+  label: string;
+  options: (string | Option)[];
+  required?: boolean;
+  placeholder?: string; 
+  autocomplete?: string;
+  cols?: "1" | "2" | "3";
+}
+
+const {
+  id,
+  label,
+  options = [],
+  required = false,
+  placeholder,
+  autocomplete,
+  cols
+} = Astro.props;
+---
+
+<InputWrapper id={id} label={label} cols={cols}>
+  <div class="select-wrapper">
+    <select 
+      id={id} 
+      name={id} 
+      class="form-select" 
+      required={required}
+      autocomplete={autocomplete}
+    >
+      {placeholder && <option value="">{placeholder}</option>}
+      
+      {options.map((opt) => {
+        const val = typeof opt === 'string' ? opt : (opt.value ?? opt.label);
+        const display = typeof opt === 'string' ? opt : opt.label;
+        return <option value={val}>{display}</option>;
+      })}
+    </select>
+    
+    <svg class="select-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2 4.5L6 8.5L10 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+</InputWrapper>
+
+<style>
+	.select-wrapper {
+		position: relative;
+		width: 100%;
+		display: block;
+	}
+
+	.form-select {
+		width: 100%;
+		padding: 1.3rem 1rem 0.3rem;
+		padding-right: 2.5rem;
+		font-size: 1rem;
+		font-family: var(--sans-font);
+		color: var(--text);
+		background: var(--bg);
+		border: calc(var(--border-width) * 2) solid var(--border);
+		border-radius: var(--standard-border-radius);
+		transition: border-color 0.2s ease-out;
+		cursor: pointer;
+		appearance: none;
+	}
+
+	.form-select:focus {
+		outline: none;
+		border-color: var(--accent);
+	}
+
+	.form-select.error {
+		border-color: var(--error);
+	}
+
+	.select-arrow {
+		position: absolute;
+		right: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+		pointer-events: none;
+	}
+</style>

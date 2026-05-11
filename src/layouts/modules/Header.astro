@@ -1,0 +1,401 @@
+---
+import { Image } from "astro:assets";
+import { siteInfo } from "@shared/siteInfo.js";
+import logo from "@assets/images/logo.png";
+const logoAlt = `${siteInfo.name} Home`;
+---
+
+<site-header role="banner" transition:name="site-header" transition:persist="site-header">
+	<div class="top-navbar-content">
+		<a href="/" id="logo">
+			<Image src={logo} alt={logoAlt} />
+		</a>
+
+		<button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
+			<span class="sr-only">Menu</span>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<title>Menu</title>
+				<rect y="6" width="24" height="2" rx="1"></rect>
+				<rect y="13" width="24" height="2" rx="1"></rect>
+				<rect y="20" width="24" height="2" rx="1"></rect>
+			</svg>
+		</button>
+
+		<div class="nav-links">
+			<nav>
+				<button class="mobile-nav-close" aria-label="Close menu">&times;</button>
+				<ul>
+					<li><a href="/about/">About</a></li>
+					<li><a href="/#services">Services</a></li>
+					<li><a href="/#contact">Contact</a></li>
+					<li><a href="/faq/">FAQ</a></li>
+          <li><a class="nav-cta-button" href="/shop/">Buy Now</a></li>
+				</ul>
+			</nav>
+
+			<div class="social-links-block">
+				<p class="section-subtitle">Catch Us On Socials</p>
+				<div class="social-links">
+					<a href={siteInfo.socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+						<img src="https://placehold.co/28x28?text=IG" width="28" height="28" alt="Instagram Icon" />
+					</a>
+					<a href={`https://wa.me/${siteInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Us">
+						<img src="https://placehold.co/28x28?text=WA" width="28" height="28" alt="WhatsApp Icon" />
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<button id="scrollToTop" title="Go to top">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="currentColor"
+				aria-hidden="true"
+				shape-rendering="crispEdges"
+				viewBox="0 0 5 3"><path d="M2 0h1v1H2zM1 1h1v1H1zM3 1h1v1H3zM0 2h1v1H0zM4 2h1v1H4z"></path></svg
+			>
+		</button>
+  <div id="nav-backdrop" class="nav-backdrop"></div>
+	</div>
+
+	<style>
+		site-header {
+			padding: 1rem 0.5rem;
+			padding-top: calc(1.5rem + env(safe-area-inset-top));
+			position: sticky;
+			top: 0;
+			width: 100%;
+			z-index: var(--z-header);
+			transition:
+				box-shadow 0.3s ease-in-out,
+				background-color 0.3s ease-in-out;
+			box-shadow: var(--header-shadow);
+		}
+
+		site-header.is-scrolled {
+			background-color: var(--accent-bg);
+			box-shadow: none;
+		}
+
+		nav {
+			font-size: 1rem;
+			line-height: 2;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+		}
+
+		#logo > img {
+			max-width: 70px;
+			vertical-align: middle;
+		}
+
+		@media only screen and (max-width: 768px) {
+			#logo > img {
+				max-width: 50px;
+				vertical-align: middle;
+			}
+			site-header {
+				padding: 1rem 0.5rem;
+				padding-top: calc(1rem + env(safe-area-inset-top));
+				background-color: var(--bg);
+			}
+		}
+
+		.top-navbar-content {
+			grid-column: 2;
+			align-items: center;
+			justify-content: space-between;
+			display: flex;
+		}
+
+		@media (min-width: 1021px) {
+			.top-navbar-content > .nav-links {
+				flex-direction: row;
+			}
+		}
+
+		.top-navbar-content > .nav-links p {
+			display: none;
+		}
+
+		.nav-cta-button,
+		.nav-cta-button:hover {
+			font-size: 0.9rem;
+			margin: -5px 0 0 20px;
+		}
+
+		.nav-cta-button::after {
+			display: none;
+		}
+
+		#scrollToTop {
+			display: none;
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			z-index: 99;
+			width: 35px;
+			height: 35px;
+			padding: 0;
+			border: none;
+			background-color: var(--accent);
+			box-shadow: none;
+			color: var(--text);
+			cursor: pointer;
+		}
+
+		#scrollToTop:enabled:active,
+		#scrollToTop:enabled:hover {
+			transform: none;
+		}
+
+		#scrollToTop > svg {
+			height: 18px;
+			width: 18px;
+			margin-top: 4px;
+		}
+
+		.mobile-nav-toggle,
+		.mobile-nav-close {
+			display: none;
+		}
+
+		/* Nav backdrop */
+		.nav-backdrop {
+			position: fixed;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(3px);
+			z-index: var(--z-nav-backdrop);
+			opacity: 0;
+			visibility: hidden;
+			transition:
+				opacity 200ms ease-out,
+				visibility 200ms ease-out;
+		}
+
+		.nav-backdrop[data-visible="true"] {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		@media (max-width: 1020px) {
+			site-header {
+				position: static;
+			}
+
+			.top-navbar-content > .nav-links {
+				position: fixed;
+				inset: 0 0 0 auto;
+				width: min(100%, 260px);
+				transform: translateX(100%);
+				transition: transform 200ms ease-out;
+				padding: 1rem 2rem 0;
+				gap: 3rem;
+				background-color: var(--accent-bg);
+				z-index: var(--z-nav-mobile);
+				align-items: flex-end;
+				justify-content: flex-start;
+			}
+
+			.top-navbar-content > .nav-links p {
+				display: block;
+			}
+
+			.top-navbar-content > .nav-links > .social-links-block > .social-links {
+				justify-content: flex-end;
+			}
+
+			.nav-links[data-visible="true"].nav-links[data-visible="true"] {
+				transform: translateX(0%);
+			}
+
+			.mobile-nav-toggle,
+			.mobile-nav-close,
+			.mobile-nav-toggle:enabled:hover,
+			.mobile-nav-toggle:enabled:active,
+			.mobile-nav-close:enabled:hover,
+			.mobile-nav-close:enabled:active {
+				display: block;
+				background: none;
+				transform: none;
+				box-shadow: none;
+				border: 0;
+				color: var(--text);
+				padding: 0;
+				margin: 0;
+				justify-self: flex-end;
+			}
+
+			.mobile-nav-toggle {
+				width: 2rem;
+				height: 2rem;
+			}
+			.mobile-nav-toggle.nav-open {
+				visibility: hidden;
+			}
+
+			.mobile-nav-close,
+			.mobile-nav-close:enabled:hover,
+			.mobile-nav-close:enabled:active {
+				font-size: 2.5rem;
+				margin-bottom: 1.5rem;
+			}
+
+			nav ul,
+			nav ol {
+				align-items: flex-end;
+			}
+			.nav-cta-button,
+			.nav-cta-button:hover {
+				margin: 0;
+			}
+		}
+	</style>
+
+	<style is:global>
+		site-header:has(~ main section:first-of-type.inverted) {
+			background-color: var(--accent-bg);
+		}
+		::view-transition-group(site-header) {
+			z-index: 9999;
+		}
+	</style>
+
+	<script>
+		class SiteHeader extends HTMLElement {
+			connectedCallback() {
+				if (this.dataset.initialized) {
+					return;
+				}
+				this.dataset.initialized = "true";
+
+				const header = this;
+				const nav = this.querySelector(".nav-links");
+				const navBackdrop = document.getElementById("nav-backdrop");
+				const navToggle = this.querySelector(".mobile-nav-toggle");
+				const navClose = this.querySelector(".mobile-nav-close");
+				const scrollTopButton = this.querySelector("#scrollToTop");
+				const logoLink = this.querySelector("#logo");
+				const isMobile = window.innerWidth <= 1020;
+
+				this.updateActiveLink();
+
+				document.addEventListener("astro:page-load", () => {
+					this.updateActiveLink();
+				});
+
+				if (!isMobile && header) {
+					window.addEventListener("scroll", () => {
+						header.classList.toggle("is-scrolled", window.scrollY > 20);
+					});
+				}
+
+				if (nav && navToggle && navClose) {
+					const openNav = () => {
+						nav.setAttribute("data-visible", "true");
+						navBackdrop?.setAttribute("data-visible", "true");
+						navToggle.setAttribute("aria-expanded", "true");
+						navToggle.setAttribute("aria-hidden", "false");
+						navToggle.classList.add("nav-open");
+						document.body.style.overflow = "hidden";
+					};
+					const closeNav = () => {
+						nav.setAttribute("data-visible", "false");
+						navBackdrop?.setAttribute("data-visible", "false");
+						navToggle.setAttribute("aria-expanded", "false");
+						navToggle.setAttribute("aria-hidden", "true");
+						navToggle.classList.remove("nav-open");
+						document.body.style.overflow = "";
+					};
+
+					navToggle.addEventListener("click", () => {
+						const isVisible = nav.getAttribute("data-visible") === "true";
+						if (isVisible) {
+							closeNav();
+						} else {
+							openNav();
+						}
+					});
+
+					logoLink.addEventListener("click", closeNav);
+					navClose.addEventListener("click", closeNav);
+					navBackdrop?.addEventListener("click", closeNav);
+
+					nav.addEventListener("click", (e) => {
+						if (e.target.closest("a")) {
+							closeNav();
+						}
+					});
+
+					document.addEventListener("click", (e) => {
+						if (nav.getAttribute("data-visible") !== "true") {
+							return;
+						}
+
+						const isInsideNav = this.contains(e.target);
+						const isToggle = e.target.closest(".mobile-nav-toggle");
+
+						if (!isInsideNav && !isToggle) {
+							closeNav();
+						}
+					});
+				}
+
+				// Mobile Scroll To Top Button
+				if (scrollTopButton) {
+					const handleScroll = () => {
+						const scrollPosition = document.body.scrollTop || document.documentElement.scrollTop;
+
+						if (scrollPosition > 100 && window.innerWidth <= 1020) {
+							scrollTopButton.style.display = "block";
+						} else {
+							scrollTopButton.style.display = "none";
+						}
+					};
+
+					const scrollToTop = () => {
+						window.scrollTo({ top: 0, behavior: "smooth" });
+					};
+
+					window.addEventListener("scroll", handleScroll);
+					window.addEventListener("resize", handleScroll);
+					scrollTopButton.addEventListener("click", scrollToTop);
+					handleScroll();
+				}
+			}
+
+			updateActiveLink() {
+				const currentUrl = new URL(window.location.href);
+				const currentPath = currentUrl.pathname.replace(/\/$/, "") || "/";
+
+				const links = this.querySelectorAll("nav a");
+
+				links.forEach((link) => {
+					const url = new URL(link.href);
+					const linkPath = url.pathname.replace(/\/$/, "") || "/";
+					const linkHash = url.hash;
+
+					link.classList.remove("active");
+					link.removeAttribute("aria-current");
+
+					if (!linkHash && !link.classList.contains("nav-cta-button") && currentPath === linkPath) {
+						link.classList.add("active");
+						link.setAttribute("aria-current", "page");
+					}
+				});
+			}
+		}
+
+		customElements.define("site-header", SiteHeader);
+	</script>
+</site-header>

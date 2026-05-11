@@ -1,0 +1,23 @@
+---
+import type { FeatureItem } from "./bento-features-types.ts";
+
+export interface Props {
+	data: FeatureItem[];
+	cardId?: string;
+	style?: string;
+}
+
+const { data, cardId = "features", style } = Astro.props;
+---
+
+<article id={`card-${cardId}`} class="bento-card card-features" data-card-id={cardId} style={style}>
+	<h2 class="bento-card-subtitle">Details</h2>
+	<div class="features-list">
+		{data.map((item) => (
+			<div class="feature-row">
+				<span class="field-label">{item.label}</span>
+				<span class="field-data">{item.value}</span>
+			</div>
+		))}
+	</div>
+</article>

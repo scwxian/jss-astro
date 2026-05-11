@@ -1,0 +1,94 @@
+---
+import InputWrapper from './InputWrapper.astro';
+import Tooltip from '@components/Tooltips/Tooltip.astro';
+
+interface Props {
+  id: string;
+  label: string;
+  type?: "text" | "email" | "tel" | "number" | "password" | "hidden";
+  required?: boolean;
+  placeholder?: string;
+  pattern?: string;
+  minlength?: number;
+  autocomplete?: string;
+  maxlength?: number;
+  inputmode?: "none" |"text" | "decimal" | "tel" | "numeric" | "search" | "email" | "url";
+  cols?: "1" | "2" | "3";
+}
+
+const { 
+  id, 
+  label, 
+  type = "text", 
+  required = false, 
+  placeholder = " ", 
+  pattern, 
+  minlength,
+  maxlength,
+  inputmode,
+  autocomplete,
+  cols
+} = Astro.props;
+
+const isTel = type === "tel";
+---
+<InputWrapper id={id} label={label} cols={cols}>
+  <input
+    type={type}
+    id={id}
+    name={id}
+    class={`form-input ${isTel ? 'has-tel-prefix' : ''}`}
+    placeholder={placeholder}
+    required={required}
+    pattern={pattern}
+    autocomplete={autocomplete}
+    inputmode={inputmode}
+    minlength={minlength}
+    maxlength={maxlength}
+  />
+  {isTel && (
+  <div class="tel-prefix">+</div>
+  <Tooltip content="Include your country code for delivery updates." icon as="i" class="tel" />
+  )}
+</InputWrapper>
+
+<style is:global>
+.tel.more-info { position: absolute; right: 1rem; top: 1.2rem; }
+</style>
+
+<style>
+.form-input {
+  width: 100%;
+  padding: 1.3rem 1rem 0.3rem;
+  font-size: 1rem;
+  font-family: var(--sans-font);
+  color: var(--text);
+  background: var(--bg);
+  border: calc(var(--border-width) * 2) solid var(--border);
+  border-radius: var(--standard-border-radius);
+  transition: border-color 0.2s ease-out;
+}
+
+.form-input::placeholder { opacity: 0; transition: opacity 0.2s ease-out; }
+.form-input:focus::placeholder { opacity: 1; color: #666; }
+.form-input:focus { outline: none; border-color: var(--accent); }
+.form-input.error { border-color: var(--error); }
+
+.form-input.has-tel-prefix { padding-left: 2.7rem; }
+.tel-prefix {
+  position: absolute;
+  left: 1rem;
+  top: 1.5rem;  
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  padding-right: 0.5rem;
+  border-right: 1.5px solid var(--border);
+  color: var(--text);
+  pointer-events: none; 
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+.form-input:focus + .tel-prefix,
+.form-input:not(:placeholder-shown) + .tel-prefix { opacity: 1; }
+</style>

@@ -1,0 +1,109 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Header from "@modules/Header.astro";
+import Footer from "@modules/Footer.astro";
+import CartPopover from "@cart/CartPopover.astro";
+import CartButton from "@cart/CartButton.astro";
+import AnnouncementBanner from "@components/Overlays/AnnouncementBanner.astro";
+import PromoModal from "@components/Overlays/PromoModal.astro";
+import CookieToast from "@components/Overlays/CookieToast.astro";
+
+import type { Props as BaseLayoutProps } from "./BaseLayout.astro";
+export interface Props extends BaseLayoutProps {}
+
+const props = Astro.props;
+
+const easing = "cubic-bezier(0.77, 0, 0.175, 1)";
+const duration = "300ms";
+
+const customTransition = {
+	forwards: {
+		old: {
+			name: "slide-ease-out-left",
+			duration: duration,
+			easing: easing,
+			fillMode: "forwards",
+		},
+		new: {
+			name: "slide-ease-in-right",
+			duration: duration,
+			easing: easing,
+			fillMode: "backwards",
+		},
+	},
+	backwards: {
+		old: {
+			name: "slide-ease-out-right",
+			duration: duration,
+			easing: easing,
+			fillMode: "forwards",
+		},
+		new: {
+			name: "slide-ease-in-left",
+			duration: duration,
+			easing: easing,
+			fillMode: "backwards",
+		},
+	},
+};
+---
+
+<BaseLayout {...props}>
+	<slot name="head" slot="head" />
+
+	<AnnouncementBanner />
+	<Header />
+	<main transition:animate={customTransition}>
+		<slot />
+	</main>
+	<Footer />
+	<CartPopover />
+	<CartButton />
+	<PromoModal />
+	<CookieToast />
+</BaseLayout>
+
+<style is:global>
+	@keyframes slide-ease-out-left {
+		from {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		to {
+			opacity: 0;
+			transform: translateX(-1em);
+		}
+	}
+	@keyframes slide-ease-in-right {
+		from {
+			opacity: 0;
+			transform: translateX(1em);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+	@keyframes slide-ease-out-right {
+		from {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		to {
+			opacity: 0;
+			transform: translateX(1em);
+		}
+	}
+	@keyframes slide-ease-in-left {
+		from {
+			opacity: 0;
+			transform: translateX(-1em);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+</style>
+
+<script src="@cart/cart-init.js"></script>

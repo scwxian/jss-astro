@@ -1,0 +1,170 @@
+---
+import { getCollection } from "astro:content";
+
+export interface Props {
+	collection: string;
+	basePath: string;
+	currentCategory: string;
+	currentSubCategory?: string;
+}
+
+const { collection, basePath, currentCategory, currentSubCategory } = Astro.props;
+
+const allItems = await getCollection(collection as any);
+const publishedItems = allItems.filter((item: any) => item.data.status !== "draft");
+
+// Filter to current category only
+const categoryItems = publishedItems.filter((item: any) => item.data.category?.toLowerCase() === currentCategory);
+
+// Extract unique subCategories from this category
+const uniqueSubCategories = [...new Set(categoryItems.map((item: any) => item.data.subCategory).filter(Boolean))];
+
+// Early return: no subcategories defined for this category
+if (uniqueSubCategories.length === 0) {
+	return;
+}
+
+const subCategoryLinks = uniqueSubCategories
+	.map((subCat) => {
+		const slug = (subCat as string).toLowerCase().replace(/\s+/g, "-");
+		const label = subCat as string;
+		const isActive = currentSubCategory === slug;
+		const href = isActive
+			? `${basePath}/${currentCategory}/` // Link back to parent category
+			: `${basePath}/${currentCategory}/${slug}/`;
+
+		return { label, slug, href, isActive };
+	})
+	.sort((a, b) => a.label.localeCompare(b.label));
+---
+
+<nav class="subcategory-nav" aria-label="Subcategories">
+	<ul class="subcategory-list">
+		<!-- Hidden "All" link for toggle illusion -->
+		<li class="hidden-all-link">
+			<a
+				href={`${basePath}/${currentCategory}/`}
+				data-subcategory-slug="all"
+				class="subcategory-link"
+				aria-hidden="true"
+				tabindex="-1"
+			>
+				All
+			</a>
+		</li>
+
+		{
+			subCategoryLinks.map((sub) => (
+				<li>
+					<a
+						href={sub.href}
+						data-subcategory-slug={sub.slug}
+						class:list={["subcategory-link", { active: sub.isActive }]}
+						aria-current={sub.isActive ? "page" : undefined}
+					>
+						{sub.label}
+						{sub.isActive && (
+							<span class="remove-indicator" aria-hidden="true">
+								&times;
+							</span>
+						)}
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</nav>
+
+<style>
+	.subcategory-nav {
+		width: 100%;
+		margin-top: 0.3rem;
+	}
+
+	.subcategory-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	/* Hidden "All" link - present in DOM but not visible */
+	.hidden-all-link {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.subcategory-link {
+		font-size: 0.9rem;
+		color: var(--text-light);
+		text-decoration: none;
+		transition: color 0.15s ease-in-out;
+		padding: 0.15rem 0;
+	}
+
+	.subcategory-link:hover {
+		color: var(--text);
+		text-decoration: underline;
+	}
+
+	/* Active state: accent chip with ✕ */
+	.subcategory-link.active {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.2rem 0.6rem;
+		background-color: var(--accent);
+		color: var(--text);
+		border-radius: calc(var(--standard-border-radius) / 2);
+		text-decoration: none;
+		font-weight: 500;
+		font-size: 0.8rem;
+	}
+
+	.subcategory-link.active:hover {
+		opacity: 0.9;
+	}
+
+	.remove-indicator {
+		font-size: 1em;
+		opacity: 0.8;
+		margin-left: 0.05rem;
+	}
+
+	.subcategory-link:focus-visible {
+		outline: calc(var(--border-width) * 2) solid var(--text);
+		outline-offset: 2px;
+	}
+</style>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const nav = document.querySelector(".subcategory-nav");
+		if (!nav) return;
+
+		const stateProvider = document.querySelector("[data-active-subcategory]");
+		const activeSubCategory = stateProvider?.getAttribute("data-active-subcategory");
+
+		const links = nav.querySelectorAll(".subcategory-link");
+		links.forEach((link) => {
+			const linkSlug = link.getAttribute("data-subcategory-slug");
+
+			if (linkSlug === activeSubCategory) {
+				link.classList.add("active");
+				link.setAttribute("aria-current", "page");
+			} else {
+				link.classList.remove("active");
+				link.removeAttribute("aria-current");
+			}
+		});
+	});
+</script>

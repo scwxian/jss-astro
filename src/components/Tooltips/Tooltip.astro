@@ -1,0 +1,39 @@
+---
+interface Props {
+	content: string;
+	icon?: boolean;
+	as?: "span" | "i";
+	class?: string;
+}
+
+const { content, icon = false, as: Tag = "span", class: className = "" } = Astro.props;
+
+const classes = ["more-info", className, icon ? "icon" : ""].filter(Boolean).join(" ");
+---
+
+<Tag class={classes} data-tooltip-content={content}>
+	{
+		icon ? (
+			<svg
+				class="more-info-svg"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 20 20"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<path
+					fill="currentColor"
+					fill-rule="evenodd"
+					d="M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm-9 7a9 9 0 1 1 18 0 9 9 0 0 1-18 0zm8-4a1 1 0 0 1 1-1 1 1 0 1 1 0 2 1 1 0 0 1-1-1zm0 8a1 1 0 1 0 2 0V9a1 1 0 1 0-2 0v5z"
+				/>
+			</svg>
+		) : (
+			<slot />
+		)
+	}
+</Tag>
+
+<script>
+	import "./tooltips.js";
+</script>

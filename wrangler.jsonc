@@ -1,0 +1,65 @@
+{
+	"compatibility_date": "2026-03-12",
+	"compatibility_flags": ["global_fetch_strictly_public"],
+	"name": "yoursite",
+	"main": "@astrojs/cloudflare/entrypoints/server",
+
+	// 🌐 SHARED
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"ACTIVE_ONETIME_GATEWAY": "",
+		"ACTIVE_SUBSCRIPTION_GATEWAY": "",
+		"SITE_URL": ""
+	},
+
+	// 🛑 PRODUCTION
+	"kv_namespaces": [
+		{
+			"binding": "IDEMP_CHKOUT_KV",
+			"id": "<insert id here>"
+		},
+		{
+			"binding": "SESSION",
+			"id": "<insert id here>"
+		},
+		{
+			"binding": "NOTIFY_DEDUP_KV",
+			"id": "<insert id here>"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "my-db-prod",
+			"database_id": "<insert id here>",
+			"migrations_dir": "src/db/migrations"
+		}
+	],
+
+	// 🚧 DEV
+	"env": {
+		"dev": {
+			"name": "yoursite-dev",
+			"kv_namespaces": [
+				{
+					"binding": "SESSION",
+					"id": "<insert id here>"
+				}
+			],
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "yoursite-db-dev",
+					"database_id": "<insert id here>",
+					"migrations_dir": "src/db/migrations"
+				}
+			]
+		}
+	}
+}

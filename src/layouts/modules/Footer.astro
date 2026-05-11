@@ -1,0 +1,107 @@
+---
+const currentYear = new Date().getFullYear();
+import { siteInfo } from "@shared/siteInfo.js";
+
+---
+
+<footer transition:persist="site-footer">
+	<div class="footer-content">
+		<div class="nav-links">
+			<nav>
+				<ul>
+					<li><a href="/shop/">Shop</a></li>
+					<li><a href="/about/">About</a></li>
+					<li><a href="/#services">Services</a></li>
+					<li><a href="/#contact">Contact</a></li>
+					<li><a href="/faq/">FAQ</a></li>
+				</ul>
+			</nav>
+      <div class="social-links-block-wrapper">
+        
+			<div class="social-links-block">
+				<p class="section-subtitle">Get The Good Stuff</p>
+				<div class="social-links">
+          <a href="/shop/" aria-label="Website Shop">
+            <img src="https://placehold.co/28x28?text=Web" width="28" height="28" alt="Website Icon" />
+          </a>
+					{/* Niche marketplace link removed for generic template */}
+					{/* <a href="https://my.shp.ee/aVEQA7Sw" target="_blank" rel="noopener noreferrer" aria-label="Shopee">
+						<img src={getBase64("shopee.png")} width="28" height="28" alt="Shopee Icon" />
+					</a> */}
+				</div>
+			</div>
+			<div class="social-links-block">
+				<p class="section-subtitle">Catch Us On Socials</p>
+				<div class="social-links">
+					<a href={siteInfo.socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+						<img src="https://placehold.co/28x28?text=IG" width="28" height="28" alt="Instagram Icon" />
+					</a>
+					<a href={`https://wa.me/${siteInfo.whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Us">
+						<img src="https://placehold.co/28x28?text=WA" width="28" height="28" alt="WhatsApp Icon" />
+					</a>
+				</div>
+			</div>
+		</div>
+
+      </div>
+		<nav class="legal">
+			<ul>
+				<li><a href="/privacy-policy/">Privacy Policy</a></li>
+				<li><a href="/terms-of-use/">Terms Of Use</a></li>
+        <li><a href="/refund-return-policy/">Refund & Return Policy</a></li>
+        <li><a href="/shipping-policy/">Shipping Policy</a></li>
+			</ul>
+		</nav>
+
+		<div id="footer-credits">
+      <p>Created by <a href="https://shawncheng.co" target="_blank" rel="noopener noreferrer" aria-label="Shawn Cheng"><b>Shawn Cheng</b></a>.</p>
+			<p>Copyright &copy; 2025 - {currentYear} {siteInfo.name}. All Rights Reserved.</p>
+		</div>
+	</div>
+</footer>
+
+<style>
+	footer {
+		padding: 3rem 0;
+		padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+		color: var(--text-light);
+		font-size: 0.9rem;
+		text-align: center;
+		background-color: var(--accent-bg);
+	}
+
+	.footer-content {
+		grid-column: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.footer-content > p:not(.section-subtitle) { }
+	.footer-content > *:last-child { margin: 0; }
+
+  .social-links-block-wrapper {
+    display: flex;
+    gap: 2rem;
+    @media (max-width: 768px) { flex-direction: column;}
+  }
+
+	.legal { margin: 2rem 0 1.5rem; font-size: 0.75rem; }
+	.legal ul {
+		gap: 0.2rem;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		line-height: 0.7rem;
+	}
+
+	#footer-credits a { color: var(--text-light); }
+  #footer-credits p {
+   max-width: 600px;  
+    margin: 0 0 0.6rem 0;
+    line-height: 1.2; 
+		font-size: 0.8rem;
+		color: var(--text-light);
+  }
+
+	@media (max-width: 1020px) { nav ul, nav ol { gap: 0.4rem; } }
+</style>

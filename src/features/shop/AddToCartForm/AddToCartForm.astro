@@ -1,0 +1,231 @@
+---
+import ProductFormWrapper from "@components/Forms/ProductFormWrapper.astro";
+
+import type { PriceVariantGroup, OptionGroup } from "../VariantSelector/VariantSelector.astro";
+
+export interface Props {
+  masterSku: string;
+	slug: string;
+	name: string;
+	image: string;
+	basePrice: number;
+	maxQuantity: number;
+	showQuantity: boolean;
+	isOut: boolean;
+	isPre: boolean;
+	hasPriceVariants: boolean;
+	priceVariantGroups?: PriceVariantGroup[];
+	options?: OptionGroup[];
+}
+
+const {
+	masterSku,
+	slug,
+	name,
+	image,
+	basePrice,
+	maxQuantity = 10,
+	showQuantity,
+	isOut,
+	isPre,
+	hasPriceVariants,
+	priceVariantGroups,
+	options,
+} = Astro.props;
+
+const submitBtnText = isOut 
+	? "Currently Unavailable" 
+	: isPre 
+		? "Pre-Order Now" 
+		: "Add to Cart";
+---
+
+<add-to-cart-form
+	data-master-sku={masterSku}
+	data-slug={slug}
+	data-name={name}
+	data-image={image}
+	data-base-price={basePrice}
+	data-max-quantity={maxQuantity}
+>
+	<ProductFormWrapper
+		basePrice={basePrice}
+		masterSku={masterSku}
+		hasPriceVariants={hasPriceVariants}
+		priceVariantGroups={priceVariantGroups}
+		options={options}
+		isOut={isOut}
+		isPre={isPre}
+		submitBtnText={submitBtnText}
+	>
+		{ showQuantity && (
+				<div class="quantity-selector" slot="quantity-selector">
+					<label class="quantity-label" for="qty-input">Quantity</label>
+					<div class="quantity-controls">
+						<button
+							type="button"
+							class="product-quantity-btn"
+							data-qty-decrease
+							aria-label="Decrease quantity"
+							disabled
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -12 32 32">
+								<path fill="currentColor" fill-rule="evenodd" d="M28 0H4C1.791 0 0 1.79 0 4s1.791 4 4 4h24c2.209 0 4-1.79 4-4s-1.791-4-4-4" />
+							</svg>
+						</button>
+						<input
+              id="qty-input"
+              class="qty-input"
+							type="number"
+							name="quantity"
+							data-quantity
+							value="1"
+							min="1"
+							max={maxQuantity}
+							inputMode="numeric"
+							pattern="[0-9]*"
+						/>
+						<button
+							type="button"
+							class="product-quantity-btn"
+							data-qty-increase
+							aria-label="Increase quantity"
+							disabled={maxQuantity === 1}
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+								<path fill="currentColor" fill-rule="evenodd" d="M28 12h-8V4c0-2.21-1.791-4-4-4s-4 1.79-4 4v8H4c-2.209 0-4 1.79-4 4s1.791 4 4 4h8v8c0 2.21 1.791 4 4 4s4-1.79 4-4v-8h8c2.209 0 4-1.79 4-4s-1.791-4-4-4" />
+							</svg>
+						</button>
+					</div>
+					{maxQuantity && (
+						<p
+							data-qty-limit-msg
+							class="qty-limit-msg"
+							style={`display: ${maxQuantity === 1 ? "block" : "none"};`}
+						>
+							Max Quantity for this product is {maxQuantity}. <a href="/#contact">Contact us</a> for bulk orders.
+						</p>
+					)}
+				</div>
+			) }
+
+		<Fragment slot="payment-icons">
+			<img width="30" height="30" src="https://placehold.co/30x30?text=Visa" alt="Visa" class="section-icon mid-sentence" />
+			<img width="30" height="30" src="https://placehold.co/30x30?text=MC" alt="Mastercard" class="section-icon mid-sentence" />
+			{/* Niche payment methods removed for generic template */}
+			{/* <img width="30" height="30" src={getBase64("fpx.png")} alt="FPX" class="section-icon mid-sentence" /> */}
+			{/* <img width="30" height="30" src={getBase64("tng.png")} alt="Touch 'n Go eWallet" class="section-icon mid-sentence" /> */}
+			{/* <img width="30" height="30" src={getBase64("grabpay.png")} alt="GrabPay" class="section-icon mid-sentence" /> */}
+			{/* <img width="30" height="30" src={getBase64("shopeepay.png")} alt="ShopeePay" class="section-icon mid-sentence" /> */}
+		</Fragment>
+	</ProductFormWrapper>
+</add-to-cart-form>
+
+<script src="./add-to-cart-form.js"></script>
+
+<style>
+/* stupid safari fix for weird fieldset sizing on QVM */
+add-to-cart-form { display: block; width: 100%; }
+
+.quantity-selector {
+	display: flex;
+	flex-direction: column;
+	gap: var(--legend-gap);
+	margin: var(--group-options-gap) 0 0;
+	position: relative;
+}
+
+.quantity-label {
+	font-weight: var(--bold-font-weight);
+	font-size: 0.95rem;
+	letter-spacing: 0.03rem;
+	color: var(--text);
+}
+
+.quantity-controls {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.product-quantity-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 40px;
+	border: none;
+	background: var(--bg);
+	color: var(--text);
+	font-size: 1.25rem;
+	font-weight: var(--bold-font-weight);
+	cursor: pointer;
+	transition: all 0.2s ease-out;
+	line-height: 1;
+	padding: 0;
+	box-shadow: none;
+	font-family: var(--serif-font);
+}
+.product-quantity-btn svg {
+	width: 14px;
+	height: 14px;
+}
+
+.product-quantity-btn:enabled:hover {
+	color: var(--accent);
+	transform: scale(0.95);
+	box-shadow: none;
+	background: none;
+}
+
+.product-quantity-btn:focus-visible {
+	outline: calc(var(--border-width) * 2) solid var(--text);
+	outline-offset: 2px;
+}
+
+.product-quantity-btn:active {
+	transform: scale(0.95);
+	box-shadow: none;
+}
+
+.product-quantity-btn:disabled {
+	background: none;
+	color: var(--disabled);
+}
+
+.qty-input {
+	width: 3rem;
+	height: 2.2rem;
+	text-align: center;
+	font-size: 1rem;
+	font-weight: var(--bold-font-weight);
+	border: calc(var(--border-width) * 2) solid var(--border);
+	border-radius: var(--standard-border-radius);
+	background: var(--bg);
+	color: var(--text);
+	padding: 0 0.5rem;
+	-moz-appearance: textfield;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.qty-input:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+.qty-limit-msg {
+	position: absolute;
+	color: var(--error);
+	font-size: 0.85rem;
+	margin: 0;
+	top: 100%;
+}
+.qty-limit-msg a {
+	color: var(--error);
+}
+
+</style>

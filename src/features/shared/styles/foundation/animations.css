@@ -1,0 +1,105 @@
+/* basic page element animations */
+.animate-element {
+	opacity: 0;
+	transition: all 0.6s ease-out;
+}
+
+.fade-in { transition: opacity 2s ease-in-out; }
+.fade-in-fast { transition: opacity 1s ease-in-out; }
+.fade-in-faster { transition: opacity 0.5s ease-in-out; }
+
+.slide-from-bottom { transform: translateY(30px); }
+.slide-from-left { transform: translateX(-30px); }
+.slide-from-right { transform: translateX(30px); }
+
+.animate-element.is-visible {
+	opacity: 1;
+	transform: translate(0, 0);
+}
+
+.delay-animation-small.is-visible { transition-delay: 0.2s; }
+.delay-animation-normal.is-visible { transition-delay: 0.6s; }
+
+/* shimmer loading */
+@keyframes shimmer {
+	0% { background-position: -468px 0; }
+	100% { background-position: 468px 0; }
+}
+
+.skeleton-shimmer,
+.skeleton-post,
+.npc-image-skeleton,
+.skeleton-text,
+.faq-skeleton-loader .skeleton-block {
+	background: #f6f6f6;
+	background-image: linear-gradient(
+		to right,
+		#f6f6f6 0%,
+		#eaeaea 20%,
+		#f6f6f6 40%,
+		#f6f6f6 100%
+	);
+	background-repeat: no-repeat;
+	background-size: 800px 104px;
+	animation: shimmer 1.5s linear infinite;
+}
+
+
+/* seamless slide */
+.seamless-marquee-container {
+  width: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, var(--theme-color) 5%, var(--theme-color) 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, var(--theme-color) 5%, var(--theme-color) 95%, transparent 100%);
+}
+
+.seamless-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.seamless-marquee-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+  padding-right: 15rem; 
+}
+
+@keyframes marqueeSlide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.banner { animation: marqueeSlide 15s linear infinite; }
+.homepage {
+  animation: marqueeSlide 15s linear infinite;
+  font-family: var(--serif-font);
+  font-weight: var(--bold-font-weight);
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+/* spinners */
+.spin { animation: spin 1s linear infinite; }
+.spin.slow { animation: spin 10s linear infinite; }
+.spinner { width: 20px; height: 20px; }
+
+@keyframes spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+/* loading dots */
+.loading-dots::after {
+	content: "";
+	animation: typing-dots 3s infinite steps(1);
+}
+
+@keyframes typing-dots {
+	0% { content: ""; }
+	25% { content: "."; }
+	50% { content: ".."; }
+	75% { content: "..."; }
+}

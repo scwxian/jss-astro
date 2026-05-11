@@ -1,0 +1,26 @@
+---
+import BlankLayout from "@layouts/BlankLayout.astro";
+import SimpleHeader from "@modules/SimpleHeader.astro";
+import CheckoutFallback from "@features/checkout/CheckoutFallback.astro";
+
+import { siteInfo } from "@shared/siteInfo.js";
+
+const pageName = "Payment Unsuccessful";
+const title = `${pageName} | ${siteInfo.name}`;
+const description = "There was an issue processing your payment. Your cart is saved and you can try again.";
+---
+
+<BlankLayout {title} {description} disableSchema={true} nofollow={true} noindex={true}>
+  <SimpleHeader />
+  <main>
+    <CheckoutFallback 
+      title="Payment Unsuccessful"
+      buttonText="Return to Checkout"
+      buttonLink="/checkout/"
+    >        
+      <p class="hero-body">
+        There was an issue processing your payment, this happens occasionally.<br/>
+        Don't worry, your cart is saved!<br/>Feel free to try again after a few minutes. </p>
+    </CheckoutFallback>
+  </main>
+</BlankLayout>
