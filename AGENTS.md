@@ -83,7 +83,7 @@ Feature-sliced: `/src/features/{domain}/` owns models, logic, scripts, stores.
 
 - Check `tsconfig.json` paths for import aliases. Prefer shortest (`@shared` not `@features/shared`).
 - Follow existing file + variable naming in codebase. Match conventions you find.
-- Config files: `astro.config.mjs`, `wrangler.jsonc`, `vitest.config.ts`, `eslint.config.js`.
+- Config files: `astro.config.mjs`, `wrangler.jsonc`, `vitest.config.ts`.
 - Cloudflare bindings (KV, D1, R2, env vars): read `wrangler.jsonc`.
 - Env vars: defined in `astro.config.mjs` `envField`. Type-safe via `astro:env/server`.
 - Path structure: list `/src/` before creating new files. Follow feature-sliced layout.

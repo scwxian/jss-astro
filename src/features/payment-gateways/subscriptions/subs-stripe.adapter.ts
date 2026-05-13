@@ -53,7 +53,6 @@ interface StripeError {
 
 interface StripeWebhookRaw {
 	type: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	data?: { object?: any; };
 }
 

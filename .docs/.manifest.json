@@ -332,6 +332,66 @@
 			"when_to_use": "Creating and managing customer objects, retrieval, updates"
 		},
 		{
+			"filename": "ref/stripe/checkout-sessions.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Checkout Sessions API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/checkout/sessions",
+			"when_to_use": "Creating hosted checkout sessions, line items, success/cancel URLs"
+		},
+		{
+			"filename": "ref/stripe/events.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Events API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/events",
+			"when_to_use": "Listing and retrieving Stripe events, event types reference"
+		},
+		{
+			"filename": "ref/stripe/payment-methods.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Payment Methods API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/payment_methods",
+			"when_to_use": "Creating, attaching, detaching payment methods for customers"
+		},
+		{
+			"filename": "ref/stripe/products-prices.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Products & Prices API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/products",
+			"when_to_use": "Managing product catalog and price objects in Stripe"
+		},
+		{
+			"filename": "ref/stripe/schemas.md",
+			"source": "Local Project",
+			"library": "stripe",
+			"package": "ecom-boilerplate",
+			"topic": "Stripe Schemas & Types",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "TypeScript type definitions for Stripe API responses, status enums, and request shapes"
+		},
+		{
+			"filename": "ref/stripe/subscriptions.md",
+			"source": "Official Docs",
+			"library": "stripe",
+			"package": "stripe",
+			"topic": "Stripe Subscriptions API",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": "https://stripe.com/docs/api/subscriptions",
+			"when_to_use": "Creating and managing recurring subscriptions, billing cycles"
+		},
+		{
 			"filename": "ref/stripe/webhooks.md",
 			"source": "Official Docs",
 			"library": "stripe",
@@ -340,86 +400,6 @@
 			"fetched": "2026-03-27T00:00:00Z",
 			"official_docs": "https://stripe.com/docs/webhooks",
 			"when_to_use": "Webhook registration, signature verification, event handling patterns"
-		},
-		{
-			"filename": "ref/chip-in/README.md",
-			"source": "Local Project",
-			"library": "chip_in",
-			"package": "chip-in",
-			"topic": "Chip-in API Overview",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": "https://gate.chip-in.asia/api/v1",
-			"when_to_use": "Chip-in authentication, base URL, key concepts, and purchase flow overview"
-		},
-		{
-			"filename": "ref/chip-in/authentication.md",
-			"source": "Official Docs",
-			"library": "chip_in",
-			"package": "chip-in",
-			"topic": "Chip-in Authentication",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": "https://portal.chip-in.asia/collect/developers/api-keys",
-			"when_to_use": "Bearer token authentication, Brand ID setup, signature verification"
-		},
-		{
-			"filename": "ref/chip-in/clients.md",
-			"source": "Official Docs",
-			"library": "chip_in",
-			"package": "chip-in",
-			"topic": "Chip-in Clients API",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": "https://gate.chip-in.asia/api/v1",
-			"when_to_use": "Client object management, retrieval, updates"
-		},
-		{
-			"filename": "ref/chip-in/purchases.md",
-			"source": "Official Docs",
-			"library": "chip_in",
-			"package": "chip-in",
-			"topic": "Chip-in Purchases API",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": "https://gate.chip-in.asia/api/v1",
-			"when_to_use": "Creating purchases, checkout flow, status tracking"
-		},
-		{
-			"filename": "ref/chip-in/schemas.md",
-			"source": "Local Project",
-			"library": "chip_in",
-			"package": "ecom-boilerplate",
-			"topic": "Chip-in Schemas & Types",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": null,
-			"when_to_use": "TypeScript type definitions for Chip-in API responses, status enums, and request shapes"
-		},
-		{
-			"filename": "ref/chip-in/webhooks.md",
-			"source": "Official Docs",
-			"library": "chip_in",
-			"package": "chip-in",
-			"topic": "Chip-in Webhooks",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": "https://gate.chip-in.asia/api/v1",
-			"when_to_use": "Webhook registration, RSA signature verification, event handling patterns"
-		},
-		{
-			"filename": "ref/email-integration.md",
-			"source": "Local Project",
-			"library": "notifications",
-			"package": "ecom-boilerplate",
-			"topic": "Email Integration Setup",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": null,
-			"when_to_use": "Setting up team notifications via Gmail and Google Apps Script webhook for Cloudflare Workers"
-		},
-		{
-			"filename": "ref/console-migration-assessment.md",
-			"source": "Local Project",
-			"library": "maintenance",
-			"package": "ecom-boilerplate",
-			"topic": "Console to Logger Migration Assessment",
-			"fetched": "2026-03-27T00:00:00Z",
-			"official_docs": null,
-			"when_to_use": "Tracking migration from console.* to logger utility. Lists all console calls, their current state, and required actions."
 		}
 	]
 }

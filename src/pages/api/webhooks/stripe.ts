@@ -75,7 +75,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		}
 
 		// Asynchronous Processing ("Respond Quickly" best practice)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const cfContext = (locals as any).cfContext;
 		if (cfContext?.waitUntil) {
 			cfContext.waitUntil(

@@ -38,7 +38,6 @@ const subscriptionCartOptions = {
 export const $subscriptionCart = persistentMap<Record<string, SubscriptionCartItem>>(
 	`sub-cart:${SUBSCRIPTION_CART_VERSION}:`, 
 	{}, 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	subscriptionCartOptions as any
 );
 

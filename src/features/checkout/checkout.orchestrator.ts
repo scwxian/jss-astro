@@ -25,7 +25,6 @@ import type { UserSessionData } from "@users/user.model.ts";
 // PRE-HOOKS CONFIGURATION
 // In the future, import hooks here (e.g., verifyInventory, fraudCheck)
 // type PreHook = (cartState: any) => Promise<void>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CHECKOUT_PRE_HOOKS: any[] = [];
 
 const executePreHooks = async (cartState: CartState) => {
