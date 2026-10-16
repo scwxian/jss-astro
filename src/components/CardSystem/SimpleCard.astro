@@ -1,0 +1,156 @@
+---
+import { Image } from "astro:assets";
+
+export interface Props {
+  imageSrc?: string;
+  imageAlt?: string;
+  horizontal?: boolean;
+  mobileHorizontal?: boolean;
+  title?: string;
+  description?: string;
+  shadow?: "none" | "left" | "right" | "soft";
+  outline?: boolean;
+  background?: boolean;
+  imageWidth?: number;
+  imageType?: "r2" | "pixel";
+  animate?: boolean;
+  animationDelay?: number; // ms
+  imageMargin?: string;
+  cardPadding?: string;
+  cardMobilePadding?: string;
+  class?: string;
+  style?: string;
+}
+
+const {
+  imageSrc = "",
+  imageAlt = "",
+  horizontal = false,
+  mobileHorizontal = false,
+  title = "",
+  description,
+  shadow = "none",
+  outline = false,
+  background = false,
+  imageWidth = 150,
+  imageType = "pixel",
+  animate = false,
+  animationDelay,
+  imageMargin = "1rem",
+  cardPadding = "1.5rem",
+  cardMobilePadding = "1.5rem",
+  class:className,
+  style: inlineStyle,
+} = Astro.props;
+
+const cardClass = [
+  "simple-card",
+  horizontal && "horizontal",
+  mobileHorizontal && "mobile-horizontal",
+  shadow !== "none" && `shadow-${shadow}`,
+  outline && "outline",
+  background && "bg",
+  animate && "animate-element slide-from-bottom",
+  className,
+].filter(Boolean)
+  .join(" ");
+
+const delayStyle = animationDelay !== undefined
+  ? `transition-delay: ${animationDelay}ms`
+  : undefined;
+
+const styles = [
+  `--img-width: ${imageWidth}px`,
+  `gap: ${imageMargin}`,
+  `--padding: ${cardPadding}`,
+  `--mobile-padding: ${cardMobilePadding}`,
+  delayStyle,
+  inlineStyle,
+].filter(Boolean).join("; ");
+---
+
+<div class={cardClass} style={styles}>
+  {Astro.slots.has("default") ? (
+    <slot />
+  ) : (
+    <>
+        {imageType === "r2" ? (
+          <Image
+            src={imageSrc}
+            alt={imageAlt}
+            inferSize
+            class="simple-card-img"
+            widths={[imageWidth, imageWidth * 2]}
+            sizes={`${imageWidth}px`}
+            loading="lazy"
+          />
+        ) : (
+          <img
+            class="simple-card-img"
+            src={imageSrc}
+            alt={imageAlt}
+            width={`${imageWidth}px`}
+            loading="lazy"
+          />
+        )}
+        <div>
+          <h3 class="simple-card-title">{title}</h3>
+          {description && <p class="simple-card-desc">{description}</p>}
+        </div>
+    </>
+  )}
+</div>
+
+<style>
+  .simple-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-radius: var(--standard-border-radius);
+    justify-content: center;
+    padding: var(--padding);
+    @media (max-width: 768px) {
+      padding: var(--mobile-padding);
+    }
+  }
+  .horizontal {
+    flex-direction: row;
+    text-align: left;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  @media (max-width: 768px) {
+    .mobile-horizontal {
+      flex-direction: row;
+      text-align: left;
+    }
+  }
+  .shadow-left { box-shadow: -15px 15px 0px 0px var(--disabled); }
+  .shadow-right { box-shadow: 15px 15px 0px 0px var(--disabled); }
+  .shadow-soft { box-shadow: var(--card-shadow, 0 8px 24px rgba(0, 0, 0, 0.08)); }
+  .outline { border: calc(var(--border-width)*2) solid var(--border); }
+  .bg { background: var(--accent-bg); }
+
+
+  .simple-card-img {
+    width: var(--img-width);
+    height: auto;
+    flex-shrink: 0;
+    @media (max-width: 768px) { max-width: calc(var(--img-width)*0.8); }
+  }
+
+  .simple-card-title {
+    font-family: var(--sans-font);
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .simple-card-desc {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+</style>

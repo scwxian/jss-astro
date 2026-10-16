@@ -32,6 +32,26 @@
 			"when_to_use": "Handling static assets, image optimization, and import patterns in Astro. Covers image CDN configuration, asset co-location, and performance best practices."
 		},
 		{
+			"filename": "standards/mdx-content-rules.md",
+			"source": "Local Project",
+			"library": "standards",
+			"package": "ecom-boilerplate",
+			"topic": "MDX Content Rules",
+			"fetched": "2026-03-27T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Authoring MDX for content collections with build-time component auto-import (Astro 7 + satteri). Covers scope config, no-import authoring, and critical pitfalls."
+		},
+		{
+			"filename": "standards/brand-voice.md",
+			"source": "Local Project",
+			"library": "standards",
+			"package": "ecom-boilerplate",
+			"topic": "Brand Voice & Copywriting",
+			"fetched": "2026-09-25T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Writing any customer-facing copy (product, blog, UX, legal). Skeleton of headings + explainers; fill the [FILL] slots with brand specifics before treating rules as binding."
+		},
+		{
 			"filename": "ref/astro/astro-components.md",
 			"source": "Context7 API",
 			"library": "astro_build",
@@ -400,6 +420,16 @@
 			"fetched": "2026-03-27T00:00:00Z",
 			"official_docs": "https://stripe.com/docs/webhooks",
 			"when_to_use": "Webhook registration, signature verification, event handling patterns"
+		},
+		{
+			"filename": "product-seo-tool/README.md",
+			"source": "Local Project",
+			"library": "tooling",
+			"package": "ecom-boilerplate",
+			"topic": "Product Page SEO Research Tool",
+			"fetched": "2026-10-14T00:00:00Z",
+			"official_docs": null,
+			"when_to_use": "Writing or reviewing SEO for PRODUCT pages (src/content/products/*.mdx) — seo.title, seo.description, body copy, additionalInfo FAQ. Run the DataForSEO-backed CLI (node run.mjs --keywords ...) for keyword volumes, Google SERP (PAA/related/SERP features) and autocomplete before choosing metadata. Products only; use blogpost-generation-engine for blog/editorial. Requires DF_LOCATION_CODE/DF_LOCATION_NAME in .env."
 		}
 	]
 }

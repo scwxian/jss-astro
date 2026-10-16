@@ -27,6 +27,8 @@ section:last-of-type { padding-bottom: 5rem; }
 	font-weight: var(--body-font-weight);
 }
 
+h1.section-title { font-size: var(--h2-fs); }
+
 @media (max-width: 768px) {
 	.section-title { margin-bottom: 2rem; }
 	.section-subtitle { line-height: normal; }

@@ -1,0 +1,116 @@
+---
+import { getCollection } from "astro:content";
+import { blogPublished } from "@collections/collection-route-helpers.js";
+import "@styles/section-layouts/grid.css";
+import type { CollectionEntry } from "astro:content";
+import BlogCard from "./BlogCard.astro";
+
+export type RelatedPostsMode = "similar" | "author" | "category";
+
+export interface Props {
+	mode: RelatedPostsMode;
+	post?: CollectionEntry<"blog">;
+	author?: string;
+	category?: string;
+	maxPosts?: number;
+	heading: string;
+	mobileCols?: number;
+	desktopCols?: number;
+}
+
+const {
+	mode,
+	post,
+	author,
+	category,
+	maxPosts,
+	heading,
+	mobileCols = 1,
+	desktopCols = 2,
+} = Astro.props;
+
+const allPosts = await getCollection("blog", blogPublished);
+
+const byDateDesc = (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+	b.data.pubDate.getTime() - a.data.pubDate.getTime();
+
+let posts: CollectionEntry<"blog">[] = [];
+
+switch (mode) {
+	case "similar": {
+		if (!post) return;
+		// Score: same category ranks first, newest wins ties
+		const scored = allPosts
+			.filter((candidate) => candidate.id !== post.id)
+			.map((candidate) => ({
+				candidate,
+				score: candidate.data.category === post.data.category ? 1 : 0,
+			}));
+		scored.sort(
+			(a, b) =>
+				b.score - a.score ||
+				b.candidate.data.pubDate.getTime() - a.candidate.data.pubDate.getTime(),
+		);
+		posts = scored.map(({ candidate }) => candidate);
+		break;
+	}
+	case "author": {
+		if (!author) return;
+		posts = allPosts.filter((candidate) => candidate.data.author === author).sort(byDateDesc);
+		break;
+	}
+	case "category": {
+		if (!category) return;
+		posts = allPosts
+			.filter((candidate) => candidate.data.category === category)
+			.sort(byDateDesc);
+		break;
+	}
+}
+
+if (maxPosts !== undefined) posts = posts.slice(0, maxPosts);
+if (posts.length === 0) return;
+---
+
+<section class="related-posts" style={`--mobile-cols: ${mobileCols}; --desktop-cols: ${desktopCols};`}>
+	<h2 class="related-posts-heading">{heading}</h2>
+	<ul class="related-posts-grid grid-layout">
+		{posts.map((post) => (
+			<BlogCard blog={post} animate isBlogHub />
+		))}
+	</ul>
+</section>
+
+<style>
+.related-posts {
+    padding-top: 0;
+    border-top: calc(var(--border-width)*1) solid color-mix(in srgb, var(--text) 20%, transparent 80%);
+    margin-top: 3.5rem;
+  @media (max-width: 768px) { min-width: 0; }
+}
+.related-posts-heading {
+  font-size: var(--h4-fs);
+  letter-spacing: -0.1rem;
+  font-weight: var(--body-font-weight);
+  padding: 0;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--sans-font);
+  color: var(--text);
+}
+
+.related-posts-grid {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		grid-template-columns: repeat(var(--mobile-cols, 1), 1fr);
+		--grid-gap-x: 1.5rem;
+		--grid-gap-y: 2.5rem;
+		@media (min-width: 769px) { grid-template-columns: repeat(var(--desktop-cols, 2), 1fr); }
+		@media (max-width: 768px) {
+      min-width: 0;
+      --grid-gap-x: 0;
+      --grid-gap-y: 0;
+    }
+}
+</style>

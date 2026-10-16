@@ -13,11 +13,39 @@ export interface Props {
 	slides: Slide[];
 	interval?: number;
 	class?: string;
+	style?: string;
 	imageClass?: string;
 	showButtons?: boolean;
+	showDots?: boolean;
+	showButtonsMobile?: boolean;
+	showDotsMobile?: boolean;
+	customWidth?: number;
+	trackStyles?: string;
+	navMarginTop?: string;
+	dotsOffset?: string;
+	shadow?: "none" | "left" | "right" | "soft";
+	outline?: boolean;
+	background?: boolean;
 }
 
-const { slides, interval, class: className = "", imageClass = "", showButtons = true } = Astro.props;
+const {
+	slides,
+	interval,
+	class: className = "",
+	style: inlineStyle,
+	imageClass = "",
+	showButtons,
+	showDots,
+	showButtonsMobile,
+	showDotsMobile,
+	customWidth,
+	trackStyles,
+	navMarginTop,
+	dotsOffset,
+	shadow = "none",
+	outline = false,
+	background = false,
+} = Astro.props;
 
 // Determines if a string URL is a public asset (Rule 2). Public assets use root-relative paths starting with '/'.
 const isPublicAsset = (src: string): boolean => {
@@ -25,7 +53,20 @@ const isPublicAsset = (src: string): boolean => {
 };
 ---
 
-<BaseCarousel slideCount={slides.length} {interval} class={className} {showButtons}>
+<BaseCarousel
+  slideCount={slides.length}
+  {interval}
+  class={className}
+  style={inlineStyle}
+  {showButtons}
+  {showDots}
+  {showButtonsMobile}
+  {showDotsMobile}
+  {customWidth}
+  {trackStyles}
+  {navMarginTop}
+  {dotsOffset}
+>
 	{
 		slides.map((slide) => {
 			const isPublic = typeof slide.src === "string" && isPublicAsset(slide.src);
@@ -55,8 +96,15 @@ const isPublicAsset = (src: string): boolean => {
         />
 			);
 
+			const slideClass = [
+        "carousel-slide",
+        shadow !== "none" && `shadow-${shadow}`,
+        outline && "outline",
+        background && "bg",
+      ].filter(Boolean).join(" ");
+
 			return (
-				<div class="carousel-slide">
+				<div class={slideClass}>
 					{slide.href ? (
 						<a href={slide.href} target="_blank" rel="noopener noreferrer">
 							{ImageContent}
@@ -79,4 +127,13 @@ const isPublicAsset = (src: string): boolean => {
 		border: var(--border-width) solid var(--border);
 		box-shadow: -4px 4px 0px 0px var(--accent-bg);
 	}
+
+	.shadow-left { box-shadow: -4px 4px 0px 0px var(--disabled); }
+	.shadow-right { box-shadow: 4px 4px 0px 0px var(--disabled); }
+	.shadow-soft { box-shadow: var(--disabled); }
+	.outline {
+		border: calc(var(--border-width) * 2) solid var(--border);
+		border-radius: var(--standard-border-radius);
+	}
+	.bg { background: var(--accent-bg); }
 </style>

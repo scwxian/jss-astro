@@ -1,0 +1,212 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import { render } from "astro:content";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { formatDate, formatCategoryLabel } from "@scripts/utils.js";
+import { DEFAULT_HERO_IMAGE } from "./blog-schema.ts";
+import BlogMetaLine from "./BlogMetaLine.astro";
+import BlogpostFooter from "./BlogpostFooter.astro";
+import RelatedPosts from "./RelatedPosts.astro";
+import Accordion from "@components/Accordion/Accordion.astro";
+
+export interface Props {
+	post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { data, id } = post;
+const { Content } = await render(post);
+
+const heroImageUrl = getAssetUrl("blog", id, data.heroImage ?? DEFAULT_HERO_IMAGE);
+const heroAlt = data.heroImageAlt ?? data.title;
+const isDraftPreview = import.meta.env.DEV && data.draft;
+const displayDate = data.updatedAt ?? data.pubDate;
+---
+
+<article class="blogpost-core-ui">
+	<header class="blogpost-header">
+
+    {isDraftPreview && <span class="badge draft blogpost-draft-badge">Draft</span>}
+    <div class="blogpost-tags"><time datetime={displayDate.toISOString()}>{formatDate(displayDate)}</time> // {formatCategoryLabel(data.category)}</div>
+		<h1 class="blogpost-title">{data.title}</h1>
+		{data.subtitle && <p class="blogpost-subtitle">{data.subtitle}</p>}
+		<BlogMetaLine blog={post} avatarSize={36} authorLinked avatarGap="0.75rem" />
+	</header>
+    {data.summary && (
+    <div class="blogpost-tldr">
+      <h2 class="blogpost-tldr-heading">TL;DR • Summary</h2>
+      <div class="blogpost-tldr-content" set:html={data.summary} />
+      <div class="blogpost-tldr-content learn-more"><b>Interested?</b> <em>Read to learn more.</em></div>
+    </div>
+    )}
+
+	<figure class="blogpost-hero">
+		<Image
+			src={heroImageUrl}
+			alt={heroAlt}
+			inferSize
+			class="blogpost-hero-image"
+      widths={[340, 680 ]}
+			sizes="(max-width: 768px) 100vw"
+			loading="eager"
+			fetchpriority="high"
+		/>
+		{data.heroImageCaption && (
+			<figcaption class="blogpost-hero-caption" set:html={data.heroImageCaption} />
+		)}
+	</figure>
+
+	<div class="blogpost-body">
+		<Content />
+    {data.faq && data.faq.length > 0 && (
+    <hr>
+    <BlogpostFooter category={data.category} />
+    <hr>
+    <Accordion items={data.faq} heading="Frequently Asked Questions" id="faq" />
+    )}
+	</div>
+
+</article>
+
+<RelatedPosts mode="similar" post={post} maxPosts={4} heading="Similar Reads" />
+
+<style>
+	.blogpost-core-ui { max-width: 680px; margin: 0 auto; }
+
+  .blogpost-header {
+    padding-bottom: 1rem;
+    border-bottom: calc(var(--border-width)*1) solid color-mix(in srgb, var(--text) 20%, transparent 80%);
+    margin-bottom: 1rem;
+  }
+
+  .blogpost-tags {
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: -0.08rem;
+    color: var(--accent);
+    line-height: 1.2;
+    font-family: var(--sans-font);
+    max-width: 600px;
+  }
+
+  .blogpost-draft-badge { display: inline-block; margin: 0.5rem 0; }
+  .blogpost-title { font-size: var(--h3-fs); font-family: var(--mono-font); margin: 0; }
+  .blogpost-subtitle { color: var(--text-light); margin: 0.5rem 0 1rem; }
+
+  .blogpost-tldr {
+    margin: 3rem 0;
+    padding: 1rem;
+    border: calc(var(--border-width)*2) solid var(--accent);
+    border-radius: var(--standard-border-radius);
+  }
+
+  .blogpost-tldr-heading {
+    font-size: var(--h6-fs);
+    color: var(--accent);
+    font-weight: var(--body-font-weight);
+    letter-spacing: -0.1rem;
+    margin: 0 0 1rem 0;
+  }
+
+  .blogpost-tldr-content { font-size: 0.95rem; }
+
+  .blogpost-tldr-content.learn-more {margin-top: 1rem;}
+  .blogpost-hero { margin: 1rem 0 1.5rem; }
+</style>
+
+<style is:global>
+.blogpost-body h2, 
+.blogpost-body h3, 
+.blogpost-body h4,
+.blogpost-body h5,
+.blogpost-body h6 {
+  font-family: var(--mono-font);
+  margin-bottom: 1rem;
+  letter-spacing: 0.02rem;
+}
+
+.blogpost-body h2 { font-size: var(--h3-fs); }
+.blogpost-body h3 { font-size: var(--h4-fs); }
+.blogpost-body h4 { font-size: var(--h5-fs); }
+.blogpost-body p {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+  @media (max-width: 768px) { margin-bottom: 1.5rem; line-height: 1.7; }
+}
+
+.blogpost-body li { margin-bottom: 0.75rem; }
+
+.blogpost-body blockquote {
+  border-inline-start: 0.2rem solid var(--border);
+  padding: 0.6rem 1.2rem;
+  font-size: 1.2rem;
+  
+  @media (max-width: 768px) {
+  margin-inline-start: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  margin-block: 2rem;
+  }
+}
+
+.blogpost-body blockquote p { line-height: 1.5; }
+.blogpost-body blockquote p:first-of-type { margin-top: 0;}
+.blogpost-body blockquote p:last-of-type { margin-bottom: 0;}
+
+.blogpost-hero-image,
+.blogpost-body img {
+  border-radius: var(--standard-border-radius);
+  width: 100%;
+  height: auto;
+}
+
+.blogpost-hero-caption,
+.blogpost-body figure,
+.blogpost-body figcaption { 
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-style: italic;
+  line-height: 1.4;
+}
+.blogpost-body figure {
+  margin: 3rem auto;
+  @media (max-width: 768px) { margin: 2rem auto; }
+}
+
+.blogpost-body figcaption { margin-top: 0.25rem; }
+
+.blogpost-body table {
+  margin: 1.5rem auto;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.blogpost-body hr { 
+  background: color-mix(in srgb, var(--text) 20%, transparent 80%);
+  width: 50%;
+  margin: 3rem auto;
+  @media (max-width: 768px) { width: 80%; }
+}
+.blogpost-body :has(+ hr) { margin-bottom: 0; }
+.blogpost-body hr + * { margin-top: 0; }
+
+.blogpost-body :is(ul, ol):not(:is(ul, ol) :is(ul, ol)) { 
+  margin: 1.5rem 0;
+}
+@media (max-width: 768px) {
+	.blogpost-body :is(ul, ol):not(:is(ul, ol) :is(ul, ol)) {
+    padding-inline-start: 1.5rem;
+  }
+}
+
+.blogpost-tldr-content p,
+.blogpost-ending p { margin: 0.5rem 0; }
+
+.blogpost-ending p:first-of-type,
+.blogpost-tldr-content > p:first-of-type { margin-top: 0; }
+
+</style>

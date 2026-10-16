@@ -1,0 +1,248 @@
+---
+import type { Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import CollectionCategoryNav from "@collections/CollectionCategoryNav.astro";
+import CollectionHubWrapper from "@collections/CollectionHubWrapper.astro";
+import BlogCard from "@blog/BlogCard.astro";
+import { blogPublished } from "@collections/collection-route-helpers.js";
+import StandardLayout from "./StandardLayout.astro";
+
+export interface Props {
+	title: string;
+	description: string;
+  pageTitle?: string;
+  pageSubtitle?: string;
+	currentCategory: string;
+	mobileCols?: number;
+	desktopCols?: number;
+	schemaItem?: Record<string, any>;
+	isBlogHub?: boolean;
+	posts: CollectionEntry<"blog">[];
+	heroPost?: CollectionEntry<"blog">;
+	page: Page<any>;
+}
+
+const {
+  title,
+  description,
+  pageTitle = title,
+  pageSubtitle,
+  currentCategory,
+  mobileCols = 1,
+  desktopCols = 2,
+  schemaItem,
+  isBlogHub = true,
+  posts,
+  heroPost,
+  page,
+} = Astro.props;
+
+---
+
+<StandardLayout {title} {description} {schemaItem} transition:animate="none" cartFabMode="auto">
+	<slot name="head" slot="head" />
+	<section class="blog-intro break-section" transition:name="blog-intro" transition:animate="none">
+		<div class="image-masker-overlay" transition:persist="blog-banner">
+      <img
+        src="https://placehold.co/800x300?text=Blog+Banner"
+        alt="Blog Banner"
+        width="800"
+        height="300"
+        fetchpriority="high"/>
+		</div>
+
+		<div class="break-section-content">
+      <div class="blog-heading-wrapper">
+        <h1 class="page-title" transition:name="blog-heading" transition:animate="fade">
+          <span class="title">{pageTitle}</span>
+          {pageSubtitle && <span class="blog-subheading">{pageSubtitle}</span> }
+        </h1>
+      </div>
+		</div>
+	</section>
+
+	<section class="blog-main">
+		<div class="blog-nav-section" transition:name="blog-nav-wrapper" transition:animate="none">
+			<h2 class="category-label section-subtitle">Filter by category</h2>
+			<CollectionCategoryNav
+				collection="blog"
+				basePath="/blog"
+				categoryPath="/blog/category"
+        published={blogPublished}
+				{currentCategory}
+			/>
+		</div>
+
+    <div class="blogposts-region">
+      {heroPost && (
+      <ul class="blog-hero-grid">
+        <BlogCard blog={heroPost} hero index={0} {isBlogHub} />
+      </ul>
+      )}
+
+      <div
+        class="variable-provider collection-wrapper"
+        data-active-category={currentCategory}
+        transition:name="blog-grid"
+        style={`--mobile-cols: ${mobileCols}; --desktop-cols: ${desktopCols};`}
+      >
+        <CollectionHubWrapper {page}>
+          {posts.map((post, i) => <BlogCard blog={post} index={i + 1} animate {isBlogHub} />)}
+        </CollectionHubWrapper>
+      </div>
+    </div>
+	</section>
+
+	<script>
+		// Preserve scroll when navigating categories
+		let preserveScroll = false;
+		let savedScrollY = 0;
+		let savedCategoryScrollX = 0;
+
+		document.addEventListener("astro:before-preparation", (event) => {
+			const isBlogNavigation = event.from.pathname.startsWith("/blog") && event.to.pathname.startsWith("/blog");
+
+			if (isBlogNavigation) {
+				preserveScroll = true;
+				savedScrollY = window.scrollY;
+				// Save horizontal scroll position of category nav
+				const categoryNav = document.querySelector(".category-nav");
+				if (categoryNav) {
+					savedCategoryScrollX = categoryNav.scrollLeft;
+				}
+				// Show loading state on post grid
+				const grid = document.querySelector("[data-collection-grid]");
+				if (grid) {
+					grid.classList.add("is-loading");
+				}
+				// Show loading state on hero post
+				const hero = document.querySelector(".blog-hero-grid");
+				if (hero) {
+					hero.classList.add("is-loading");
+				}
+			} else {
+				preserveScroll = false;
+			}
+		});
+
+		document.addEventListener("astro:after-swap", () => {
+			if (preserveScroll) {
+				window.scrollTo({ top: savedScrollY, behavior: "instant" });
+				// Restore horizontal scroll position of category nav
+				const categoryNav = document.querySelector(".category-nav");
+				if (categoryNav) {
+					categoryNav.scrollLeft = savedCategoryScrollX;
+				}
+			}
+		});
+	</script>
+</StandardLayout>
+
+<style>
+	.break-section {
+		padding-top: 5rem;
+		padding-bottom: 5.5rem;
+		@media (max-width: 768px) { padding-bottom: 4.5rem; }
+	}
+
+	.break-section-content {
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.blog-intro h2 {
+		font-weight: var(--body-font-weight);
+		font-size: var(--h2-fs);
+		position: relative;
+		z-index: 3;
+		margin: 0;
+		color: var(--text);
+		text-align: center;
+		@media only screen and (max-width: 768px) { font-size: calc(var(--h2-fs) * 0.9); margin: 0; }
+	}
+
+  .page-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: var(--h2-fs);
+    font-weight: var(--body-font-weight);
+  }
+  .page-title .title {
+    padding: 0.5rem 1.2rem;
+    background-color: var(--bg);
+    display: block;
+  }
+	.blog-subheading {
+    display: block;
+    margin: 0.5rem 0 0 0;
+    max-width: 600px;
+    font-size: var(--h3-fs);
+    line-height: 1;
+    @media (max-width: 768px) {
+    margin: 2rem 0 0 0;
+      font-size: var(--h4-fs);
+    }
+	}
+
+	.blog-nav-section {
+		margin-bottom: 1.5rem;
+		justify-self: flex-start;
+		width: 100%;
+		@media (max-width: 768px) { margin-bottom: 2rem; }
+	}
+
+	.category-label {
+    font-family: var(--mono-font);
+		color: var(--text);
+		font-weight: 500;
+		margin-bottom: 10px;
+	}
+
+	.blog-main { padding-top: 2rem; }
+
+	.collection-wrapper {
+		width: 100%;
+		margin: 0 auto;
+		--grid-gap-x: 1.5rem;
+		--grid-gap-y: 2rem;
+		@media (max-width: 768px) { --grid-gap-x: 0; --grid-gap-y: 0; }
+	}
+
+	ul.blog-hero-grid {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+    @media (max-width: 768px) {
+      padding-bottom: 1.5rem;
+      border-bottom: calc(var(--border-width)*1) solid color-mix(in srgb, var(--text) 20%, transparent 80%);
+      margin-bottom: 1.5rem;
+    }
+	}
+
+	ul.blog-hero-grid.is-loading {
+		opacity: 0.2;
+		pointer-events: none;
+    transition: opacity 0.3s ease;
+	}
+</style>
+
+<style is:global>
+::view-transition-group(blog-heading) { z-index: 50; }
+
+@media (min-width: 769px) {
+  .blogposts-region .collection-grid { align-items: stretch; }
+  .blog-hero-card {--hero-image-width: 480px}
+  .blog-hero-card .blog-tags-wrapper {margin-top: 0;}
+  .blog-hero-card .blog-card-title { margin-top: 0; }
+  .blog-hero-card .blog-card { flex-direction: row; gap: 2rem; }
+  .blog-hero-card .image-wrapper {
+    max-width: var(--hero-image-width);
+    min-width: 460px;
+  }
+  .blog-hero-card .blog-tags-wrapper { left: 0; }
+}
+</style>

@@ -1,0 +1,24 @@
+---
+import YoutubeEmbed from "@components/YoutubeEmbed.astro";
+
+export interface Props {
+	videoId: string;
+	playlistId?: string;
+	videoSnippet?: string;
+	alt?: string;
+	caption?: string; // string fallback; use <Fragment slot="caption"> for HTML
+}
+
+const { videoId, playlistId, videoSnippet, alt, caption } = Astro.props;
+
+if (!videoId) throw new Error("BlogpostVideo: `videoId` is required.");
+const emCaption = (html?: string) => (html ? `<em>${html}</em>` : undefined);
+
+// Slot markup wins over prop; lets MDX author HTML without quote escaping
+const captionHtml = Astro.slots.has("caption") ? await Astro.slots.render("caption") : caption;
+---
+
+<figure class="blogpost-video">
+	<YoutubeEmbed {videoId} {playlistId} {videoSnippet} {alt} />
+	{captionHtml && <figcaption set:html={emCaption(captionHtml)} />}
+</figure>

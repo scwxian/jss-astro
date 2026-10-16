@@ -1,0 +1,35 @@
+---
+import { blogHubSEO } from "@features/blog/blogHubSEO";
+import BlogLayout from "@layouts/BlogLayout.astro";
+import { getPaginatedBlogPaths } from "@collections/collection-route-helpers.js";
+import { buildBlogCollectionSchema } from "@collections/collection-schema.ts";
+import { resolveHeroPost, type PinnedPostConfig } from "@features/blog/blogHeroPost.ts";
+
+
+export async function getStaticPaths({ paginate }) {
+	return getPaginatedBlogPaths(paginate);
+}
+
+const pinnedPost: PinnedPostConfig = { mode: "latest" };
+const { page } = Astro.props;
+const { heroPost, gridPosts } = resolveHeroPost(page.data, page.currentPage, pinnedPost);
+const schemaItem = buildBlogCollectionSchema(page);
+const seo = blogHubSEO["all"];
+---
+
+<BlogLayout 
+  title={seo.title} 
+  description={seo.description} 
+  pageTitle={seo.pageTitle} 
+  pageSubtitle={seo.pageSubtitle}
+  currentCategory="all" 
+  posts={gridPosts}
+  heroPost={heroPost}
+  {page}
+  {schemaItem}
+>
+	<Fragment slot="head">
+		{page.url.prev && <link rel="prev" href={page.url.prev} />}
+		{page.url.next && <link rel="next" href={page.url.next} />}
+	</Fragment>
+</BlogLayout>

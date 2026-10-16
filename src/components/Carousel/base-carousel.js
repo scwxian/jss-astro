@@ -40,17 +40,42 @@ class BaseCarousel extends HTMLElement {
 
 		this.scrollNext = () => {
 			let nextIndex = this.activeIndex + 1;
-			if (nextIndex >= this.slides.length) {
-				nextIndex = 0;
+			if (nextIndex >= this.slides.length) nextIndex = 0;
+
+			// Skip a slide that already sits near center to avoid a no-op scroll
+			const viewCenter = this.track.clientWidth / 2;
+			const threshold = this.slides[nextIndex].offsetWidth * 0.5;
+
+			const slideCenter = this.slides[nextIndex].offsetLeft
+				+ this.slides[nextIndex].offsetWidth / 2
+				- this.track.scrollLeft;
+			const distToCenter = Math.abs(slideCenter - viewCenter);
+
+			if (distToCenter < threshold) {
+				const skipIndex = (nextIndex + 1) % this.slides.length;
+				if (skipIndex !== this.activeIndex) nextIndex = skipIndex;
 			}
+
 			this.scrollToSlide(nextIndex);
 		};
 
 		this.scrollPrev = () => {
 			let prevIndex = this.activeIndex - 1;
-			if (prevIndex < 0) {
-				prevIndex = this.slides.length - 1;
+			if (prevIndex < 0) prevIndex = this.slides.length - 1;
+
+			const viewCenter = this.track.clientWidth / 2;
+			const threshold = this.slides[prevIndex].offsetWidth * 0.5;
+
+			const slideCenter = this.slides[prevIndex].offsetLeft
+				+ this.slides[prevIndex].offsetWidth / 2
+				- this.track.scrollLeft;
+			const distToCenter = Math.abs(slideCenter - viewCenter);
+
+			if (distToCenter < threshold) {
+				const skipIndex = (prevIndex - 1 + this.slides.length) % this.slides.length;
+				if (skipIndex !== this.activeIndex) prevIndex = skipIndex;
 			}
+
 			this.scrollToSlide(prevIndex);
 		};
 

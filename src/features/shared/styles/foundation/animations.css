@@ -45,6 +45,24 @@
 }
 
 
+/* page/step slide transitions — used by Astro View Transitions & stepper */
+@keyframes slide-ease-out-left {
+	from { opacity: 1; transform: translateX(0); }
+	to { opacity: 0; transform: translateX(-1em); }
+}
+@keyframes slide-ease-in-right {
+	from { opacity: 0; transform: translateX(1em); }
+	to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-ease-out-right {
+	from { opacity: 1; transform: translateX(0); }
+	to { opacity: 0; transform: translateX(1em); }
+}
+@keyframes slide-ease-in-left {
+	from { opacity: 0; transform: translateX(-1em); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
 /* seamless slide */
 .seamless-marquee-container {
   width: 100%;

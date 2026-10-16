@@ -3,6 +3,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig, envField, fontProviders } from "astro/config";
 import { siteInfo } from "./src/features/shared/siteInfo.js";
+import { mdxAutoImport } from "./src/features/shared/mdx-auto-import.ts";
 
 function sanitizeName(name) {
   if (!name) return 'asset';
@@ -27,12 +28,34 @@ export default defineConfig({
 		prerenderEnvironment: "workerd",
 	}),
 
-	integrations: [sitemap(), mdx()],
+	integrations: [
+		sitemap({
+			filter: (page) => {
+				const pathname = new URL(page).pathname;
+				return !pathname.startsWith("/checkout/");
+			},
+		}),
+		mdxAutoImport({
+			scopes: [
+				{
+					match: "/blog/",
+					imports: [
+						"./src/features/blog/post-components/BlogpostImage.astro",
+						"./src/features/blog/post-components/BlogpostVideo.astro",
+						"./src/features/blog/post-components/BlogProductList.astro",
+					],
+				},
+				{ match: "/products/", imports: ["./src/components/CardSystem/SimpleCard.astro"] },
+			],
+		}),
+		mdx(),
+	],
 
 	image: {
 		remotePatterns: [
 			{ protocol: "https", hostname: `assets.${siteInfo.domain}` },
 			{ protocol: "https", hostname: "images.unsplash.com" },
+			{ protocol: "https", hostname: "placehold.co" },
 		],
 	},
 
@@ -145,6 +168,17 @@ export default defineConfig({
 				optional: true,
 			}),
 			NOTIFY_GENERIC_WEBHOOK_URL: envField.string({
+				context: "server",
+				access: "secret",
+				optional: true,
+			}),
+			// Live Stock (Baserow)
+			BASEROW_API_TOKEN: envField.string({
+				context: "server",
+				access: "secret",
+				optional: true,
+			}),
+			ACTIVE_STOCK_PROVIDER: envField.string({
 				context: "server",
 				access: "secret",
 				optional: true,

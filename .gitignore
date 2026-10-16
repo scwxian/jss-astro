@@ -14,8 +14,19 @@ pnpm-debug.log
 
 # environment variables
 .env
+.env.prod
 .env.production
 .dev.vars
+
+# blog-generation dev tooling (internal only — separate from prod/dev site secrets)
+.docs/blogpost-generation-engine/tools/.env
+.docs/blogpost-generation-engine/output/.cache/
+.docs/blogpost-generation-engine/tools/node_modules/
+
+# product SEO dev tooling (internal only)
+.docs/product-seo-tool/.env
+.docs/product-seo-tool/.cache/
+.docs/product-seo-tool/out/
 
 
 # macOS

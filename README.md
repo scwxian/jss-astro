@@ -1,7 +1,7 @@
 [![AI Coauthored](https://img.shields.io/badge/AI_Coauthored-Engineered_↗-blue)](https://coauthored.dev/#v:2;o:~Y29hdXRob3JlZC5kZXY;stakes:4;autonomy:2;scope:project;tools:~T3BlbmNvZGUgd2l0aCBLaW1pIEsyLjUgJiBEZWVwc2Vlaw;review:ran;watch:code,security,edge,tests;notes:~QnVpbHQgd2l0aCBIZWxwIG9mIEFJIExMTXMuIEV2ZXJ5IGxpbmUgb2YgY29kZSB3YXMgcmV2aWV3ZWQgYW5kIG1vZGlmaWVkIGJ5IG1lLCBidXQgSSdtIG9ubHkgaHVtYW4sIHNvIHRoZXJlIHdpbGwgYmUgbWlzdGFrZXMgYW5kIGJ1Z3Mu;created:2026-05-12)
 # 'Just Sell Stuff' (JSS) Astro E-Commerce Boilerplate
 
-Production-ready ecommerce template built with 🚀 [Astro 6](https://astro.build) + 🛠️ [Cloudflare Workers](https://developers.cloudflare.com/workers/) + 📦 [Nanostores](https://github.com/nanostores/nanostores).
+Production-ready ecommerce template built with 🚀 [Astro 7](https://astro.build) + 🛠️ [Cloudflare Workers](https://developers.cloudflare.com/workers/) + 📦 [Nanostores](https://github.com/nanostores/nanostores).
 
 **Live demo** : [maincoffeelab.com](https://maincoffeelab.com) *(my coffee roastery, come check us out!)*
 

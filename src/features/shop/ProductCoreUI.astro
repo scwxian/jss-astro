@@ -5,7 +5,7 @@ import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
 import ProductCarousel from "@components/Carousel/ProductCarousel.astro";
 import AddToCartForm from "./AddToCartForm/AddToCartForm.astro";
 import PurchaseSubscriptionForm from "./PurchaseSubscriptionForm/PurchaseSubscriptionForm.astro";
-import AdditionalInfo from "./AdditionalInfo/AdditionalInfo.astro";
+import Accordion from "@components/Accordion/Accordion.astro";
 import RelatedProducts from "./RelatedProducts.astro";
 import AlsoAvailableIcons from "@components/AlsoAvailableIcons.astro";
 import "@components/BentoCarousel/bento-carousel.css"
@@ -20,10 +20,15 @@ const productImageUrl = data.images[0] ? getAssetUrl("products", id, data.images
 const isOut = data.status === "out-of-stock";
 const isPre = data.status === "pre-order";
 const isBestSeller = data.isFeatured === true;
+const isNew = data.isNew === true && data.status === "active";
 const isSub = data.type === "subscription";
 const showQuantity = data.showQuantitySelector !== false; 
 const maxQuantity = data.maxQuantity;
 const hasPriceVariants = "priceVariantGroups" in data && data.priceVariantGroups && data.priceVariantGroups.length > 0;
+const stockCheck =
+	data.type === "physical" &&
+	data.stockCheckRequired === true &&
+	data.status === "active";
 
 const altContext = (data.seo?.title ?? "")
 	.replaceAll(data.name, "")
@@ -43,17 +48,31 @@ const altContext = (data.seo?.title ?? "")
 			slug={id}
 			imageClass="product-gallery-image"
 			altContext={altContext}
+			interval={3000}
+			navMarginTop="1rem"
 		/>
 
     <div class="badge-container">
-      {isOut && <span class="badge out-of-stock">Out of Stock</span>}
-      {isPre && <span class="badge pre-order">Pre-Order</span>}
+      {(isOut || stockCheck) && (
+        <span class:list={["badge", "out-of-stock", { "is-hidden": stockCheck && !isOut }]}
+          data-stock-badge="out">Out of Stock</span>
+      )}
+      {(isPre || stockCheck) && (
+        <span class:list={["badge", "pre-order", { "is-hidden": stockCheck && !isPre }]}
+          data-stock-badge="pre">Pre-Order</span>
+      )}
       {isBestSeller && <span class="badge best-seller">Best Seller</span>}
+      {!isBestSeller && isNew && <span class="badge new">New</span>}
     </div>
 
 		<div class="product-details">
+			{(isPre || stockCheck) && (
+				<div class:list={["preorder-wrapper", { "is-hidden": stockCheck && !isPre }]} data-preorder-callout>
+					<p><em>Estimated wait times for pre-orders differ by item. You may place an order first and we'll notify you of the wait time, or <a href="/#contact">contact us</a> to confirm before placing an order.</em></p>
+				</div>
+			)}
 			{productTags && <span class="product-tags section-subtitle">{productTags}</span>}
-      <h1 class="product-title">{data.name}<span class="hidden-visually">- {altContext}</span></h1>
+      <h1 class="product-title">{data.name}</h1>
 			<p class="product-desc">{data.shortDescription}</p>
 
       {isSub ? (
@@ -67,6 +86,7 @@ const altContext = (data.seo?.title ?? "")
           hasPriceVariants={hasPriceVariants}
           priceVariantGroups={data.priceVariantGroups}
           options={data.options}
+          variantSortOrder={data.variantSortOrder}
           hasDeliverySchedule={data.hasDeliverySchedule}
           billingAlignment={data.billingAlignment}
         />
@@ -84,6 +104,9 @@ const altContext = (data.seo?.title ?? "")
           hasPriceVariants={hasPriceVariants}
           priceVariantGroups={data.priceVariantGroups}
           options={data.options}
+          variantSortOrder={data.variantSortOrder}
+          stockCheck={stockCheck}
+          stockFallbackStatus={data.stockFallbackStatus}
         >
         </AddToCartForm>
       )}
@@ -96,7 +119,7 @@ const altContext = (data.seo?.title ?? "")
 
 	<section class="product-description">
 		<Content />
-		<AdditionalInfo items={data.additionalInfo} />
+		<Accordion items={data.additionalInfo} heading="More Info" />
 		<RelatedProducts relatedProductIds={data.relatedProductIds} />
 	</section>
 </div>
@@ -165,22 +188,6 @@ const altContext = (data.seo?.title ?? "")
 .badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  border-radius: 4px;
-  z-index: 2;
-}
-
-.badge.out-of-stock { background-color: var(--disabled); color: var(--text-light); }
-.badge.pre-order { background-color: var(--accent-bg); color: var(--text); }
-.badge.best-seller {
-  background-color: var(--accent);
-  color: var(--text);
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--accent-hover);
-    color: var(--bg);
-  }
 }
 
 .section-subtitle.product-tags {
@@ -198,6 +205,16 @@ const altContext = (data.seo?.title ?? "")
 	line-height: 1.6;
 	margin: 0.5rem 0 0 0;
 }
+
+.preorder-wrapper {
+	margin-top: 0.75rem;
+	padding: 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: var(--standard-border-radius);
+	font-size: 0.85rem;
+	color: var(--text-light);
+}
+.preorder-wrapper p { margin: 0; }
 </style>
 
 <script src="@shop/shop-init.js"></script>

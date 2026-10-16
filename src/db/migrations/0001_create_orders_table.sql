@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS orders (
     order_id TEXT NOT NULL,            -- YYMMDD_XXXX for user-facing reference
     customer_email TEXT NOT NULL,
     status TEXT NOT NULL,              -- pending | success | failed | cancelled
-    fulfillment_status TEXT,            -- unfulfilled | fulfilled | shipped | delivered
+    fulfillment_status TEXT,            -- unfulfilled | fulfilled | shipped
     type TEXT NOT NULL DEFAULT 'one_time', -- one_time | subscription
     total_amount INTEGER NOT NULL,       -- Stored as lowest currency denominator (e.g., cents)
     checkout_payload TEXT NOT NULL,     -- JSON string of the raw user input

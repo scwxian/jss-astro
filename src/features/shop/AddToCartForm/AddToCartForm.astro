@@ -2,6 +2,7 @@
 import ProductFormWrapper from "@components/Forms/ProductFormWrapper.astro";
 
 import type { PriceVariantGroup, OptionGroup } from "../VariantSelector/VariantSelector.astro";
+import { getQtyLimitCopy } from "./qty-limit.copy.ts";
 
 export interface Props {
   masterSku: string;
@@ -16,6 +17,9 @@ export interface Props {
 	hasPriceVariants: boolean;
 	priceVariantGroups?: PriceVariantGroup[];
 	options?: OptionGroup[];
+	variantSortOrder?: string[];
+	stockCheck?: boolean;
+	stockFallbackStatus?: "out-of-stock" | "pre-order";
 }
 
 const {
@@ -31,13 +35,20 @@ const {
 	hasPriceVariants,
 	priceVariantGroups,
 	options,
+	variantSortOrder,
+	stockCheck = false,
+	stockFallbackStatus = "out-of-stock",
 } = Astro.props;
 
-const submitBtnText = isOut 
-	? "Currently Unavailable" 
-	: isPre 
-		? "Pre-Order Now" 
-		: "Add to Cart";
+const submitBtnText = stockCheck
+	? "Checking availability…"
+	: isOut
+		? "Currently Unavailable"
+		: isPre
+			? "Pre-Order Now"
+			: "Add to Cart";
+
+const qtyLimit = getQtyLimitCopy(maxQuantity);
 ---
 
 <add-to-cart-form
@@ -47,6 +58,9 @@ const submitBtnText = isOut
 	data-image={image}
 	data-base-price={basePrice}
 	data-max-quantity={maxQuantity}
+	data-stock-check={stockCheck ? "true" : "false"}
+	data-stock-fallback={stockFallbackStatus}
+	data-is-out={isOut ? "true" : "false"}
 >
 	<ProductFormWrapper
 		basePrice={basePrice}
@@ -54,9 +68,12 @@ const submitBtnText = isOut
 		hasPriceVariants={hasPriceVariants}
 		priceVariantGroups={priceVariantGroups}
 		options={options}
+		variantSortOrder={variantSortOrder}
 		isOut={isOut}
 		isPre={isPre}
 		submitBtnText={submitBtnText}
+		loading={stockCheck}
+		slug={slug}
 	>
 		{ showQuantity && (
 				<div class="quantity-selector" slot="quantity-selector">
@@ -97,14 +114,13 @@ const submitBtnText = isOut
 							</svg>
 						</button>
 					</div>
-					{maxQuantity && (
+					{qtyLimit && (
 						<p
 							data-qty-limit-msg
 							class="qty-limit-msg"
-							style={`display: ${maxQuantity === 1 ? "block" : "none"};`}
-						>
-							Max Quantity for this product is {maxQuantity}. <a href="/#contact">Contact us</a> for bulk orders.
-						</p>
+							style={`display: ${qtyLimit.alwaysVisible ? "block" : "none"};`}
+							set:html={qtyLimit.html}
+						></p>
 					)}
 				</div>
 			) }
@@ -121,11 +137,22 @@ const submitBtnText = isOut
 	</ProductFormWrapper>
 </add-to-cart-form>
 
+{stockCheck && (
+	<noscript>
+		<p class="stock-noscript">
+			Live stock checking requires JavaScript. Please enable JavaScript to add this item, or
+			<a href="/#contact">contact us</a> to order.
+		</p>
+	</noscript>
+)}
+
 <script src="./add-to-cart-form.js"></script>
 
 <style>
 /* stupid safari fix for weird fieldset sizing on QVM */
 add-to-cart-form { display: block; width: 100%; }
+
+.stock-noscript { color: var(--error); font-size: 0.85rem; margin-top: 0.75rem; }
 
 .quantity-selector {
 	display: flex;
@@ -218,7 +245,6 @@ add-to-cart-form { display: block; width: 100%; }
 	border-color: var(--accent);
 }
 .qty-limit-msg {
-	position: absolute;
 	color: var(--error);
 	font-size: 0.85rem;
 	margin: 0;

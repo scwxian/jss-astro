@@ -1,0 +1,29 @@
+[
+  {
+    "keyword": "what is stainless steel cookware",
+    "itemTypes": ["organic", "people_also_ask", "related_searches"],
+    "organic": [
+      { "rank": 1, "url": "https://example-cookware.com/blog/stainless-steel-cookware-guide", "title": "Stainless Steel Cookware Guide", "domain": "example-cookware.com" },
+      { "rank": 2, "url": "https://en.wikipedia.org/wiki/Cookware_and_bakeware", "title": "Cookware and bakeware", "domain": "en.wikipedia.org" },
+      { "rank": 3, "url": "https://homereviews.com/guides/what-is-stainless-steel-cookware", "title": "What Is Stainless Steel Cookware?", "domain": "homereviews.com" }
+    ],
+    "paa": [
+      { "question": "Is stainless steel cookware worth the price?", "url": null },
+      { "question": "Do stainless steel pans justify their premium price?", "url": null }
+    ],
+    "related": ["stainless steel cookware meaning", "stainless steel vs non-stick"],
+    "featuredSnippet": null
+  },
+  {
+    "keyword": "stainless steel vs non-stick",
+    "itemTypes": ["organic", "related_searches"],
+    "organic": [
+      { "rank": 1, "url": "https://kitchenlab.com/blog/stainless-steel-vs-non-stick", "title": "Stainless Steel vs Non-Stick", "domain": "kitchenlab.com" },
+      { "rank": 2, "url": "https://example-cookware.com/blog/stainless-steel-cookware-guide", "title": "Stainless Steel Cookware Guide", "domain": "example-cookware.com" },
+      { "rank": 3, "url": "https://homereviews.com/guides/steel-vs-nonstick", "title": "Steel vs Non-Stick", "domain": "homereviews.com" }
+    ],
+    "paa": [],
+    "related": ["stainless steel vs non-stick cookware"],
+    "featuredSnippet": null
+  }
+]

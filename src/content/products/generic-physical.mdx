@@ -17,33 +17,52 @@ images:
   - "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=800"
 options:
   - name: "Color"
+    tooltip: "Pick the finish that best matches your setup."
+    showLabel: true
     choices:
       - name: "Black"
         skuSuffix: "BK"
+        iconSource: "emoji"
+        icon: "⚫"
+        moreInfo: "<b>Stealth Black</b>: matte finish that hides fingerprints."
       - name: "White"
         skuSuffix: "WH"
+        iconSource: "emoji"
+        icon: "⚪"
+        moreInfo: "<b>Arctic White</b>: clean and minimal."
       - name: "Blue"
         skuSuffix: "BL"
+        iconSource: "emoji"
+        icon: "🔵"
+        moreInfo: "<b>Ocean Blue</b>: limited-run anodized color."
       - name: "Red"
         skuSuffix: "RD"
+        iconSource: "emoji"
+        icon: "🔴"
+        moreInfo: "<b>Signal Red</b>: easiest to spot in a crowded bag."
 priceVariantGroups:
   - name: "Size"
+    tooltip: "Dimensions scale with size; weight shown is shipping weight."
     variants:
       - name: "Small"
         skuSuffix: "SM"
         price: 0
         weightInGrams: 200
         inStock: true
+        moreInfo: "Compact — fits in a backpack pocket."
       - name: "Medium"
         skuSuffix: "MD"
         price: 4000
         weightInGrams: 400
         inStock: true
+        moreInfo: "The everyday sweet spot."
       - name: "Large"
         skuSuffix: "LG"
         price: 15000
         weightInGrams: 1000
         inStock: true
+        compareAtPrice: 19000
+        moreInfo: "Best value — roughly <b>21% off</b> the regular price."
 shortDescription: "A versatile physical product designed for everyday use. Features high-quality materials and a universal fit suitable for a wide range of applications."
 seo:
   title: "Generic Physical Product | Your Store Name"
@@ -68,3 +87,14 @@ Our Generic Physical Product is built with care and attention to detail. It comb
 **Specifications:** Standard size, medium weight, universal voltage.
 
 Perfect for home, office, or on-the-go use.
+
+## Highlights at a glance
+
+<SimpleCard
+  imageSrc="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=400"
+  imageAlt="Product highlight"
+  title="Auto-imported MDX card"
+  description="This card renders with no import line in the MDX file."
+  outline
+  background
+/>

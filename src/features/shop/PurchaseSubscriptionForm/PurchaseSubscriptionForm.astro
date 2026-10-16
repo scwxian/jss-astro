@@ -13,6 +13,7 @@ export interface Props {
   hasPriceVariants: boolean;
   priceVariantGroups?: PriceVariantGroup[];
   options?: OptionGroup[];
+  variantSortOrder?: string[];
   hasDeliverySchedule: boolean;
   billingAlignment: "anchored" | "rolling";
 }
@@ -27,6 +28,7 @@ const {
   hasPriceVariants,
   priceVariantGroups,
   options,
+  variantSortOrder,
   hasDeliverySchedule,
   billingAlignment,
 } = Astro.props;
@@ -52,9 +54,11 @@ const showBillingInfo = billingAlignment === "anchored";
     hasPriceVariants={hasPriceVariants}
     priceVariantGroups={priceVariantGroups}
     options={options}
+    variantSortOrder={variantSortOrder}
     isOut={isOut}
     submitBtnText={submitBtnText}
     includeSkuGroups={["Schedule"]}
+    slug={slug}
   >
 
     <Fragment slot="sub-info">

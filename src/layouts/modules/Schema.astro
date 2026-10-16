@@ -1,24 +1,31 @@
 ---
-import { siteInfo, countryCodeMap } from "@shared/siteInfo.js";
+import { siteInfo, countryCodeMap, orgSameAs } from "@shared/siteInfo.js";
 
 export interface Props {
 	title: string;
 	description: string;
 	url: string;
 	item?: Record<string, any>;
+	additionalItems?: Record<string, any>[];
 	breadcrumbs?: { name: string; url: string }[];
 }
 
-const { title, description, url, item, breadcrumbs } = Astro.props;
+const { title, description, url, item, breadcrumbs, additionalItems } = Astro.props;
 
 const siteUrl = siteInfo.url.endsWith("/") ? siteInfo.url : `${siteInfo.url}/`;
 const pageUrl = url.endsWith("/") ? url : `${url}/`;
 
-const orgNode = {
+const orgNode: Record<string, any> = {
 	"@type": "LocalBusiness",
 	"@id": `${siteUrl}#organization`,
 	name: siteInfo.businessName,
+	legalName: siteInfo.legalBusinessName,
 	url: siteUrl,
+	description: siteInfo.description,
+	email: siteInfo.email,
+	slogan: siteInfo.slogan,
+	foundingDate: siteInfo.foundingDate,
+	knowsAbout: siteInfo.knowsAbout,
 	logo: {
 		"@type": "ImageObject",
 		"@id": `${siteUrl}#logo`,
@@ -27,6 +34,14 @@ const orgNode = {
 	},
 	image: { "@id": `${siteUrl}#logo` },
 	telephone: siteInfo.phone,
+	contactPoint: {
+		"@type": "ContactPoint",
+		contactType: "customer service",
+		email: siteInfo.email,
+		telephone: siteInfo.phone,
+		availableLanguage: ["English"],
+	},
+	currenciesAccepted: siteInfo.defaultCurrency,
 	address: {
 		"@type": "PostalAddress",
     streetAddress: siteInfo.address.streetAddress,
@@ -41,9 +56,25 @@ const orgNode = {
 			name: countryCodeMap[code] || code,
 		}))
 		.filter((c) => c.name),
-	sameAs: Object.values(siteInfo.socials),
+	sameAs: orgSameAs,
 	priceRange: "$$",
 };
+
+if (siteInfo.legalBusinessRegNo) {
+	orgNode.companyRegistration = {
+		"@type": "Certification",
+		name: "Company Registration",
+		certificationIdentification: siteInfo.legalBusinessRegNo,
+	};
+}
+
+if (siteInfo.companyProfiles.wikidata) {
+	orgNode.identifier = {
+		"@type": "PropertyValue",
+		propertyID: "Wikidata",
+		value: siteInfo.companyProfiles.wikidata.split("/").pop(),
+	};
+}
 
 const websiteNode = {
 	"@type": "WebSite",
@@ -80,7 +111,7 @@ if (breadcrumbs && breadcrumbs.length > 0) {
 			"@type": "ListItem",
 			position: index + 1,
 			name: crumb.name,
-			item: crumb.url,
+			...(crumb.url ? { item: new URL(crumb.url, siteUrl).href } : {}),
 		})),
 	};
 	graphItems.push(breadcrumbNode);
@@ -111,6 +142,15 @@ if (item) {
 	}
 } else {
 	graphItems.push(pageNode);
+}
+
+// Extra standalone nodes (e.g. FAQPage); additive only, never replaces pageNode.
+if (additionalItems && additionalItems.length > 0) {
+	for (const extra of additionalItems) {
+		const extraType = extra["@type"];
+		const extraId = typeof extraType === "string" ? `${pageUrl}#${extraType.toLowerCase()}` : `${pageUrl}#extra`;
+		graphItems.push({ ...extra, "@id": extra["@id"] ?? extraId });
+	}
 }
 
 const schema = {

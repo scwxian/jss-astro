@@ -1,17 +1,18 @@
 ---
 export interface Props {
 	videoId: string;
+	playlistId?: string;
 	videoSnippet?: string;
 	alt?: string;
 	class?: string;
 }
 
-const { videoId, videoSnippet, alt = "YouTube Video Embed", class: className = "" } = Astro.props;
+const { videoId, playlistId, videoSnippet, alt = "YouTube Video Embed", class: className = "" } = Astro.props;
 
 const posterUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 ---
 
-<div class={`video-facade ${className}`} data-video-id={videoId}>
+<div class={`video-facade ${className}`} data-video-id={videoId} data-playlist-id={playlistId ?? ""}>
 	<img
 		src={posterUrl}
 		{alt}
@@ -166,8 +167,12 @@ const posterUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 			facade.addEventListener(
 				"click",
 				() => {
+					const playlistId = facade.dataset.playlistId;
+					let embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+					if (playlistId) embedUrl += `&list=${playlistId}`;
+
 					const iframe = document.createElement("iframe");
-					iframe.setAttribute("src", `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`);
+					iframe.setAttribute("src", embedUrl);
 					iframe.setAttribute("frameborder", "0");
 					iframe.setAttribute(
 						"allow",

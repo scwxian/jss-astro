@@ -1,0 +1,200 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { DEFAULT_HERO_IMAGE } from "@blog/blog-schema.ts";
+import { formatDate, formatCategoryLabel } from "@scripts/utils.js";
+import BlogMetaLine from "./BlogMetaLine.astro";
+
+export interface Props {
+	blog: CollectionEntry<"blog">;
+	index?: number;
+	animate?: boolean;
+	hero?: boolean;
+	isBlogHub?: boolean;
+}
+
+const { blog, index, animate = false, hero = false, isBlogHub = false } = Astro.props;
+
+const { data, id } = blog;
+const loading = index !== undefined && index < 4 ? "eager" : "lazy";
+const fetchpriority = index !== undefined && index < 4 ? "high" : "auto";
+
+const thumbnailUrl = getAssetUrl("blog", id, data.heroImage ?? DEFAULT_HERO_IMAGE);
+const isDraftPreview = import.meta.env.DEV && data.draft;
+
+const liClass = [
+	"blog-card-wrapper",
+	hero && "blog-hero-card",
+	animate && "animate-element",
+	animate && "slide-from-bottom",
+].filter(Boolean).join(" ");
+---
+
+<li class={liClass}>
+
+	<a
+		class="blog-card"
+		href={`/blog/${id}/`}
+	>
+		<div class="image-wrapper image-masker-overlay">
+			<Image
+				src={thumbnailUrl}
+				alt={data.title}
+				inferSize
+				class="blog-image"
+				widths={hero ? [400, 800, 1200] : [200, 400, 600]}
+				sizes={hero ? "(max-width: 768px) 50vw, 100vw" : "(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"}
+				loading={loading}
+				fetchpriority={fetchpriority}
+			/>
+		</div>
+
+		<div class="blog-info">
+			<div class="blog-meta">
+				<div class="blog-tags-wrapper">
+          <span class="blog-tags">{formatDate(data.updatedAt ?? data.pubDate)} // {formatCategoryLabel(data.category)}</span>
+				</div>
+				<h3 class="blog-card-title">{data.title}</h3>
+				{data.subtitle && <p class="blog-short-desc">{data.subtitle}</p>}
+        <BlogMetaLine blog={blog} {loading} {fetchpriority} {isBlogHub} />
+			</div>
+		</div>
+		{isDraftPreview && <span class="badge draft blog-draft-badge">Draft</span>}
+	</a>
+</li>
+
+<style>
+li.blog-card-wrapper {
+  height: 100%;
+  cursor: pointer;
+}
+li.blog-card-wrapper:not(:last-child) .blog-card {
+  @media (max-width: 768px) {
+    padding-bottom: 1.5rem;
+    border-bottom: calc(var(--border-width)*1) solid color-mix(in srgb, var(--text) 20%, transparent 80%);
+    margin-bottom: 1.5rem;
+  }
+}
+.blog-card {
+  --tag-color: var(--accent);
+  --title-color: var(--text);
+  --short-desc-color: var(--text);
+  --metaline-color: var(--text-light);
+  --image-radius: calc(var(--standard-border-radius)/2);
+  --hover-shadow: 0 12px 24px rgb(0, 0, 0, 0.05);
+
+  @media (prefers-color-scheme: dark) {
+    --tag-color: var(--accent-hover);
+    --hover-shadow: 0 12px 24px rgb(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) { --image-radius: calc(var(--standard-border-radius)/4); }
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  @media (min-width: 769px) { height: 100%; }
+  @media (max-width: 768px) {
+    flex-direction: row-reverse;
+    min-width: 0;
+    justify-content: space-between;
+  }
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  @media (max-width: 768px) { transform: none; }
+}
+
+.image-wrapper {
+  position: relative;
+  aspect-ratio: 1.91 / 1;
+  overflow: hidden;
+  border-radius: var(--image-radius);
+  @media (max-width: 768px) {
+    min-width: 80px;
+    max-width: 80px;
+    margin-left: 0.5rem;
+  }
+}
+
+.image-wrapper.image-masker-overlay::after {
+  background-color: var(--image-overlay-color-less);
+  @media (max-width: 768px) { background: none;}
+}
+
+.blog-info {
+  @media (min-width: 769px) { flex: 1; display: flex; flex-direction: column; }
+  @media (max-width: 768px) { min-width: 0; }
+}
+
+.blog-image {
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.blog-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  @media (min-width: 769px) { flex: 1; }
+}
+
+.blog-tags-wrapper {
+  display: flex;
+  margin-top: 1rem;
+  @media (max-width: 768px) { margin-top: 0; }
+}
+
+.blog-tags {
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: -0.08rem;
+  color: var(--tag-color);
+  line-height: 1.2;
+  font-family: var(--sans-font);
+  @media (max-width: 768px) {
+  font-size: 0.85rem;
+    padding: 0;
+  }
+}
+
+.blog-card-title {
+  color: var(--title-color);
+  font-size: var(--h5-fs);
+  letter-spacing: 0.03rem;
+  font-family: var(--mono-font);
+  margin: 0 0 0.5rem;
+  @media (max-width: 768px) {
+  font-size: var(--h6-fs);
+  }
+}
+
+.blog-draft-badge {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.6rem;
+}
+
+.blog-short-desc {
+  color: var(--short-desc-color);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  @media (max-width: 768px) {
+    line-height: 1.3;
+  }
+}
+
+</style>

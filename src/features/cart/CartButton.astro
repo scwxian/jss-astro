@@ -1,8 +1,10 @@
 ---
+export interface Props { hide?: boolean; }
+const { hide = false } = Astro.props;
 ---
 <button
 	id="cart-button"
-	class="cart-button"
+	class={`cart-button${hide ? ' is-hidden' : ''}`}
 	aria-label="Open Cart"
 	transition:animate="none"
 	transition:persist="cart-button"

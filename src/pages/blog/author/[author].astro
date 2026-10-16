@@ -1,0 +1,105 @@
+---
+import { getCollection } from "astro:content";
+import { blogPublished } from "@collections/collection-route-helpers.js";
+import Breadcrumb from "@collections/Breadcrumb.astro";
+import StandardLayout from "@layouts/StandardLayout.astro";
+import { authorProfiles, buildProfileUrl } from "@shared/team.data.js";
+import { siteInfo } from "@shared/siteInfo.js";
+import { buildProfilePageSchema } from "@blog/blog-schema.ts";
+import RelatedPosts from "@blog/RelatedPosts.astro";
+
+export function getStaticPaths() {
+	return Object.entries(authorProfiles).map(([authorId, author]) => ({
+		params: { author: authorId },
+		props: { author },
+	}));
+}
+
+const { author } = Astro.props;
+
+const pageUrl = buildProfileUrl(author.id);
+const breadcrumbs = [
+	{ name: "Blog", url: "/blog/" },
+  { name: author.name, url: `/blog/author/${author.id}/` },
+];
+
+const allPosts = (
+	await getCollection("blog", (entry) => blogPublished(entry) && entry.data.author === author.id)
+).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const dateModified =
+	allPosts.length > 0 ? (allPosts[0].data.updatedAt ?? allPosts[0].data.pubDate).toISOString() : undefined;
+const schemaItem = buildProfilePageSchema(author, pageUrl, dateModified);
+
+const title = `${author.name} | ${author.role} | ${siteInfo.name}`;
+const description = author.seoDescription;
+---
+
+<StandardLayout {title} {description} {breadcrumbs} {schemaItem}>
+	<main class="author-page-container">
+		<Breadcrumb items={breadcrumbs} />
+
+    <header class="author-header">
+      <div class="author-top-section">
+        {author.profilePicUrl && (
+        <img
+          src={author.profilePicUrl}
+          alt={author.name}
+          width="120"
+          height="120"
+          class="author-photo"
+        />
+        )}
+        <div>
+          <span class="section-subtitle">{author.role}</span>
+          <h1 class="section-title">{author.name}</h1>
+        </div>
+      </div>
+      <p>{author.bio}</p>
+      <ul class="author-links">
+        {author.sameAs.map((link) => (
+        <li>
+          <a href={link} target="_blank" rel="noopener noreferrer">
+            Profile
+          </a>
+        </li>
+        ))}
+      </ul>
+    </header>
+
+		<RelatedPosts mode="author" author={author.id} heading="Latest Posts" />
+	</main>
+
+	<style>
+		.author-page-container {
+			padding: 4rem 0 0;
+			@media (max-width: 768px) { padding: 2rem 0 0; }
+		}
+
+    .author-top-section {
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+      margin: 0 0 1.5rem 0;
+      align-items: flex-start;
+      @media (max-width: 768px) { gap: 1rem; }
+    }
+
+		.author-photo { border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .author-header .section-subtitle {
+      margin: 0;
+      margin-top: 20px;
+      @media (max-width: 768px) { margin-top: 0px; }
+    }
+    .author-header .section-title { line-height: 0.8; letter-spacing: -0.15rem; margin: 0 0 0 -5px; }
+    .author-header p {margin: 0;}
+
+		.author-links {
+			list-style: none;
+			display: flex;
+			gap: 1rem;
+			padding: 0;
+			margin-top: 1rem;
+		}
+	</style>
+</StandardLayout>

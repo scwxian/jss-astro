@@ -16,11 +16,13 @@
 			"@log-alert/*": ["./src/features/log-alert/*"],
 			"@shared/*": ["./src/features/shared/*"],
 			"@shop/*": ["./src/features/shop/*"],
+			"@blog/*": ["./src/features/blog/*"],
 			"@users/*": ["./src/features/users/*"],
 			"@calc-engine/*": ["./src/features/calc-engine/*"],
 			"@checkout/*": ["./src/features/checkout/*"],
 			"@payment-gateways/*": ["./src/features/payment-gateways/*"],
 			"@pp/*": ["./src/features/post-purchase/*"],
+			"@live-stock/*": ["./src/features/live-stock/*"],
 			"@db/*": ["./src/db/*"],
 			"@contentconfig": ["./src/content.config.ts"]
 		}

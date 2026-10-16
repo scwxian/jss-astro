@@ -1,26 +1,24 @@
 ---
-import { siteInfo, shopHubSEO } from "@shared/siteInfo.js";
+import { siteInfo } from "@shared/siteInfo.js";
+import { shopHubSEO } from "@shop/shopHubSEO.js";
 import CollectionHubWrapper from "@collections/CollectionHubWrapper.astro";
 import ProductCard from "@shop/ProductCard.astro";
 import ShopLayout from "@layouts/ShopLayout.astro";
-import { getPaginatedCategoryPaths } from "@collections/collection-route-helpers.js";
-import { buildCollectionSchema } from "@collections/collection-schema.ts";
+import { getPaginatedProductCategoryPaths } from "@collections/collection-route-helpers.js";
+import { buildProductCollectionSchema } from "@collections/collection-schema.ts";
+import { formatCategoryLabel } from "@scripts/utils.js";
 
 export async function getStaticPaths({ paginate }) {
-	return await getPaginatedCategoryPaths("products", paginate, 12);
+	return await getPaginatedProductCategoryPaths(paginate);
 }
 
 const { category } = Astro.params;
 const { page } = Astro.props;
-const categoryName = category
-	.split("-")
-	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-	.join(" ");
-const schemaItem = buildCollectionSchema(page);
+const categoryName = formatCategoryLabel(category);
+const schemaItem = buildProductCollectionSchema(page);
 const seo = shopHubSEO[category] || {
   title: `${categoryName} | ${siteInfo.name} Shop`,
   description: `Shop our ${categoryName} collection.`,
-  hiddenH1: `Shop and Buy ${categoryName} by ${siteInfo.name}`,
   moreInfo: [],
 }
 ---
@@ -28,9 +26,9 @@ const seo = shopHubSEO[category] || {
 <ShopLayout
 	title={seo.title}
 	description={seo.description}
-  hiddenH1={seo.hiddenH1}
   moreInfo={seo.moreInfo}
-	heading={categoryName}
+	pageTitle={categoryName}
+	pageSubtitle={seo.pageSubtitle}
 	currentCategory={category}
 	{schemaItem}
 >
@@ -39,6 +37,6 @@ const seo = shopHubSEO[category] || {
 		{page.url.next && <link rel="next" href={page.url.next} />}
 	</Fragment>
 	<CollectionHubWrapper {page}>
-		{page.data.map((product, i) => <ProductCard product={product} index={i} />)}
+		{page.data.map((product, i) => <ProductCard product={product} index={i} animate />)}
 	</CollectionHubWrapper>
 </ShopLayout>

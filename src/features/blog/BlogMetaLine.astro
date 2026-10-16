@@ -1,0 +1,91 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { blogAuthors } from "@shared/team.data.js";
+import { getReadTime } from "./blog-schema.ts";
+
+export interface Props {
+	blog: CollectionEntry<"blog">;
+	avatarSize?: number;
+	avatarGap?: string;
+	authorLinked?: boolean;
+	isBlogHub?: boolean;
+	loading?: "eager" | "lazy";
+	fetchpriority?: "high" | "auto";
+}
+
+const {
+	blog,
+	avatarSize = 24,
+	avatarGap = "0.5rem",
+	authorLinked = false,
+	isBlogHub = false,
+	loading = "lazy",
+	fetchpriority = "auto",
+} = Astro.props;
+
+const { data } = blog;
+const author = blogAuthors[data.author];
+const readTime = getReadTime(blog);
+---
+
+<div class:list={["metaline-wrapper", { "blog-hub-mobile": isBlogHub }]} style={`--avatar-gap: ${avatarGap}`}>
+  <div class="metaline-author" >
+	{author.profilePicUrl && (
+		<Image
+			src={author.profilePicUrl}
+			alt={`${author.name} avatar`}
+			inferSize
+			class="avatar-image"
+			style={`--avatar-size: ${avatarSize}px`}
+			widths={[avatarSize]}
+			sizes={`${avatarSize}px`}
+			{loading}
+			{fetchpriority}
+		/>
+	)}
+  </div>
+	<p class="m-0">
+    {authorLinked ? (
+    <a href={`/blog/author/${author.id}/`} rel="author">
+      {author.name}
+    </a>
+    ) : (
+      author.name
+    )} • <span class="metaline-readtime">{readTime} min read</span>
+	</p>
+</div>
+
+<style>
+.metaline-wrapper {
+  display: flex;
+  align-items: center;
+  color: var(--metaline-color);
+  font-size: 0.95rem;
+  margin: auto 0 0 0;
+  padding-top: 0.5rem;
+  line-height: 0;
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .metaline-wrapper.blog-hub-mobile {
+    overflow: visible;
+    white-space: nowrap;
+  }
+}
+
+.avatar-image {
+  border-radius: 50%;
+  max-width: var(--avatar-size);
+  height: fit-content;
+  margin-right: var(--avatar-gap);
+}
+
+.metaline-date {}
+.metaline-readtime {}
+.metaline-category {}
+</style>

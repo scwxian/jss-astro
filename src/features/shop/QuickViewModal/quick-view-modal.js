@@ -125,6 +125,11 @@ document.addEventListener("astro:page-load", () => {
 					throw new Error("Could not extract product content");
 				}
 				await injectModalContent(extracted, injectionTarget, loader);
+
+				// Reveal animate-elements inside modal immediately
+				injectionTarget.querySelectorAll(".animate-element").forEach((el) => {
+					el.classList.add("is-visible");
+				});
 			} catch (error) {
 				// Error loading product details - show user message
 				loader.style.display = "none";

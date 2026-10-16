@@ -1,0 +1,43 @@
+---
+import { siteInfo } from "@features/shared/siteInfo";
+import { blogHubSEO } from "@features/blog/blogHubSEO";
+import BlogLayout from "@layouts/BlogLayout.astro";
+import { getPaginatedBlogCategoryPaths } from "@collections/collection-route-helpers.js";
+import { buildBlogCollectionSchema } from "@collections/collection-schema.ts";
+import { categoryPinnedPosts, resolveHeroPost } from "@features/blog/blogHeroPost.ts";
+import { formatCategoryLabel } from "@scripts/utils.js";
+
+export async function getStaticPaths({ paginate }) {
+	return getPaginatedBlogCategoryPaths(paginate);
+}
+
+const { category } = Astro.params;
+const { page } = Astro.props;
+const pinnedPost = categoryPinnedPosts[category];
+const { heroPost, gridPosts } = resolveHeroPost(page.data, page.currentPage, pinnedPost);
+const categoryName = formatCategoryLabel(category);
+const schemaItem = buildBlogCollectionSchema(page);
+const seo = blogHubSEO[category] || {
+  title: `${categoryName} | ${siteInfo.name} Blog`,
+  description: `Read our ${categoryName} articles from ${siteInfo.name}.`,
+  pageTitle: categoryName,
+  pageSubtitle: `Articles & stories from ${siteInfo.name}`
+};
+---
+
+<BlogLayout
+	title={seo.title}
+	description={seo.description}
+	pageTitle={seo.pageTitle}
+	pageSubtitle={seo.pageSubtitle}
+	currentCategory={category}
+	posts={gridPosts}
+	heroPost={heroPost}
+	{page}
+	{schemaItem}
+>
+	<Fragment slot="head">
+		{page.url.prev && <link rel="prev" href={page.url.prev} />}
+		{page.url.next && <link rel="next" href={page.url.next} />}
+	</Fragment>
+</BlogLayout>

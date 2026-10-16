@@ -1,0 +1,147 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import type { Category } from "@contentconfig";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { stripHtml } from "@scripts/utils.js";
+import "@styles/section-layouts/grid.css";
+
+export interface Props {
+  category: Category;
+  subCategory?: string;
+  limit?: number;
+  title?: string;
+}
+
+const { category, subCategory, limit = 3, title } = Astro.props;
+
+const products = (await getCollection("products"))
+  .filter(
+    (p) =>
+      p.data.category === category &&
+      !["draft", "out-of-stock", "pre-order"].includes(p.data.status) &&
+      (!subCategory || p.data.subCategory?.toLowerCase() === subCategory.toLowerCase()),
+  )
+  .sort(
+    (a, b) =>
+      (b.data.isFeatured || b.data.isNew ? 1 : 0) - (a.data.isFeatured || a.data.isNew ? 1 : 0) ||
+      a.data.basePrice - b.data.basePrice,
+  )
+  .slice(0, limit);
+
+if (products.length === 0) return;
+---
+
+{title && <h2 class="blog-product-list-title">{title}</h2>}
+
+<ul class="blog-product-list grid-layout grid-2">
+  {products.map((product) => {
+    const { data, id } = product;
+    return (
+      <li class="blog-product-list-item">
+        <a class="blog-product-card" href={`/products/${id}/`}>
+          <div class="blog-product-card-thumb">
+            <Image
+              src={getAssetUrl("products", id, data.images[0])}
+              alt={data.name}
+              inferSize
+              class="blog-product-card-img"
+              widths={[200, 400, 600]}
+              sizes="(max-width: 768px) 100vw, 300px"
+              loading="lazy"
+            />
+          </div>
+          <div class="blog-product-card-body">
+            <h3 class="blog-product-card-name">{data.name}</h3>
+            <p class="blog-product-card-desc">{stripHtml(data.shortDescription)}</p>
+            <span class="blog-product-card-cta">Learn More</span>
+          </div>
+        </a>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .blog-product-list {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+    --grid-gap-x: 1.2rem;
+    --grid-gap-y: 1.2rem;
+  }
+
+  .blog-product-list-item {
+    min-width: 0;
+    margin: 0;
+    height: 100%;
+  }
+
+  .blog-product-card {
+    display: flex;
+    align-items: stretch;
+    gap: 0.8rem;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    background-color: var(--accent-bg);
+    border-radius: var(--standard-border-radius);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    --hover-shadow: 0 12px 24px rgb(0, 0, 0, 0.05);
+    @media (prefers-color-scheme: dark) { --hover-shadow: 0 12px 24px rgb(0, 0, 0, 0.2); }
+  }
+
+  .blog-product-card:hover { transform: translateY(-4px); box-shadow: var(--hover-shadow); }
+
+  .blog-product-card-thumb {
+    flex: 0 0 40%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--image-overlay-color-less);
+  }
+
+  .blog-product-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 0 0;
+    border-radius: 0;
+  }
+
+  .blog-product-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.8rem 0.8rem 0.8rem 0;
+  }
+
+  .blog-product-card-name {
+    margin: 0;
+    font-family: var(--mono-font);
+    font-size: 1.05rem;
+    letter-spacing: 0.03rem;
+  }
+
+  .blog-product-card-desc {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blog-product-card-cta {
+    font-size: 0.85rem;
+    margin-top: auto;
+    align-self: flex-end;
+    border: var(--border-width) solid var(--text);
+    padding: 0.3rem 0.6rem;
+    border-radius: calc(var(--standard-border-radius)/2);
+    /* text-decoration: underline; */
+    font-weight: var(--bold-font-weight);
+  }
+</style>

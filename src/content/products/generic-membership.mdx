@@ -14,17 +14,22 @@ images:
 shortDescription: "Unlock access to our premium membership. Enjoy exclusive benefits, workspace access, and member perks with no strings attached."
 options:
   - name: "Schedule"
+    tooltip: "Memberships renew automatically until cancelled."
     choices:
       - name: "Monthly"
         skuSuffix: "MTH"
+        moreInfo: "Flexible — cancel anytime."
       - name: "Yearly"
         skuSuffix: "YR"
+        moreInfo: "Two months free versus monthly."
 priceVariantGroups:
   - name: "Access Level"
+    tooltip: "What you can access during opening hours."
     variants:
       - name: "Standard"
         skuSuffix: "STD"
         price: 0
+        moreInfo: "Full workspace and member perks."
 relatedProductIds: ["generic-physical", "generic-subscription-recurring", "generic-subscription-rolling"]
 seo:
   title: "Generic Membership | Your Store Name"

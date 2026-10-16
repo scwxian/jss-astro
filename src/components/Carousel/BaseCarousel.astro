@@ -3,16 +3,47 @@ export interface Props {
 	slideCount: number;
 	interval?: number;
 	class?: string;
+	style?: string;
 	showButtons?: boolean;
+	showDots?: boolean;
+	showButtonsMobile?: boolean;
+	showDotsMobile?: boolean;
+	customWidth?: number;
+	trackStyles?: string;
+	navMarginTop?: string;
+	dotsOffset?: string;
 }
 
-const { slideCount, interval, class: className = "", showButtons = true } = Astro.props;
+const {
+	slideCount,
+	interval,
+	class: className = "",
+	style: inlineStyle,
+	showButtons = true,
+	showDots = true,
+	showButtonsMobile = true,
+	showDotsMobile = true,
+	customWidth,
+	trackStyles,
+	navMarginTop = "1.5rem",
+	dotsOffset,
+} = Astro.props;
+
+const carouselStyle = [
+	customWidth !== undefined ? `--max-w: ${customWidth}%` : "",
+	inlineStyle,
+].filter(Boolean).join("; ") || undefined;
+
+const dotsStyle = [
+	`margin-top: ${navMarginTop}`,
+	dotsOffset ? `position: relative; top: ${dotsOffset}` : "",
+].filter(Boolean).join("; ");
 ---
 
-<base-carousel class={`carousel ${className}`} data-interval={interval}>
+<base-carousel class={`carousel ${className}`} data-interval={interval} style={carouselStyle}>
 	{
-		showButtons && slideCount > 1 && (
-			<button class="carousel-button prev" aria-label="Previous slide">
+		slideCount > 1 && (
+			<button class:list={["carousel-button", "prev", { "hide-desktop": !showButtons, "hide-mobile": !showButtonsMobile }]} aria-label="Previous slide">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
@@ -28,13 +59,13 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 		)
 	}
 
-	<div class="carousel-track">
+	<div class="carousel-track" style={trackStyles}>
 		<slot />
 	</div>
 
 	{
-		showButtons && slideCount > 1 && (
-			<button class="carousel-button next" aria-label="Next slide">
+		slideCount > 1 && (
+			<button class:list={["carousel-button", "next", { "hide-desktop": !showButtons, "hide-mobile": !showButtonsMobile }]} aria-label="Next slide">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
@@ -52,7 +83,7 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 
 	{
 		slideCount > 1 && (
-			<div class="carousel-nav">
+			<div class:list={["carousel-nav", { "hide-desktop": !showDots, "hide-mobile": !showDotsMobile }]} style={dotsStyle}>
 				{Array.from({ length: slideCount }).map((_, index) => (
 					<button class={`carousel-indicator ${index === 0 ? "active" : ""}`} aria-label={`Go to slide ${index + 1}`} />
 				))}
@@ -66,7 +97,7 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 		display: block;
 		position: relative;
 		width: 100%;
-		max-width: 800px;
+		max-width: var(--max-w, 800px);
 		margin: 0 auto;
 		min-width: 0;
 	}
@@ -79,13 +110,30 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 		scrollbar-width: none;
 		-ms-overflow-style: none;
 		gap: 1rem;
-		padding: 0.5rem 0;
+		padding: var(--carousel-track-padding, 0.5rem 0);
 	}
 
 	.carousel-track::-webkit-scrollbar {
 		display: none;
 	}
 
+	/* Dot Indicators */
+	.carousel-nav {
+		display: flex;
+		justify-content: center;
+		gap: 8px;
+	}
+</style>
+
+<style is:global>
+	.carousel-slide {
+		flex: 0 0 var(--slide-width, 85%);
+		scroll-snap-align: center;
+		scroll-snap-stop: always;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+	}
 	/* Navigation Buttons */
 	.carousel-button {
 		position: absolute;
@@ -102,7 +150,6 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 		cursor: pointer;
 		display: grid;
 		place-items: center;
-		/* box-shadow: 0 4px 6px rgba(0,0,0,0.1); */
 		box-shadow: none;
 		transition:
 			transform 0.2s ease,
@@ -119,10 +166,10 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 		transform: scaleX(-1);
 	}
 	.carousel-button.prev {
-		left: 0;
+		left: var(--button-offset, 5%);
 	}
 	.carousel-button.next {
-		right: 0;
+		right: var(--button-offset, 5%);
 	}
 
 	.carousel-button:enabled:hover {
@@ -137,13 +184,6 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 	}
 
 	/* Dot Indicators */
-	.carousel-nav {
-		display: flex;
-		justify-content: center;
-		gap: 8px;
-		margin-top: 1.5rem;
-	}
-
 	.carousel-indicator {
 		width: 10px;
 		height: 10px;
@@ -175,29 +215,16 @@ const { slideCount, interval, class: className = "", showButtons = true } = Astr
 			height: 26px;
 		}
 		.carousel-button.prev {
-			left: 0;
+			left: var(--button-offset, 5%);
 		}
 		.carousel-button.next {
-			right: 0;
+			right: var(--button-offset, 5%);
 		}
 
 		.carousel-button svg {
 			width: 11px;
 			height: 12px;
 		}
-	}
-</style>
-
-<style is:global>
-	.carousel-slide {
-		flex: 0 0 85%;
-		scroll-snap-align: center;
-		scroll-snap-stop: always;
-		box-sizing: border-box;
-		display: flex;
-		justify-content: center;
-	}
-	@media (max-width: 768px) {
 	}
 </style>
 

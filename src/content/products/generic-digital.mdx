@@ -2,6 +2,7 @@
 type: "digital"
 masterSku: "DIG-001"
 status: "active"
+isNew: true
 createdAt: "2025-08-01T00:00:00.000Z"
 name: "Generic Digital Product"
 category: "digital"
@@ -12,23 +13,35 @@ images:
 basePrice: 2500
 options:
   - name: "License"
+    tooltip: "Commercial covers use in paid client work."
     choices:
       - name: "Personal"
         skuSuffix: "PER"
+        iconSource: "emoji"
+        icon: "🙋"
+        moreInfo: "For personal, non-commercial projects."
       - name: "Commercial"
         skuSuffix: "COM"
+        iconSource: "emoji"
+        icon: "🏢"
+        moreInfo: "Use in client and revenue-generating work."
 priceVariantGroups:
   - name: "Tier"
+    tooltip: "Higher tiers unlock more files and features."
     variants:
       - name: "Basic"
         skuSuffix: "BAS"
         price: 0
+        moreInfo: "Core files only."
       - name: "Pro"
         skuSuffix: "PRO"
         price: 2500
+        compareAtPrice: 4000
+        moreInfo: "All source files — <b>37% off</b> launch price."
       - name: "Enterprise"
         skuSuffix: "ENT"
         price: 10000
+        moreInfo: "Adds team seats and priority support."
 relatedProductIds: ["generic-physical", "generic-subscription-recurring", "generic-membership"]
 shortDescription: "An instant digital download ready to use immediately after purchase. Compatible with all major platforms and devices."
 seo:

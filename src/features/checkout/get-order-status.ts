@@ -8,7 +8,7 @@ import { getOrderById } from "@db/db.utils.ts";
 export const getOrderStatus = defineAction({
 	accept: "json",
 	input: z.object({
-		transactionId: z.string().uuid(),
+		transactionId: z.uuid(),
 	}),
 	handler: async ({ transactionId }) => {
 		const db = env.DB;

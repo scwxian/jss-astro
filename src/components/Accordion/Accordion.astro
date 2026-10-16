@@ -1,0 +1,43 @@
+---
+export interface AccordionItem {
+	summary: string;
+	content: string;
+}
+
+export interface Props {
+	items?: AccordionItem[];
+	heading?: string;
+	id?: string;
+}
+
+const { items, heading, id } = Astro.props;
+if (!items || items.length === 0) { return; }
+---
+
+<accordion-list class="accordion-list p-0" id={id}>
+	{heading && <h2>{heading}</h2>}
+	{
+		items.map((item) => (
+			<details class="info-accordion">
+				<summary class="info-summary"><h3 class="accordion-heading">{item.summary}</h3></summary>
+				<div class="details-content" set:html={item.content} />
+			</details>
+		))
+	}
+</accordion-list>
+
+<style>
+.details-content { padding-bottom: 1rem; font-size: 0.95rem; }
+summary > .accordion-heading {
+	font: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	letter-spacing: inherit;
+	color: inherit;
+	margin: 0;
+	display: inline;
+}
+</style>
+
+<script src="./accordion.js"></script>

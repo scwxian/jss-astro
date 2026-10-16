@@ -1,21 +1,21 @@
 ---
-import { siteInfo, shopHubSEO } from "@shared/siteInfo.js";
+import { siteInfo } from "@shared/siteInfo.js";
+import { shopHubSEO } from "@shop/shopHubSEO.js";
 import CollectionHubWrapper from "@collections/CollectionHubWrapper.astro";
 import ProductCard from "@shop/ProductCard.astro";
 import ShopLayout from "@layouts/ShopLayout.astro";
-import { getPaginatedCollectionPaths } from "@collections/collection-route-helpers.js";
-import { buildCollectionSchema } from "@collections/collection-schema.ts";
+import { getPaginatedProductPaths } from "@collections/collection-route-helpers.js";
+import { buildProductCollectionSchema } from "@collections/collection-schema.ts";
 
 export async function getStaticPaths({ paginate }) {
-	return await getPaginatedCollectionPaths("products", paginate, 12);
+	return await getPaginatedProductPaths(paginate);
 }
 
 const { page } = Astro.props;
-const schemaItem = buildCollectionSchema(page);
+const schemaItem = buildProductCollectionSchema(page);
 const seo = shopHubSEO["all"] || {
   title:`Shop All Products | ${siteInfo.name}`,
   description: "Browse our full collection of products. Secure checkout and fast delivery.",
-  hiddenH1: "Shop All Products",
   moreInfo: [],
 }
 ---
@@ -23,9 +23,9 @@ const seo = shopHubSEO["all"] || {
 <ShopLayout 
   title={seo.title} 
   description={seo.description} 
-  hiddenH1={seo.hiddenH1} 
   moreInfo={seo.moreInfo}
-  heading="Shop All" 
+  pageTitle="Shop All" 
+  pageSubtitle={seo.pageSubtitle}
   currentCategory="all" 
   {schemaItem}
 >
@@ -34,6 +34,6 @@ const seo = shopHubSEO["all"] || {
 		{page.url.next && <link rel="next" href={page.url.next} />}
 	</Fragment>
 	<CollectionHubWrapper {page}>
-		{page.data.map((product, i) => <ProductCard product={product} index={i} />)}
+		{page.data.map((product, i) => <ProductCard product={product} index={i} animate />)}
 	</CollectionHubWrapper>
 </ShopLayout>

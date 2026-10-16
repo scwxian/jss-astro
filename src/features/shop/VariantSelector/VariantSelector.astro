@@ -1,165 +1,246 @@
 ---
 import Tooltip from "@components/Tooltips/Tooltip.astro";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking";
 export interface PriceVariant {
-	name: string;
-	skuSuffix: string;
-	price: number;
+  name: string;
+  skuSuffix: string;
+  price: number;
+  compareAtPrice?: number;
+  moreInfo?: string;
+  iconSource?: "emoji" | "r2Asset" | "http";
+  icon?: string;
 }
 
 export interface PriceVariantGroup {
-	name: string;
-	tooltip?: string;
-	variants: PriceVariant[];
+  name: string;
+  tooltip?: string;
+  showLabel?: boolean;
+  variants: PriceVariant[];
 }
 
 export interface OptionChoice {
-	name: string;
-	skuSuffix: string;
+  name: string;
+  skuSuffix: string;
+  moreInfo?: string;
+  iconSource?: "emoji" | "r2Asset" | "http";
+  icon?: string;
 }
 
 export interface OptionGroup {
-	name: string;
-	tooltip?: string;
-	choices: OptionChoice[];
+  name: string;
+  tooltip?: string;
+  showLabel?: boolean;
+  multiSelect?: boolean;
+  pickCount?: number;
+  choices: OptionChoice[];
 }
 
 export interface Props {
-	basePrice: number;
-	masterSku: string;
-	hasPriceVariants: boolean;
-	priceVariantGroups?: PriceVariantGroup[];
-	options?: OptionGroup[];
-	includeSkuGroups?: string[];
+  basePrice: number;
+  masterSku: string;
+  hasPriceVariants: boolean;
+  priceVariantGroups?: PriceVariantGroup[];
+  options?: OptionGroup[];
+  includeSkuGroups?: string[];
+  slug?: string;
+  variantSortOrder?: string[];
 }
 
-const { basePrice, masterSku, hasPriceVariants, priceVariantGroups, options, includeSkuGroups } = Astro.props;
+const { basePrice, masterSku, hasPriceVariants, priceVariantGroups, options, includeSkuGroups, slug, variantSortOrder } = Astro.props;
+
+type RenderGroup =
+  | { kind: "price"; group: PriceVariantGroup; index: number }
+  | { kind: "option"; group: OptionGroup };
+
+const priceEntries: RenderGroup[] = (hasPriceVariants ? (priceVariantGroups ?? []) : []).map(
+  (group, index) => ({ kind: "price", group, index }),
+);
+const optionEntries: RenderGroup[] = (options ?? []).map((group) => ({ kind: "option", group }));
+const defaultOrder: RenderGroup[] = [...priceEntries, ...optionEntries];
+
+// variantSortOrder = top→bottom names; unknown fails build; unlisted appended in default order
+let orderedGroups: RenderGroup[] = defaultOrder;
+if (variantSortOrder) {
+  const knownNames = new Set(defaultOrder.map((e) => e.group.name));
+  const unknown = variantSortOrder.filter((name) => !knownNames.has(name));
+  if (unknown.length > 0) {
+    throw new Error(`VariantSelector: unknown variantSortOrder group name(s): ${unknown.join(", ")}`);
+  }
+  const rank = new Map(variantSortOrder.map((name, i) => [name, i]));
+  const listed = defaultOrder
+    .filter((e) => rank.has(e.group.name))
+    .sort((a, b) => rank.get(a.group.name)! - rank.get(b.group.name)!);
+  const unlisted = defaultOrder.filter((e) => !rank.has(e.group.name));
+  orderedGroups = [...listed, ...unlisted];
+}
 ---
 
 <variant-selector data-base-price={basePrice} data-master-sku={masterSku} data-include-sku-groups={includeSkuGroups?.join(",")}>
-	{
-		hasPriceVariants &&
-			priceVariantGroups &&
-			priceVariantGroups.map((group, groupIndex) => (
-				<fieldset class="variant-group" data-group-index={groupIndex} data-group-name={group.name}>
-          <div class="legend-group">
-            <legend>{group.name}</legend>
-            {group.tooltip && <Tooltip icon content={group.tooltip} class="label-tooltip" />}
-          </div>
-					<div class="radio-grid">
-						{group.variants.map((variant, variantIndex) => (
-							<label class="radio-label">
-								<input
-									type="radio"
-									name={`price_variant_group_${groupIndex}`}
-									value={variant.skuSuffix}
-									data-price={variant.price}
-									data-variant-name={variant.name}
-									data-group-index={groupIndex}
-									checked={variantIndex === 0}
-								/>
-								<span class="radio-btn">{variant.name}</span>
-							</label>
-						))}
-					</div>
-				</fieldset>
-			))
-	}
+  {orderedGroups.map((entry) =>
+    entry.kind === "price" ? (
+  <fieldset class="variant-group" data-group-index={entry.index} data-group-name={entry.group.name}>
+        {entry.group.showLabel !== false && (
+        <div class="legend-group">
+          <legend>{entry.group.name}</legend>
+          {entry.group.tooltip && <Tooltip icon content={entry.group.tooltip} class="label-tooltip" />}
+        </div>
+        )}
+    <div class="radio-grid">
+      {entry.group.variants.map((variant, variantIndex) => (
+      <label class="radio-label">
+        <input
+          type="radio"
+          name={`price_variant_group_${entry.index}`}
+          value={variant.skuSuffix}
+          data-price={variant.price}
+          data-compare-at-price={variant.compareAtPrice}
+          data-variant-name={variant.name}
+          data-group-index={entry.index}
+          data-more-info={variant.moreInfo}
+          checked={variantIndex === 0}
+        />
+        <span class="radio-btn">
+          {variant.iconSource === "emoji" && variant.icon && (
+            <span class="choice-icon icon-emoji">{variant.icon}</span>
+          )}
+          {variant.iconSource === "r2Asset" && variant.icon && slug && (
+            <img src={getAssetUrl("products", slug, variant.icon)} alt="" class="choice-icon icon-r2" width="24" height="24" />
+          )}
+          {variant.iconSource === "http" && variant.icon && (
+            <img src={variant.icon} alt="" class="choice-icon icon-http" width="24" height="24" />
+          )}
+          {variant.name}
+        </span>
+      </label>
+      ))}
+    </div>
+    <span class="variant-choice-info" hidden></span>
+  </fieldset>
+    ) : (
+  <fieldset class="variant-group" data-group-name={entry.group.name} data-multi-select={entry.group.multiSelect ? "true" : undefined} data-pick-count={entry.group.multiSelect ? entry.group.pickCount : undefined}>
+        {entry.group.showLabel !== false && (
+        <div class="legend-group">
+          <legend>{entry.group.name}</legend>
+          {entry.group.tooltip && <Tooltip icon content={entry.group.tooltip} class="label-tooltip" />}
+        </div>
+        )}
+    <div class="radio-grid">
+      {entry.group.choices.map((choice, index) => (
+      <label class="radio-label">
+        <input
+          type={entry.group.multiSelect ? "checkbox" : "radio"}
+          name={entry.group.name.toLowerCase().replace(/\s+/g, "-")}
+          value={choice.name}
+          data-sku-suffix={choice.skuSuffix}
+          data-more-info={choice.moreInfo}
+          checked={!entry.group.multiSelect && index === 0}
+        />
+        <span class="radio-btn">
+          {choice.iconSource === "emoji" && choice.icon && (
+            <span class="choice-icon icon-emoji">{choice.icon}</span>
+          )}
+          {choice.iconSource === "r2Asset" && choice.icon && slug && (
+            <img src={getAssetUrl("products", slug, choice.icon)} alt="" class="choice-icon icon-r2" width="24" height="24" />
+          )}
+          {choice.iconSource === "http" && choice.icon && (
+            <img src={choice.icon} alt="" class="choice-icon icon-http" width="24" height="24" />
+          )}
+          {choice.name}
+        </span>
+      </label>
+      ))}
+    </div>
+    <span class="variant-choice-info" hidden></span>
+  </fieldset>
+    )
+  )}
 
-	{
-		options &&
-			options.map((optionGroup) => (
-				<fieldset class="variant-group" data-group-name={optionGroup.name}>
-          <div class="legend-group">
-            <legend>{optionGroup.name}</legend>
-            {optionGroup.tooltip && <Tooltip icon content={optionGroup.tooltip} class="label-tooltip" />}
-          </div>
-					<div class="radio-grid">
-						{optionGroup.choices.map((choice, index) => (
-							<label class="radio-label">
-								<input
-									type="radio"
-									name={optionGroup.name.toLowerCase().replace(/\s+/g, "-")}
-									value={choice.name}
-									data-sku-suffix={choice.skuSuffix}
-									checked={index === 0}
-								/>
-								<span class="radio-btn">{choice.name}</span>
-							</label>
-						))}
-					</div>
-				</fieldset>
-			))
-	}
-
-	<slot />
+  <slot />
 </variant-selector>
 
 <style>
 variant-selector {
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	gap: var(--group-options-gap);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--group-options-gap);
 }
 .variant-group {
-	border: none;
-	padding: 0;
-	margin: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
   min-width: 0;
 }
 .variant-group legend {
-	font-weight: var(--bold-font-weight);
-	margin-bottom: var(--legend-gap);
-	font-size: 0.95rem;
-	letter-spacing: 0.03rem;
+  font-weight: var(--bold-font-weight);
+  margin-bottom: var(--legend-gap);
+  font-size: 0.95rem;
+  letter-spacing: 0.03rem;
   padding-right: 0;
-	color: var(--text);
+  color: var(--text);
 }
 
 .legend-group {display: flex;}
 
 .radio-grid {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   min-width: 0;
 }
 
 /* stupid safari fix for weird fieldset sizing on QVM */
 .radio-label { position: relative; display: inline-flex; }
 
-.radio-label input[type="radio"] {
-	/* Visually hide native radio button, keep accessible */
-	position: absolute;
-	opacity: 0;
-	width: 0;
-	height: 0;
+.radio-label input[type="radio"],
+.radio-label input[type="checkbox"] {
+  /* Visually hide native input, keep accessible */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .radio-btn {
-	display: inline-block;
-	padding: 0.4rem 0.8rem;
-	border: calc(var(--border-width) * 2) solid var(--border);
-	border-radius: calc(var(--standard-border-radius) / 2);
-	cursor: pointer;
-	transition: all 0.2s ease-out;
-	font-size: 0.9rem;
-	letter-spacing: 0.02rem;
-	color: var(--text);
-	font-weight: var(--bold-font-weight);
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border: calc(var(--border-width) * 2) solid var(--border);
+  border-radius: calc(var(--standard-border-radius) / 2);
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  font-size: 0.9rem;
+  letter-spacing: 0.02rem;
+  color: var(--text);
+  font-weight: var(--bold-font-weight);
 }
 
-.radio-label input[type="radio"]:checked + .radio-btn,
-.radio-label input[type="radio"]:hover + .radio-btn {
-	background: var(--accent);
-	border-color: var(--accent);
-	font-weight: var(--bold-font-weight);
+.radio-label input:checked + .radio-btn,
+.radio-label input:not(:disabled):hover + .radio-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: var(--bold-font-weight);
 }
 
-.radio-label input[type="radio"]:focus-visible + .radio-btn {
-	outline: calc(var(--border-width) * 2) solid var(--text);
-	outline-offset: 2px;
+.radio-label input:focus-visible + .radio-btn {
+  outline: calc(var(--border-width) * 2) solid var(--text);
+  outline-offset: 2px;
 }
+
+.radio-label input:disabled + .radio-btn {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.variant-choice-info {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+.choice-icon { margin-right: 0.35rem; vertical-align: middle; }
+.icon-emoji { font-size: 1.1rem; }
+.icon-r2, .icon-http { width: 24px; height: 24px; }
 
 </style>
-

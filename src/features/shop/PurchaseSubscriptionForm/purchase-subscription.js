@@ -3,6 +3,7 @@ import {
 	formatPrice,
 	resolveSubscriptionSchedule,
 } from "@cart/sub-cart.store.ts";
+import { updateSlashPrice } from "@shop/VariantSelector/variant-selector.js";
 
 const intervalGroupName = "Schedule";
 const intervalDesc = {
@@ -58,6 +59,7 @@ class PurchaseSubscriptionForm extends HTMLElement {
 
 		this.currentVariant = null;
 		this.currentInterval = null;
+		this.currentCompareAtPrice = null;
 		this.currentNonPriceVariants = [];
 		this.currentUnitPrice = this.basePrice;
 		this.currentFullSku = this.masterSku;
@@ -72,6 +74,8 @@ class PurchaseSubscriptionForm extends HTMLElement {
 		this.showBillingInfo = this.dataset.showBillingInfo === "true";
 
 		this.setupEventListeners();
+		const vs = this.querySelector("variant-selector");
+		if (vs?.calculateVariantState) vs.calculateVariantState();
 	}
 
 	setupEventListeners() {
@@ -84,6 +88,7 @@ class PurchaseSubscriptionForm extends HTMLElement {
 
 	handleVariantChange(detail) {
 		this.currentUnitPrice = detail.unitPrice;
+		this.currentCompareAtPrice = detail.compareAtPrice;
 		this.currentFullSku = detail.finalSku;
 		this.currentPriceVariants = detail.priceVariants || [];
 		this.currentNonPriceVariants = detail.nonPriceVariants || [];
@@ -107,11 +112,17 @@ class PurchaseSubscriptionForm extends HTMLElement {
 
 	updatePriceDisplay() {
 		if (!this.priceDisplay) return;
-		const priceStr = formatPrice(this.getDisplayUnitPrice());
+		const displayPrice = this.getDisplayUnitPrice();
+		const multiplier = intervalDesc[this.currentInterval]?.priceMultiplier ?? 1;
+		const compareDisplay = this.currentCompareAtPrice
+			? this.currentCompareAtPrice * multiplier
+			: null;
+		const priceStr = formatPrice(displayPrice);
 		const data = intervalDesc[this.currentInterval];
 		this.priceDisplay.textContent = data?.priceLabel
 			? `${priceStr} / ${data.priceLabel}`
 			: priceStr;
+		updateSlashPrice(this, displayPrice, compareDisplay);
 	}
 
 	updateBillingInfoUI(interval) {

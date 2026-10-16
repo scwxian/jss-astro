@@ -1,0 +1,47 @@
+---
+import { formatCategoryLabel } from "@scripts/utils.js";
+
+export interface Props {
+	category: string;
+}
+
+const { category } = Astro.props;
+const categoryName = formatCategoryLabel(category);
+---
+
+
+<div class="blogpost-ending">
+  <p>That's it for this one. Keep exploring more <a href={`/blog/category/${category}/`}>{categoryName}</a> posts, or browse the full <a href="/blog/">blog</a>.</p>
+  <div class="cta-buttons">
+    <a href="/shop/" aria-label="Explore Our Shop" class="button">Explore Our Shop</a>
+  </div>
+</div>
+
+<style>
+	.blogpost-ending {
+		margin-bottom: 3rem;
+		display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+		@media (max-width: 768px) {
+		}
+	}
+	.blogpost-ending p {
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+	.blogpost-ending .cta-buttons {
+    margin-top: 0.25rem;
+		display: flex;
+		gap: 1rem;
+		@media (max-width: 768px) { flex-direction: column; }
+	}
+	.blogpost-ending .cta-buttons a {
+		font-size: 1rem;
+		padding: 0.5rem 1rem;
+		@media (max-width: 768px) {
+			width: fit-content;
+		}
+	}
+</style>

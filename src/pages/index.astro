@@ -1,5 +1,6 @@
 ---
 import StandardLayout from "@layouts/StandardLayout.astro";
+import FeaturedProductCarousel from "@components/Carousel/FeaturedProductCarousel.astro";
 import "@styles/section-layouts/overlap.css";
 import "@styles/section-layouts/grid.css";
 import { siteInfo } from "@shared/siteInfo.js";
@@ -10,15 +11,13 @@ const description = siteInfo.description;
 ---
 
 <StandardLayout {title} {description}>
-  <h1 class="hidden-visually">{siteInfo.name} — {siteInfo.description}</h1>
-
   <!-- Hero — overlap-layout -->
   <section class="overlap-layout">
     <div class="overlap-layout-content">
       <p class="section-subtitle">
         Welcome to <img width="22" height="22" src="https://placehold.co/22x22?text=*" alt="Store icon" class="section-icon" /> {siteInfo.name}
       </p>
-      <h2 class="section-title">Quality Products, Fair Prices</h2>
+      <h1 class="section-title">Quality Products, Fair Prices</h1>
     </div>
 
     <div class="overlap-layout-image animate-element fade-in">
@@ -40,6 +39,17 @@ const description = siteInfo.description;
       <div class="section-cta animate-element slide-from-left delay-animation-small">
         <a href="/shop/" class="button">Browse Products</a>
       </div>
+    </div>
+  </section>
+
+  <!-- Featured products — carousel example -->
+  <section class="center-layout featured-products" style="position: relative;">
+    <p class="section-subtitle">Fresh picks</p>
+    <h2 class="section-title">Featured Products</h2>
+    <FeaturedProductCarousel interval={5000} showDots={false} showButtonsMobile={false} />
+
+    <div class="section-cta animate-element slide-from-bottom delay-animation-small">
+      <a href="/shop/" class="button">View All Products</a>
     </div>
   </section>
 
@@ -232,6 +242,20 @@ const description = siteInfo.description;
   </section>
 
   <style>
+  section.featured-products {
+    --button-offset: -7%;
+    --carousel-track-padding: 0.5rem 0 2rem;
+    @media (max-width: 768px) {
+      --button-offset: 5%;
+      --carousel-track-padding: 0.5rem 0;
+      margin-top: 5rem;
+    }
+  }
+
+  .featured-products .section-cta {
+    @media (max-width: 768px) { margin-top: 1rem; }
+  }
+
   #services {
     gap: 2rem 4rem;
   }
@@ -277,7 +301,7 @@ const description = siteInfo.description;
   }
 
   .contact-links li::before {
-    content: "";
+    content: "🚀";
     display: inline-block;
     height: 1.4rem;
     width: 1.4rem;
@@ -286,15 +310,9 @@ const description = siteInfo.description;
     background-repeat: no-repeat;
     background-position: center;
   }
-  .contact-links li#email::before {
-    background-image: url("../assets/pixel-art/email.png");
-  }
-  .contact-links li#whatsapp::before {
-    background-image: url("../assets/pixel-art/whatsapp.png");
-  }
-  .contact-links li#instagram::before {
-    background-image: url("../assets/pixel-art/instagram.png");
-  }
+  .contact-links li#email::before { content: "✉️"; }
+  .contact-links li#whatsapp::before { content: "💬"; }
+  .contact-links li#instagram::before { content: "🖼️"; }
   </style>
 
   <script>

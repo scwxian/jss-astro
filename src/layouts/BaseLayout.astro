@@ -11,6 +11,7 @@ export interface Props {
 	description: string;
 	href?: string;
 	schemaItem?: Record<string, any>;
+	additionalItems?: Record<string, any>[];
 	disableSchema?: boolean;
 	image?: string;
 	type?: string;
@@ -21,6 +22,7 @@ export interface Props {
 	currency?: string;
 	availability?: string;
 	condition?: string;
+	fabMode?: "default" | "hidden" | "auto";
 }
 
 const {
@@ -28,6 +30,7 @@ const {
 	description,
 	href = new URL(Astro.url.pathname, Astro.site).href,
 	schemaItem,
+	additionalItems,
 	disableSchema = false,
 	image,
 	type,
@@ -38,6 +41,7 @@ const {
 	currency = siteInfo.defaultCurrency,
 	availability,
 	condition,
+	fabMode = "default",
 } = Astro.props;
 ---
 
@@ -48,7 +52,7 @@ const {
 
 		{
 			!disableSchema && (
-				<Schema title={title} description={description} url={href} item={schemaItem} breadcrumbs={breadcrumbs} />
+				<Schema title={title} description={description} url={href} item={schemaItem} additionalItems={additionalItems} breadcrumbs={breadcrumbs} />
 			)
 		}
 
@@ -59,19 +63,17 @@ const {
 		<slot name="head" />
 	</head>
 
-	<body>
+	<body data-fab-mode={fabMode}>
 		<slot />
 	</body>
 </html>
 
 <script>
-	let globalAnimationObserver;
-
 	document.addEventListener("astro:page-load", () => {
 		const observedElements = document.querySelectorAll(".animate-element");
 
 		if (observedElements.length > 0) {
-			globalAnimationObserver = new IntersectionObserver(
+			window.globalAnimationObserver = new IntersectionObserver(
 				(entries, observerInstance) => {
 					entries.forEach((entry) => {
 						if (entry.isIntersecting) {
@@ -84,15 +86,19 @@ const {
 			);
 
 			observedElements.forEach((element) => {
-				globalAnimationObserver.observe(element);
+				if (element.getBoundingClientRect().top < window.innerHeight) {
+					element.classList.add("is-visible");
+				} else {
+					window.globalAnimationObserver.observe(element);
+				}
 			});
 		}
 	});
 
 	document.addEventListener("astro:before-swap", () => {
-		if (globalAnimationObserver) {
-			globalAnimationObserver.disconnect();
-			globalAnimationObserver = null;
+		if (window.globalAnimationObserver) {
+			window.globalAnimationObserver.disconnect();
+			window.globalAnimationObserver = null;
 		}
 	});
 </script>

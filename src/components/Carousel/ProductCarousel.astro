@@ -18,8 +18,16 @@ export interface Props {
 	slug?: string;
 	interval?: number;
 	class?: string;
+	style?: string;
 	imageClass?: string;
 	showButtons?: boolean;
+	showDots?: boolean;
+	showButtonsMobile?: boolean;
+	showDotsMobile?: boolean;
+	customWidth?: number;
+	trackStyles?: string;
+	navMarginTop?: string;
+	dotsOffset?: string;
 	altContext?: string;
 }
 
@@ -31,8 +39,16 @@ const {
 	slug = "",
 	interval,
 	class: className = "",
+	style: inlineStyle,
 	imageClass = "",
 	showButtons = true,
+	showDots,
+	showButtonsMobile,
+	showDotsMobile,
+	customWidth,
+	trackStyles,
+	navMarginTop,
+	dotsOffset,
 	altContext,
 } = Astro.props;
 
@@ -59,14 +75,33 @@ const videoSlides = video
 	: [];
 
 const slides = [...imageSlides, ...videoSlides];
+
+// Image-only slides for lightbox viewer
+const imageOnlySlides = slides.filter((s) => s.type === "image").map((s) => ({
+	src: s.src,
+	alt: s.alt,
+}));
 ---
 
-<BaseCarousel slideCount={slides.length} {interval} class={className} {showButtons}>
+<BaseCarousel
+	slideCount={slides.length}
+	{interval}
+	class={className}
+	style={inlineStyle}
+	{showButtons}
+	{showDots}
+	{showButtonsMobile}
+	{showDotsMobile}
+	{customWidth}
+	{trackStyles}
+	{navMarginTop}
+	{dotsOffset}
+>
 	{
-		slides.map((slide) => {
+		slides.map((slide, index) => {
 			if (slide.type === "image") {
 				return (
-					<div class="carousel-slide">
+					<div class="carousel-slide" data-lightbox-slide={index}>
             <Image 
               src={slide.src} 
               alt={slide.alt}
@@ -74,6 +109,8 @@ const slides = [...imageSlides, ...videoSlides];
               class={imageClass} 
               widths={[320, 640, 960, 1200]}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+              loading={index < 2 ? "eager" : "lazy"}
+              fetchpriority={index < 2 ? "high" : "auto"}
             />
 					</div>
 				);
@@ -112,6 +149,56 @@ const slides = [...imageSlides, ...videoSlides];
 	}
 </BaseCarousel>
 
+<!-- Pre-rendered lightbox (hidden by default) -->
+<div class="product-lightbox-backdrop" id="product-lightbox" aria-hidden="true" data-lightbox-images={JSON.stringify(imageOnlySlides)}>
+	<button class="product-lightbox-close" aria-label="Close lightbox">&times;</button>
+
+	<img class="product-lightbox-image" src="" alt="" />
+
+	{imageOnlySlides.length > 1 && (
+		<button class="carousel-button product-lightbox-arrow prev" aria-label="Previous image">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="3"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<polyline points="9 18 15 12 9 6" />
+			</svg>
+		</button>
+	)}
+
+	{imageOnlySlides.length > 1 && (
+		<button class="carousel-button product-lightbox-arrow next" aria-label="Next image">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="3"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<polyline points="9 18 15 12 9 6" />
+			</svg>
+		</button>
+	)}
+
+	{imageOnlySlides.length > 1 && (
+		<div class="product-lightbox-dots">
+			{imageOnlySlides.map((_, i) => (
+				<button
+					class={`carousel-indicator product-lightbox-dot${i === 0 ? " active" : ""}`}
+					aria-label={`Go to image ${i + 1}`}
+				/>
+			))}
+		</div>
+	)}
+</div>
+
 <style>
 	.carousel-slide iframe,
 	.carousel-slide video {
@@ -120,4 +207,134 @@ const slides = [...imageSlides, ...videoSlides];
 		object-fit: cover;
 		border-radius: var(--standard-border-radius);
 	}
+
+	.product-lightbox-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.92);
+		z-index: var(--z-lightbox-backdrop);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 200ms ease,
+			visibility 200ms ease;
+	}
+
+	.product-lightbox-backdrop.visible {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.product-lightbox-image {
+		max-width: 70vw;
+		max-height: 70vh;
+		object-fit: contain;
+		border-radius: var(--standard-border-radius);
+	}
+
+	.product-lightbox-close {
+		position: absolute;
+		top: 5%;
+		right: 10%;
+		z-index: var(--z-lightbox);
+		background: transparent;
+		border: none;
+		color: #fff;
+		font-size: 3rem;
+		line-height: 1;
+		cursor: pointer;
+		padding: 0.25rem;
+		transition: opacity 0.2s ease;
+		box-shadow: none;
+	}
+
+	.product-lightbox-close:hover {
+		opacity: 0.7;
+		color: var(--accent);
+		box-shadow: none;
+		transform: none;
+		background: none;
+	}
+
+	.product-lightbox-arrow {
+		width: 40px;
+		height: 40px;
+		top: 50%;
+	}
+
+	.product-lightbox-arrow svg {
+		width: 20px;
+		height: 20px;
+		display: block;
+	}
+
+	.product-lightbox-arrow.next {
+		right: 10%;
+	}
+
+	.product-lightbox-arrow.prev {
+		left: 10%;
+	}
+
+	.product-lightbox-arrow.prev svg {
+		transform: scaleX(-1);
+	}
+
+	.product-lightbox-dots {
+		position: absolute;
+		bottom: 10%;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		gap: 8px;
+		z-index: var(--z-lightbox);
+
+		@media (max-width: 768px) {
+			bottom: 4%;
+		}
+	}
+
+	@media (prefers-color-scheme: light) {
+		.product-lightbox-arrow {
+			background-color: var(--bg);
+			color: var(--text);
+		}
+		.product-lightbox-dot {
+			background-color: var(--text);
+			border-color: var(--bg);
+		}
+		.product-lightbox-dot.active {
+			background-color: var(--bg);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.product-lightbox-image {
+			max-width: 90vw;
+			max-height: 85vh;
+		}
+		.product-lightbox-arrow {
+			width: 32px;
+			height: 32px;
+		}
+		.product-lightbox-arrow svg {
+			width: 14px;
+			height: 14px;
+		}
+		.product-lightbox-arrow.prev {
+			left: 0.5rem;
+		}
+		.product-lightbox-arrow.next {
+			right: 0.5rem;
+		}
+		.product-lightbox-close {
+			top: 1rem;
+			right: 1rem;
+		}
+	}
 </style>
+
+<script src="./product-lightbox.js"></script>

@@ -15,17 +15,22 @@ billingAlignment: "rolling"
 hasDeliverySchedule: false
 options:
   - name: "Schedule"
+    tooltip: "Rolling plans renew on the day you sign up."
     choices:
       - name: "Monthly"
         skuSuffix: "MTH"
+        moreInfo: "Renews every month on your sign-up date."
       - name: "Yearly"
         skuSuffix: "YR"
+        moreInfo: "Renews once a year — best per-month value."
 priceVariantGroups:
   - name: "Pass Type"
+    tooltip: "What your pass unlocks."
     variants:
       - name: "Standard"
         skuSuffix: "STD"
         price: 0
+        moreInfo: "Full community access, all standard events."
 relatedProductIds: ["generic-physical", "generic-membership", "generic-subscription-recurring"]
 seo:
   title: "Generic Rolling Pass | Your Store Name"

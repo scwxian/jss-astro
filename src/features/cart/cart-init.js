@@ -261,6 +261,16 @@ function updateCartBadge(count) {
 	}
 }
 
+// Toggle FAB visibility from per-page mode on <body data-fab-mode>.
+function syncCartFabVisibility() {
+	const fab = document.getElementById("cart-button");
+	if (!fab) return;
+	const mode = document.body?.dataset.fabMode ?? "default";
+	if (mode === "auto") fab.classList.toggle("is-hidden", $cartCount.get() === 0);
+	else if (mode === "hidden") fab.classList.add("is-hidden");
+	else fab.classList.remove("is-hidden");
+}
+
 // CART POPOVER SET GLOBAL EVENT HANDLERS
 function handleGlobalClicks(event) {
 	// Handle closing the popover
@@ -325,6 +335,7 @@ $cartSubtotal.subscribe((subtotal) => {
 
 $cartCount.subscribe((count) => {
 	updateCartBadge(count);
+	syncCartFabVisibility();
 });
 
 $removedItems.subscribe(() => {
@@ -337,6 +348,7 @@ document.addEventListener("astro:page-load", () => {
 	renderCartPopover();
 	updateSubtotalDisplay($cartSubtotal.get());
 	updateCartBadge($cartCount.get());
+	syncCartFabVisibility();
 });
 
 // GLOBAL EXPORTS

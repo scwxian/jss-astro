@@ -13,6 +13,9 @@ export interface Props {
 	isPre?: boolean;
 	submitBtnText: string;
 	includeSkuGroups?: string[];
+	slug?: string;
+	variantSortOrder?: string[];
+	loading?: boolean;
 }
 
 const {
@@ -25,14 +28,22 @@ const {
 	isPre = false,
 	submitBtnText,
 	includeSkuGroups,
+	slug,
+	variantSortOrder,
+	loading = false,
 } = Astro.props;
 
 const formattedBasePrice = formatPrice(basePrice);
+const requiresSelection = options?.some((o) => o.multiSelect) ?? false;
 ---
 
 <div class="product-form-wrapper">
   <div class="price-wrapper">
     <p class="product-price m-0" data-dynamic-price>{formattedBasePrice}</p>
+    <div class="slash-price is-hidden" data-slash-price>
+      <s class="compare-at-price"></s>
+      <span class="discount-badge"></span>
+    </div>
   </div>
 	<form class="add-to-cart-form" data-form>
 		<VariantSelector
@@ -42,13 +53,26 @@ const formattedBasePrice = formatPrice(basePrice);
 			priceVariantGroups={priceVariantGroups}
 			options={options}
 			includeSkuGroups={includeSkuGroups}
+			variantSortOrder={variantSortOrder}
+			slug={slug}
 		/>
 
     <slot name="sub-info" />
     <slot name="quantity-selector" />
 
-		<button type="submit" class="btn-submit" data-submit-btn disabled={isOut}>
-			{submitBtnText}
+		<button type="submit" class="btn-submit" data-submit-btn
+			disabled={isOut || loading || requiresSelection} aria-busy={loading ? "true" : undefined}>
+			{loading ? (
+				<span class="btn-loading">
+					<svg class="spinner spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+						<circle cx="12" cy="12" r="10" stroke-opacity="0.25" />
+						<path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+					</svg>
+					{submitBtnText}
+				</span>
+			) : (
+				submitBtnText
+			)}
 		</button>
 
 		<div class="payment-methods-wrapper">
@@ -67,13 +91,47 @@ const formattedBasePrice = formatPrice(basePrice);
   --legend-gap: 0.25rem;
   --group-options-gap: 1rem;
 }
-.product-form-wrapper .price-wrapper { margin: 2rem 0 1.5rem 0; }
+.product-form-wrapper .price-wrapper {
+  margin: 2rem 0 1.5rem 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
 .product-price {
 	font-size: 1.5rem;
 	font-weight: var(--bold-font-weight);
 	color: var(--text);
 }
+
+.product-price .price-addition {font-size: 1rem; color: var(--text-light);}
+
+.product-form-wrapper .slash-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.product-form-wrapper .slash-price.is-hidden {
+  display: none;
+}
+.product-form-wrapper .compare-at-price {
+  font-size: 1rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+.product-form-wrapper .discount-badge {
+  font-size: 0.75rem;
+  font-weight: var(--bold-font-weight);
+  background: var(--accent-bg);
+  color: var(--accent);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .btn-submit { margin: 1.5rem 0 0 0.3rem; width: fit-content; }
+.btn-submit .btn-loading { display: inline-flex; align-items: center; gap: 0.5rem; }
+.btn-submit .spinner { width: 16px; height: 16px; }
 
 .payment-methods-wrapper {
 	display: flex;

@@ -9,9 +9,10 @@ import PromoModal from "@components/Overlays/PromoModal.astro";
 import CookieToast from "@components/Overlays/CookieToast.astro";
 
 import type { Props as BaseLayoutProps } from "./BaseLayout.astro";
-export interface Props extends BaseLayoutProps {}
+export interface Props extends BaseLayoutProps { hideCartFAB?: boolean; cartFabMode?: "auto"; }
 
-const props = Astro.props;
+const { hideCartFAB = false, cartFabMode, ...props } = Astro.props;
+const fabMode = cartFabMode ?? (hideCartFAB ? "hidden" : "default");
 
 const easing = "cubic-bezier(0.77, 0, 0.175, 1)";
 const duration = "300ms";
@@ -48,7 +49,7 @@ const customTransition = {
 };
 ---
 
-<BaseLayout {...props}>
+<BaseLayout {...props} fabMode={fabMode}>
 	<slot name="head" slot="head" />
 
 	<AnnouncementBanner />
@@ -58,52 +59,9 @@ const customTransition = {
 	</main>
 	<Footer />
 	<CartPopover />
-	<CartButton />
+	<CartButton hide={hideCartFAB} />
 	<PromoModal />
 	<CookieToast />
 </BaseLayout>
-
-<style is:global>
-	@keyframes slide-ease-out-left {
-		from {
-			opacity: 1;
-			transform: translateX(0);
-		}
-		to {
-			opacity: 0;
-			transform: translateX(-1em);
-		}
-	}
-	@keyframes slide-ease-in-right {
-		from {
-			opacity: 0;
-			transform: translateX(1em);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-	@keyframes slide-ease-out-right {
-		from {
-			opacity: 1;
-			transform: translateX(0);
-		}
-		to {
-			opacity: 0;
-			transform: translateX(1em);
-		}
-	}
-	@keyframes slide-ease-in-left {
-		from {
-			opacity: 0;
-			transform: translateX(-1em);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
-</style>
 
 <script src="@cart/cart-init.js"></script>

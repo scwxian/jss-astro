@@ -1,2 +1,19 @@
 .hello { padding: 0; }
 
+/* Badge styles */
+.badge {
+  color: white;
+  letter-spacing: 0.03rem;
+  text-transform: uppercase;
+  font-weight: var(--bold-font-weight);
+  font-size: 0.75rem;
+  border-radius: 4px;
+  z-index: 2;
+  @media (prefers-color-scheme: dark) { color: var(--bg); }
+}
+.badge.out-of-stock { background-color: var(--disabled); color: var(--text-light); }
+.badge.pre-order { background-color: var(--warning); }
+.badge.draft { background-color: var(--warning); }
+.badge.best-seller { background-color: var(--accent-hover); }
+.badge.new { background-color: var(--success); }
+

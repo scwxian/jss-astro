@@ -2,30 +2,46 @@
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
-import { formatPrice } from "@scripts/utils.js";
+import { formatPrice, stripHtml } from "@scripts/utils.js";
 
 export interface Props {
 	product: CollectionEntry<"products">;
 	useQuickView?: boolean;
 	index?: number;
+	animate?: boolean;
 }
 
-const { product, useQuickView = true, index } = Astro.props;
+const { product, useQuickView = true, index, animate = false } = Astro.props;
 const { data, id } = product;
 const loading = index !== undefined && index < 4 ? "eager" : "lazy";
 const fetchpriority = index !== undefined && index < 4 ? "high" : "auto";
 
 const formattedPrice = formatPrice(data.basePrice);
+const cleanDesc = stripHtml(data.shortDescription);
 
 const isOut = data.status === "out-of-stock";
 const isPre = data.status === "pre-order";
 const isBestSeller = data.isFeatured === true;
+const isNew = data.isNew === true && data.status === "active";
 
 const displayTags = data.tags.slice(0, 3);
 const thumbnailUrl = getAssetUrl("products", id, data.images[0]);
+
+const delayStyle =
+	animate && index !== undefined
+		? `transition-delay: ${Math.floor(Math.random() * 201)}ms`
+		: undefined;
+
+const liClass = [
+	"product-card-wrapper",
+	animate && "animate-element",
+	animate && "slide-from-bottom",
+]
+	.filter(Boolean)
+	.join(" ");
 ---
 
-<li class="product-card-wrapper">
+<li class={liClass} style={delayStyle}>
 	<a
 		class="product-card"
 		href={`/products/${id}/`}
@@ -46,7 +62,8 @@ const thumbnailUrl = getAssetUrl("products", id, data.images[0]);
 
 		{isOut && <span class="badge out-of-stock">Out of Stock</span>}
 		{isPre && <span class="badge pre-order">Pre-Order</span>}
-		{isBestSeller && <span class="badge best-seller">Best Seller</span>}
+		{isBestSeller && !isPre && <span class="badge best-seller">Best Seller</span>}
+		{!isBestSeller && isNew && <span class="badge new">New</span>}
 
 		<span class="quick-view-trigger" aria-hidden="true"> Learn More </span>
 	</div>
@@ -61,7 +78,7 @@ const thumbnailUrl = getAssetUrl("products", id, data.images[0]);
 		}
 		<div class="product-meta">
 			<h3 class="product-card-title">{data.name}</h3>
-			<p class="product-short-desc">{data.shortDescription}</p>
+			<p class="product-short-desc">{cleanDesc}</p>
 		</div>
 		<div class="product-price-wrapper">
 			<p class="product-price-pre">From&nbsp;&nbsp;</p><p class="format-price">{formattedPrice}</p>
@@ -71,7 +88,11 @@ const thumbnailUrl = getAssetUrl("products", id, data.images[0]);
 </li>
 
 <style>
-li.product-card-wrapper {height: 100%;}
+li.product-card-wrapper {
+  height: 100%;
+  container-type: inline-size;
+  width: 100%;
+}
 	.product-card {
 		--card-bg-color: var(--accent-bg);
 		--tag-color: var(--accent);
@@ -146,23 +167,7 @@ li.product-card-wrapper {height: 100%;}
 		top: 10px;
 		left: 10px;
 		padding: 0.25rem 0.75rem;
-		font-size: 0.75rem;
-		font-weight: bold;
-		text-transform: uppercase;
-		border-radius: 4px;
-		z-index: 2;
 	}
-
-.badge.out-of-stock { background-color: var(--disabled); color: var(--text-light); }
-.badge.pre-order { background-color: var(--accent-bg); color: var(--text); }
-.badge.best-seller {
-  background-color: var(--accent);
-  color: var(--text);
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--accent-hover);
-    color: var(--bg);
-  }
-}
 
 	.quick-view-trigger {
 		position: absolute;
@@ -259,5 +264,16 @@ li.product-card-wrapper {height: 100%;}
 		padding: 0;
 		margin: 0;
 		color: var(--price-color);
+		display: flex;
+		gap: 0.3rem;
+		align-items: baseline;
+	}
+
+	@container (max-width: 200px) {
+		.format-price {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0;
+		}
 	}
 </style>

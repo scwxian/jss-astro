@@ -7,42 +7,62 @@ status: "active"
 category: "subscriptions"
 createdAt: "2024-06-01T09:00:00.000Z"
 showQuantitySelector: false
+hideCartFAB: true
 tags: ["Subscription", "Box", "Weekly Delivery", "Curated"]
 images:
   - "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&q=80&w=800"
 shortDescription: "Curated items delivered to your door every week. Never run out of great products."
 options:
   - name: "Schedule"
+    tooltip: "How often a new box is delivered."
     choices:
       - name: "Monthly"
         skuSuffix: "MTH"
+        moreInfo: "One box every month."
       - name: "Bi-Weekly"
         skuSuffix: "BIWK"
+        moreInfo: "A box every two weeks — best for heavy users."
       - name: "Bi-Monthly"
         skuSuffix: "BIMTH"
+        moreInfo: "One box every two months."
   - name: "Style"
+    tooltip: "How curated or premium you want each box to be."
     choices:
       - name: "Standard"
         skuSuffix: "STD"
+        iconSource: "emoji"
+        icon: "📦"
+        moreInfo: "Core range. Great value."
       - name: "Premium"
         skuSuffix: "PRM"
+        iconSource: "emoji"
+        icon: "✨"
+        moreInfo: "Adds small-batch and seasonal picks."
       - name: "Deluxe"
         skuSuffix: "DLX"
+        iconSource: "emoji"
+        icon: "👑"
+        moreInfo: "Everything in Premium plus exclusive items."
 priceVariantGroups:
   - name: "Box Size"
+    tooltip: "How much product arrives in each delivery."
     variants:
       - name: "Small"
         skuSuffix: "SM"
         price: 0
         weightInGrams: 200
+        moreInfo: "Starter size — try before you commit."
       - name: "Medium"
         skuSuffix: "MD"
         price: 5500
         weightInGrams: 400
+        moreInfo: "Most popular size."
       - name: "Large"
         skuSuffix: "LG"
         price: 22000
         weightInGrams: 1000
+        compareAtPrice: 27500
+        moreInfo: "Bulk size — saves about <b>20%</b> per delivery."
 additionalInfo:
   - summary: "Do you offer refunds for subscriptions?"
     content: "Unfortunately, it's not possible for us to offer refunds for subscriptions at the moment. You will always receive the products that you paid for. For example, if you subscribed 'Bi-Weekly' and received your first box, cancelling means you will no longer be charged in the future, but you will still receive your second box. If you subscribed 'Monthly' and already received your box for the month, cancelling means you won't be charged and receive boxes for the subsequent months. If you're not sure, feel free to message us to ask any questions!"

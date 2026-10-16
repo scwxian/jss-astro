@@ -15,6 +15,7 @@
 	"vars": {
 		"ACTIVE_ONETIME_GATEWAY": "",
 		"ACTIVE_SUBSCRIPTION_GATEWAY": "",
+		"ACTIVE_STOCK_PROVIDER": "baserow",
 		"SITE_URL": ""
 	},
 

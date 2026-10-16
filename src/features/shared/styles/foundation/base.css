@@ -6,6 +6,8 @@
 	--z-modal: 993;
 	--z-nav-mobile: 994;
 	--z-toast: 995;
+	--z-lightbox-backdrop: 996;
+	--z-lightbox: 997;
 }
 
 /* Reset box-sizing */
@@ -60,18 +62,12 @@ progress {
 	margin-bottom: 1rem;
 }
 
-article,
 fieldset,
 dialog {
 	border: var(--border-width) solid var(--border);
 	padding: 1rem;
 	border-radius: var(--standard-border-radius);
 	margin-bottom: 1rem;
-}
-
-article h2:first-child,
-article h3:first-child {
-	margin-top: 1rem;
 }
 
 /* hide large hl text for seo */

@@ -1,0 +1,82 @@
+---
+import { getCollection } from "astro:content";
+import BaseCarousel from "./BaseCarousel.astro";
+import ProductCard from "@shop/ProductCard.astro";
+
+export interface Props {
+	interval?: number;
+	class?: string;
+	style?: string;
+	showButtons?: boolean;
+	showDots?: boolean;
+	showButtonsMobile?: boolean;
+	showDotsMobile?: boolean;
+	customWidth?: number;
+	trackStyles?: string;
+	navMarginTop?: string;
+	dotsOffset?: string;
+}
+
+const {
+	interval = 5000,
+	class: className = "",
+	style: inlineStyle,
+	showButtons,
+	showDots,
+	showButtonsMobile,
+	showDotsMobile,
+	customWidth,
+	trackStyles,
+	navMarginTop,
+	dotsOffset,
+} = Astro.props;
+
+const allProducts = await getCollection("products");
+const featuredProducts = allProducts
+	.filter(
+		(p) =>
+			(p.data.isNew || p.data.isFeatured) &&
+			!["draft", "out-of-stock", "pre-order"].includes(p.data.status),
+	)
+	.sort((a, b) => {
+		// Featured products first, then cheapest basePrice first
+		const featuredRank = (b.data.isFeatured ? 1 : 0) - (a.data.isFeatured ? 1 : 0);
+		if (featuredRank !== 0) return featuredRank;
+		return a.data.basePrice - b.data.basePrice;
+	});
+
+if (featuredProducts.length === 0) return;
+---
+
+<BaseCarousel
+	slideCount={featuredProducts.length}
+	{interval}
+	class={className}
+	style={inlineStyle}
+	{showButtons}
+	{showDots}
+	{showButtonsMobile}
+	{showDotsMobile}
+	{customWidth}
+	{trackStyles}
+	{navMarginTop}
+	{dotsOffset}
+>
+	{featuredProducts.map((product) => (
+		<div class="carousel-slide featured-carousel-slide">
+			<ProductCard product={product} useQuickView={false} />
+		</div>
+	))}
+</BaseCarousel>
+
+<style>
+	.featured-carousel-slide {
+		flex: 0 0 65%;
+		list-style: none;
+		position: relative;
+		overflow: visible;
+		@media (min-width: 769px) {
+			flex: 0 0 33%;
+		}
+	}
+</style>

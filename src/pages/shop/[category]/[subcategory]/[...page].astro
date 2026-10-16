@@ -1,46 +1,40 @@
 ---
-import { siteInfo, shopHubSEO } from "@shared/siteInfo.js";
+import { siteInfo } from "@shared/siteInfo.js";
+import { shopHubSEO } from "@shop/shopHubSEO.js";
 import CollectionHubWrapper from "@collections/CollectionHubWrapper.astro";
 import ProductCard from "@shop/ProductCard.astro";
 import ShopLayout from "@layouts/ShopLayout.astro";
 import { getPaginatedSubCategoryPaths } from "@collections/collection-route-helpers.js";
-import { buildCollectionSchema } from "@collections/collection-schema.ts";
+import { buildProductCollectionSchema } from "@collections/collection-schema.ts";
+import { formatCategoryLabel } from "@scripts/utils.js";
 
 export async function getStaticPaths({ paginate }) {
-	return await getPaginatedSubCategoryPaths("products", paginate, 12);
+	return await getPaginatedSubCategoryPaths(paginate);
 }
 
 const { category, subcategory } = Astro.params;
 const { page } = Astro.props;
 
-const categoryName = category
-	.split("-")
-	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-	.join(" ");
+const categoryName = formatCategoryLabel(category);
 
-const subCategoryName = subcategory
-	.split("-")
-	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-	.join(" ");
+const subCategoryName = formatCategoryLabel(subcategory);
 
 const seo = shopHubSEO[subcategory] || {
   title: `${subCategoryName} ${categoryName} | ${siteInfo.name} Shop`,
   description: `Shop ${subCategoryName} from our ${categoryName} collection.`,
-  hiddenH1: `Shop and Buy ${subCategoryName} from our ${categoryName} collection by ${siteInfo.name}`,
    moreInfo: [],
 }
 
 
-const schemaItem = buildCollectionSchema(page);
+const schemaItem = buildProductCollectionSchema(page);
 ---
 
 <ShopLayout
 	title={seo.title}
 	description={seo.description}
-	hiddenH1={seo.hiddenH1}
   moreInfo={seo.moreInfo}
-	heading={subCategoryName}
-	subheading={categoryName}
+	pageTitle={subCategoryName}
+	pageSubtitle={seo.pageSubtitle ?? categoryName}
 	currentCategory={category}
 	currentSubCategory={subcategory}
 	{schemaItem}
@@ -50,6 +44,6 @@ const schemaItem = buildCollectionSchema(page);
 		{page.url.next && <link rel="next" href={page.url.next} />}
 	</Fragment>
 	<CollectionHubWrapper {page}>
-		{page.data.map((product, i) => <ProductCard product={product} index={i} />)}
+		{page.data.map((product, i) => <ProductCard product={product} index={i} animate />)}
 	</CollectionHubWrapper>
 </ShopLayout>

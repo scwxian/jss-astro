@@ -3,6 +3,30 @@ User-agent: *
 Allow: /
 Disallow: /links/
 
+# Retrieval/answer agents: allowed to crawl and cite us.
+# Retrieval and citation are permitted; training is not.
+# Note: Google-Extended does NOT affect AI Overviews - those are served by Googlebot.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
 # Specifically disallow AI data harvesting/training bots
 User-agent: GPTBot
 Disallow: /

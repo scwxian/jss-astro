@@ -210,8 +210,10 @@ th {
 }
 
 tr:nth-child(even) {
-	/* Set every other cell slightly darker. Improves readability. */
-	background-color: var(--accent-bg);
+	background-color: color-mix(in srgb, var(--bg) 95%, black 5%);
+	@media (prefers-color-scheme: dark) {
+		background-color: color-mix(in srgb, var(--bg) 95%, white 5%);
+	}
 }
 
 table caption {
@@ -360,7 +362,10 @@ div.notice p:last-of-type {
 .more-info:hover, .more-info.tooltip-locked { transform: scale(1.05); }
 
 .tooltip {
-	position: absolute;
+	position: fixed;
+	inset: unset;
+	margin: 0;
+	overflow: visible;
 	background-color: var(--accent-bg);
 	border: var(--border-width) solid var(--border);
 	padding: 0.5rem;
@@ -374,8 +379,14 @@ div.notice p:last-of-type {
 	transition:
 		opacity 0.2s ease-in-out,
 		visibility 0.2s ease-in-out;
-	z-index: 100;
 	pointer-events: none;
+}
+
+.tooltip:popover-open {
+	border: var(--border-width) solid var(--border);
+	inset: unset;
+	margin: 0;
+	overflow: visible;
 }
 
 .tooltip.visible {

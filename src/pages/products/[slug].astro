@@ -6,6 +6,7 @@ import StandardLayout from "@layouts/StandardLayout.astro";
 import { buildProductSchema } from "@shop/product-schema.ts";
 import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
 import { siteInfo } from "@shared/siteInfo.js";
+import { formatCategoryLabel } from "@scripts/utils.js";
 
 export async function getStaticPaths() {
 	const products = await getCollection("products", ({ data }) => {
@@ -23,16 +24,10 @@ const { data } = product;
 
 const currency = siteInfo.defaultCurrency;
 
-const categoryName = data.category
-	.split("-")
-	.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-	.join(" ");
+const categoryName = formatCategoryLabel(data.category);
 
 const subCategoryName = data.subCategory
-	? data.subCategory
-			.split("-")
-			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(" ")
+	? formatCategoryLabel(data.subCategory)
 	: null;
 
 const breadcrumbs = data.subCategory
@@ -81,7 +76,7 @@ function ogAvailability(status: string): string {
 }
 ---
 
-<StandardLayout title={pageTitle} description={pageDescription} {breadcrumbs} {schemaItem} type="product" image={productImage} price={(lowPrice / 100).toFixed(2)} {currency} availability={ogAvailability(data.status)} condition="new">
+<StandardLayout title={pageTitle} description={pageDescription} {breadcrumbs} {schemaItem} type="product" image={productImage} price={(lowPrice / 100).toFixed(2)} {currency} availability={ogAvailability(data.status)} condition="new" hideCartFAB={data.hideCartFAB}>
 	<main class="product-page-container">
 		<Breadcrumb items={breadcrumbs} />
 		<ProductCoreUI {product} />

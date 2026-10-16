@@ -1,0 +1,71 @@
+---
+import { getCollection } from "astro:content";
+import { blogPublished } from "@collections/collection-route-helpers.js";
+import Breadcrumb from "@collections/Breadcrumb.astro";
+import BlogpostCoreUI from "@blog/BlogpostCoreUI.astro";
+import StandardLayout from "@layouts/StandardLayout.astro";
+import { buildBlogPostSchema, buildFaqSchema } from "@blog/blog-schema.ts";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { siteInfo } from "@shared/siteInfo.js";
+import { formatCategoryLabel } from "@scripts/utils.js";
+
+export async function getStaticPaths() {
+	const posts = await getCollection("blog", blogPublished);
+
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+const { data, id } = post;
+
+const categoryName = formatCategoryLabel(data.category);
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+const breadcrumbs = [
+	{ name: "Blog", url: "/blog/" },
+	{ name: categoryName, url: `/blog/category/${data.category.toLowerCase()}/` },
+	{ name: data.title, url: pageUrl },
+];
+
+const schemaItem = buildBlogPostSchema(post, pageUrl);
+
+const additionalItems =
+	data.faq && data.faq.length > 0 ? [buildFaqSchema(data.faq, pageUrl)] : undefined;
+
+const ogImage = data.heroImage
+	? getAssetUrl("blog", id, data.heroImage)
+	: siteInfo.image;
+
+const pageTitle = data.seo?.title ?? data.title;
+const pageDescription = data.seo?.description ?? data.subtitle ?? data.summary ?? "";
+---
+
+<StandardLayout
+	title={pageTitle}
+	description={pageDescription}
+	{breadcrumbs}
+	{schemaItem}
+	{additionalItems}
+	type="article"
+	image={ogImage}
+	cartFabMode="auto"
+>
+	<div class="blog-post-container">
+		<Breadcrumb items={breadcrumbs} />
+		<BlogpostCoreUI {post} />
+	</div>
+
+	<style>
+		.blog-post-container {
+      padding: 4rem 0 0;
+      min-width: 0;
+      max-width: 680px;
+      @media (min-width: 769px) { margin: 0 auto; }
+      @media (max-width: 768px) { padding: 2rem 0 0; }
+    }
+	</style>
+</StandardLayout>

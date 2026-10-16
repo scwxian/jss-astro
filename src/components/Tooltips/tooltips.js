@@ -1,9 +1,12 @@
 let tooltipEl = null;
+let hideTimer = null;
+let showRafId = null;
 
 function getTooltip() {
 	if (!tooltipEl || !tooltipEl.isConnected) {
 		tooltipEl = document.createElement("div");
 		tooltipEl.className = "tooltip global-tooltip";
+		tooltipEl.popover = "manual";
 		document.body.appendChild(tooltipEl);
 	}
 	return tooltipEl;
@@ -12,11 +15,11 @@ function getTooltip() {
 function positionTooltip(target) {
 	const tooltip = getTooltip();
 	const rect = target.getBoundingClientRect();
-	const top = rect.top + window.scrollY;
-	const left = rect.left + rect.width / 2 + window.scrollX;
+	const left = rect.left + rect.width / 2;
+	const top = rect.top - 10;
 
 	tooltip.style.left = `${left}px`;
-	tooltip.style.top = `${top - 10}px`;
+	tooltip.style.top = `${top}px`;
 	tooltip.style.transform = "translateX(-50%) translateY(-100%)";
 
 	const tRect = tooltip.getBoundingClientRect();
@@ -34,14 +37,45 @@ function positionTooltip(target) {
 function show(target) {
 	const content = target.dataset.tooltipContent;
 	if (!content) return;
+
+	clearTimeout(hideTimer);
 	const tooltip = getTooltip();
-	tooltip.textContent = content;
+	tooltip.innerHTML = content;
 	positionTooltip(target);
-	tooltip.classList.add("visible");
+
+	try {
+		if (!tooltip.matches(":popover-open")) {
+			tooltip.showPopover();
+		}
+	} catch {
+		// Fallback for browsers without popover support
+		tooltip.style.position = "absolute";
+		tooltip.style.zIndex = "100";
+	}
+
+	cancelAnimationFrame(showRafId);
+	showRafId = requestAnimationFrame(() => {
+		tooltip.classList.add("visible");
+	});
 }
 
 function hide() {
-	if (tooltipEl) tooltipEl.classList.remove("visible");
+	cancelAnimationFrame(showRafId);
+	clearTimeout(hideTimer);
+	if (!tooltipEl) return;
+
+	tooltipEl.classList.remove("visible");
+	const el = tooltipEl;
+
+	hideTimer = setTimeout(() => {
+		try {
+			if (el?.matches(":popover-open")) {
+				el.hidePopover();
+			}
+		} catch {
+			// Popover unsupported - nothing to close
+		}
+	}, 250);
 }
 
 function onMouseOver(e) {

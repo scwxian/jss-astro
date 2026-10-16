@@ -2,7 +2,21 @@
 import { Image } from "astro:assets";
 import { siteInfo } from "@shared/siteInfo.js";
 import logo from "@assets/images/logo.png";
+import { getCollection } from "astro:content";
+import { formatCategoryLabel } from "@scripts/utils.js";
+
 const logoAlt = `${siteInfo.name} Home`;
+
+const allProducts = await getCollection("products");
+const publishedProducts = allProducts.filter((p) => p.data.status !== "draft");
+const uniqueCategories = [...new Set(publishedProducts.map((p) => p.data.category))].filter(Boolean) as string[];
+const headerCategories = uniqueCategories
+	.map((slug) => ({
+		label: formatCategoryLabel(slug),
+		slug,
+		href: `/shop/${slug}/`,
+	}))
+	.sort((a, b) => a.label.localeCompare(b.label));
 ---
 
 <site-header role="banner" transition:name="site-header" transition:persist="site-header">
@@ -33,11 +47,27 @@ const logoAlt = `${siteInfo.name} Home`;
 			<nav>
 				<button class="mobile-nav-close" aria-label="Close menu">&times;</button>
 				<ul>
+					<li class="nav-dropdown">
+						<a
+							href="/shop/"
+							class="nav-dropdown-trigger"
+							data-dropdown-trigger
+							aria-haspopup="true"
+							aria-expanded="false"
+						>
+							Shop
+						</a>
+						<ul class="nav-dropdown-menu">
+							<li><a href="/shop/">All Products</a></li>
+							{headerCategories.map((cat) => (
+								<li><a href={cat.href}>{cat.label}</a></li>
+							))}
+						</ul>
+					</li>
+					<li><a href="/blog/">Blog</a></li>
 					<li><a href="/about/">About</a></li>
-					<li><a href="/#services">Services</a></li>
 					<li><a href="/#contact">Contact</a></li>
 					<li><a href="/faq/">FAQ</a></li>
-          <li><a class="nav-cta-button" href="/shop/">Buy Now</a></li>
 				</ul>
 			</nav>
 
@@ -73,6 +103,7 @@ const logoAlt = `${siteInfo.name} Home`;
 			position: sticky;
 			top: 0;
 			width: 100%;
+			height: fit-content;
 			z-index: var(--z-header);
 			transition:
 				box-shadow 0.3s ease-in-out,
@@ -90,7 +121,8 @@ const logoAlt = `${siteInfo.name} Home`;
 			line-height: 2;
 			display: flex;
 			flex-direction: column;
-			align-items: flex-end;
+			align-items: flex-start;
+			width: 100%;
 		}
 
 		#logo > img {
@@ -124,16 +156,6 @@ const logoAlt = `${siteInfo.name} Home`;
 		}
 
 		.top-navbar-content > .nav-links p {
-			display: none;
-		}
-
-		.nav-cta-button,
-		.nav-cta-button:hover {
-			font-size: 0.9rem;
-			margin: -5px 0 0 20px;
-		}
-
-		.nav-cta-button::after {
 			display: none;
 		}
 
@@ -188,6 +210,66 @@ const logoAlt = `${siteInfo.name} Home`;
 			visibility: visible;
 		}
 
+		/* Dropdown nav */
+		.nav-dropdown-trigger {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+		.nav-dropdown-trigger::before {
+			content: "";
+			position: absolute;
+			left: -5px;
+			width: 0.40rem;
+			height: 0.40rem;
+			border-top: 0.3rem solid transparent;
+			border-bottom: 0.3rem solid transparent;
+			border-left: 0.4rem solid currentColor;
+			transition: transform 0.1s ease;
+		}
+		.nav-dropdown-expanded .nav-dropdown-trigger::before { transform: rotate(90deg); }
+		.nav-dropdown-menu { display: none; list-style: none; padding: 0; margin: 0; }
+
+		.nav-dropdown-menu a::after,
+		.nav-dropdown-trigger::after { content: none; }
+
+		@media (min-width: 1021px) {
+			.nav-dropdown { position: relative; }
+			.nav-dropdown-menu {
+				position: absolute;
+				top: 100%;
+				left: 0;
+				background: var(--bg);
+				z-index: 100;
+				box-shadow: var(--shadow-lg, 0 4px 12px rgba(0,0,0,0.1));
+			}
+			.nav-dropdown-expanded .nav-dropdown-menu,
+			.nav-dropdown:focus-within .nav-dropdown-menu {
+				display: block;
+			}
+			.nav-dropdown-expanded .nav-dropdown-trigger::before,
+			.nav-dropdown:focus-within .nav-dropdown-trigger::before {
+				transform: rotate(90deg);
+			}
+			.nav-dropdown-menu li {
+				margin: 0;
+				width: 100%;
+			}
+			.nav-dropdown-menu a {
+				display: block;
+				padding: 0.4rem 1rem;
+				white-space: nowrap;
+				text-decoration: none;
+				color: var(--text);
+				transition: background 0.15s ease;
+			}
+			.nav-dropdown-menu a:hover,
+			.nav-dropdown-menu a:focus-visible {
+				background-color: var(--accent-bg);
+				color: var(--text);
+			}
+		}
+
 		@media (max-width: 1020px) {
 			site-header {
 				position: static;
@@ -196,7 +278,7 @@ const logoAlt = `${siteInfo.name} Home`;
 			.top-navbar-content > .nav-links {
 				position: fixed;
 				inset: 0 0 0 auto;
-				width: min(100%, 260px);
+				width: min(100%, 250px);
 				transform: translateX(100%);
 				transition: transform 200ms ease-out;
 				padding: 1rem 2rem 0;
@@ -233,31 +315,40 @@ const logoAlt = `${siteInfo.name} Home`;
 				color: var(--text);
 				padding: 0;
 				margin: 0;
-				justify-self: flex-end;
 			}
 
-			.mobile-nav-toggle {
-				width: 2rem;
-				height: 2rem;
-			}
-			.mobile-nav-toggle.nav-open {
-				visibility: hidden;
-			}
+			.mobile-nav-toggle { width: 2rem; height: 2rem; }
+			.mobile-nav-toggle.nav-open { visibility: hidden; }
 
 			.mobile-nav-close,
 			.mobile-nav-close:enabled:hover,
 			.mobile-nav-close:enabled:active {
 				font-size: 2.5rem;
 				margin-bottom: 1.5rem;
+				align-self: flex-end;
 			}
 
 			nav ul,
-			nav ol {
-				align-items: flex-end;
+			nav ol { align-items: flex-start; }
+
+			.nav-dropdown {
+				display: flex;
+				flex-direction: column;
 			}
-			.nav-cta-button,
-			.nav-cta-button:hover {
-				margin: 0;
+			.nav-dropdown-menu {
+				display: block;
+				gap: 0.25rem;
+				line-height: 1rem;
+				overflow: hidden;
+				height: 0;
+			}
+			.nav-dropdown-expanded .nav-dropdown-menu {
+				height: auto;
+			}
+			.nav-dropdown-menu li {
+				display: list-item;
+				text-align: left;
+				margin: 0 0 0.4rem 0.5rem;
 			}
 		}
 	</style>
@@ -327,15 +418,84 @@ const logoAlt = `${siteInfo.name} Home`;
 						}
 					});
 
-					logoLink.addEventListener("click", closeNav);
+					logoLink?.addEventListener("click", closeNav);
 					navClose.addEventListener("click", closeNav);
 					navBackdrop?.addEventListener("click", closeNav);
 
 					nav.addEventListener("click", (e) => {
-						if (e.target.closest("a")) {
-							closeNav();
+						const link = e.target.closest("a");
+						if (!link) return;
+						if (link.classList.contains("nav-dropdown-trigger") && window.innerWidth <= 1020) return;
+
+						// Close dropdown before navigation for Desktop only
+						if (window.innerWidth > 1020) {
+							const dropdown = link.closest(".nav-dropdown");
+							if (dropdown?.classList.contains("nav-dropdown-expanded")) {
+								link.blur();
+								dropdown.classList.remove("nav-dropdown-expanded");
+								const trigger = dropdown.querySelector("[data-dropdown-trigger]");
+								trigger?.setAttribute("aria-expanded", "false");
+							}
 						}
+
+						closeNav();
 					});
+
+					// Mobile dropdown toggle
+					const dropdownTrigger = this.querySelector(".nav-dropdown-trigger");
+					dropdownTrigger?.addEventListener("click", (e) => {
+						if (window.innerWidth > 1020) return;
+						e.preventDefault();
+						const parent = dropdownTrigger.closest(".nav-dropdown");
+						const isOpen = parent.classList.contains("nav-dropdown-expanded");
+						const menu = parent.querySelector(".nav-dropdown-menu");
+
+						if (menu._anim) menu._anim.cancel();
+
+						if (isOpen) {
+							menu._anim = menu.animate(
+								{ height: [`${menu.offsetHeight}px`, "0px"] },
+								{ duration: 150, easing: "ease-out" },
+							);
+							menu._anim.onfinish = () => {
+								parent.classList.remove("nav-dropdown-expanded");
+								menu.style.height = "";
+								menu._anim = null;
+							};
+						} else {
+							parent.classList.add("nav-dropdown-expanded");
+							menu.style.height = "0px";
+							menu._anim = menu.animate(
+								{ height: ["0px", `${menu.scrollHeight}px`] },
+								{ duration: 150, easing: "ease-out" },
+							);
+							menu._anim.onfinish = () => {
+								menu.style.height = "";
+								menu._anim = null;
+							};
+						}
+
+						const expanded = isOpen ? "false" : "true";
+						dropdownTrigger.setAttribute("aria-expanded", expanded);
+					});
+
+					// Desktop dropdown hover
+					if (window.innerWidth > 1020) {
+						const dd = this.querySelector(".nav-dropdown");
+						const ddTrigger = dd?.querySelector("[data-dropdown-trigger]");
+						if (dd) {
+							dd.addEventListener("mouseenter", () => {
+								if (window.innerWidth <= 1020) return;
+								dd.classList.add("nav-dropdown-expanded");
+								ddTrigger?.setAttribute("aria-expanded", "true");
+							});
+							dd.addEventListener("mouseleave", () => {
+								if (window.innerWidth <= 1020) return;
+								dd.classList.remove("nav-dropdown-expanded");
+								ddTrigger?.setAttribute("aria-expanded", "false");
+							});
+						}
+					}
 
 					document.addEventListener("click", (e) => {
 						if (nav.getAttribute("data-visible") !== "true") {
@@ -388,7 +548,13 @@ const logoAlt = `${siteInfo.name} Home`;
 					link.classList.remove("active");
 					link.removeAttribute("aria-current");
 
-					if (!linkHash && !link.classList.contains("nav-cta-button") && currentPath === linkPath) {
+					if (linkHash || link.classList.contains("nav-cta-button")) return;
+
+					const isExactMatch = currentPath === linkPath;
+					const isDropdownTrigger = link.hasAttribute("data-dropdown-trigger");
+					const isSectionMatch = isDropdownTrigger && currentPath.startsWith(linkPath);
+
+					if (isExactMatch || isSectionMatch) {
 						link.classList.add("active");
 						link.setAttribute("aria-current", "page");
 					}

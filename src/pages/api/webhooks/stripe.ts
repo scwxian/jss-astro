@@ -88,6 +88,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
 						const rawData = rawPayload as { livemode?: boolean };
 						event.mode = rawData.livemode ? "live" : "test";
 
+						const eventId = (rawPayload as { id?: string }).id;
+						if (eventId) {
+							const dedupKey = `wh_${eventId}`;
+							const alreadyProcessed = await env.IDEMP_CHKOUT_KV.get(dedupKey);
+							if (alreadyProcessed) {
+								logger.info(
+									{ component: "WEBHOOK-STRIPE" },
+									`Duplicate event ${eventId}, skipped`,
+								);
+								return;
+							}
+							await env.IDEMP_CHKOUT_KV.put(dedupKey, "1", { expirationTtl: 86400 });
+						}
+
 						switch (eventType) {
 							case "checkout.session.completed": {
 								if (d1Database && event.transactionId) {
@@ -131,6 +145,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
 										const dbPayload = buildPostPurchasePayload(eventType, event, updatedOrder);
 										await triggerPostPurchaseWorkflows(dbPayload);
 									}
+								} else {
+									logger.warn(
+										{ component: "WEBHOOK-STRIPE" },
+										`invoice.paid skipped: billingReason=${event.billingReason}, hasDb=${!!d1Database}, hasSubId=${!!event.providerSubscriptionId}`,
+									);
 								}
 								break;
 							}

@@ -10,10 +10,9 @@ import "@styles/others/decorative-floats.css";
 export interface Props {
 	title: string;
 	description: string;
-  hiddenH1?: string;
   moreInfo?: Array<{ q: string; a: string }>;
-	heading: string;
-	subheading?: string;
+	pageTitle: string;
+	pageSubtitle?: string;
 	currentCategory: string;
 	currentSubCategory?: string;
 	mobileCols?: number;
@@ -24,10 +23,9 @@ export interface Props {
 const {
 	title,
 	description,
-  hiddenH1,
   moreInfo,
-	heading,
-	subheading,
+	pageTitle,
+	pageSubtitle,
 	currentCategory,
 	currentSubCategory,
 	mobileCols = 2,
@@ -35,7 +33,7 @@ const {
 	schemaItem,
 } = Astro.props;
 
-const infoTitle = heading === "Shop All" ? "Shop Info" : `${heading} Info`;
+const infoTitle = pageTitle === "Shop All" ? "Shop Info" : `${pageTitle} Info`;
 ---
 
 <StandardLayout {title} {description} {schemaItem} transition:animate="none">
@@ -53,11 +51,10 @@ const infoTitle = heading === "Shop All" ? "Shop Info" : `${heading} Info`;
 
 		<div class="break-section-content">
 			<div class="shop-heading-wrapper">
-				{hiddenH1 && <h1 class="hidden-visually">{hiddenH1}</h1>}
-				<h2 transition:name="shop-heading" transition:animate="fade">
-					{heading}
-					{subheading && <span class="shop-subheading">{subheading}</span>}
-				</h2>
+				<h1 class="page-title" transition:name="shop-heading" transition:animate="fade">
+					<span class="title">{pageTitle}</span>
+					{pageSubtitle && <span class="shop-subheading">{pageSubtitle}</span>}
+				</h1>
 			</div>
 		</div>
 	</section>
@@ -113,6 +110,11 @@ const infoTitle = heading === "Shop All" ? "Shop Info" : `${heading} Info`;
 				const categoryNav = document.querySelector(".category-nav");
 				if (categoryNav) {
 					savedCategoryScrollX = categoryNav.scrollLeft;
+				}
+				// Show loading state on product grid
+				const grid = document.querySelector("[data-collection-grid]");
+				if (grid) {
+					grid.classList.add("is-loading");
 				}
 			} else {
 				preserveScroll = false;
@@ -172,7 +174,7 @@ const infoTitle = heading === "Shop All" ? "Shop Info" : `${heading} Info`;
 		@media (max-width: 768px) { top: 76%; }
 	}
 
-	.shop-intro h2 {
+	.shop-intro h1 {
 		font-weight: var(--body-font-weight);
 		font-size: var(--h2-fs);
 		position: relative;

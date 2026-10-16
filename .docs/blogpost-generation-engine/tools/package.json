@@ -1,0 +1,16 @@
+{
+  "name": "blogpost-generation-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Internal dev tooling for the blog post generation pipeline (Step 1 research). Not shipped, not imported by app code.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "selftest": "node selftest.mjs",
+    "run": "node run-post.mjs",
+    "help": "node run-post.mjs --help",
+    "entitycheck": "node entitycheck.mjs"
+  }
+}

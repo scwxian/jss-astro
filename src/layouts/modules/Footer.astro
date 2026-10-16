@@ -105,3 +105,16 @@ import { siteInfo } from "@shared/siteInfo.js";
 
 	@media (max-width: 1020px) { nav ul, nav ol { gap: 0.4rem; } }
 </style>
+<script>
+// Blur clicked footer link so Astro focus-restore can't scroll to footer
+document.addEventListener("click", (e) => {
+  const link = e.target instanceof Element ? e.target.closest("footer a[href]") : null;
+  link?.blur();
+});
+
+document.addEventListener("astro:before-swap", () => {
+  if (document.activeElement?.closest("footer")) document.activeElement.blur();
+});
+
+</script>
+

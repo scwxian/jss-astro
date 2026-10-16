@@ -1,0 +1,50 @@
+# =====================================================================
+# _redirects — Cloudflare Workers static asset routing
+# Uncomment and edit rules below. One rule per line, no trailing spaces.
+#
+# Syntax:   /from-path  /to-path  [status]
+# Status:   301/302/303/307/308 = redirect (default 302) · 200 = rewrite
+# Splats:   /*  →  :splat   (wildcard capture)
+# Params:   /blog/:slug  →  :slug   (named capture)
+# Order:    first match wins, so put specific rules above catch-alls.
+# Limits:   2000 chars/line · 2100 rules (Workers static assets)
+# =====================================================================
+
+
+# =====================================================================
+# 1. TRAILING SLASH / CANONICAL (one canonical shape per route)
+# =====================================================================
+# /old-path/ /new-path 301
+
+
+# =====================================================================
+# 2. PAGE RENAMES (permanent moves)
+# =====================================================================
+# /about /company 301
+# /contact-us /contact 301
+
+
+# =====================================================================
+# 3. SECTION MOVE (splat wildcard, keeps the sub-path)
+# =====================================================================
+# /old-blog/* /blog/:splat 301
+# /docs/* /guides/:splat 301
+
+
+# =====================================================================
+# 4. DYNAMIC PATH PLACEHOLDER (named capture)
+# =====================================================================
+# /products/:slug /shop/:slug 301
+
+
+# =====================================================================
+# 5. REWRITE / PROXY (status 200: serve other path, URL unchanged)
+# =====================================================================
+# /latest /releases/latest 200
+
+
+# =====================================================================
+# 6. FALLBACKS (order matters: most specific first)
+# =====================================================================
+# /* /404 404
+# /* /index.html 200

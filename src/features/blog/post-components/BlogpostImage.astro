@@ -1,0 +1,99 @@
+---
+import { Image } from "astro:assets";
+import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { DEFAULT_HERO_IMAGE } from "@blog/blog-schema.ts";
+
+export interface Props {
+	src?: string; // R2 filename or full URL; falls back to default hero
+	alt: string;
+	caption?: string; // string fallback; use <Fragment slot="caption"> for HTML
+	src2?: string;
+	alt2?: string;
+	caption2?: string; // string fallback; use <Fragment slot="caption2"> for HTML
+	loading?: "lazy" | "eager";
+	slug?: string; // R2 dir; auto-derived from page URL
+	class?: string; // extra classes on outer figure
+	maxHeight?: string; // CSS length; caps image height, width scales
+}
+
+const {
+  src,
+  alt,
+  caption,
+  src2,
+  alt2,
+  caption2,
+  loading = "lazy",
+  slug,
+  class: className,
+  maxHeight,
+} = Astro.props;
+
+const resolvedSlug = slug ?? Astro.url.pathname.match(/^\/blog\/([^/]+)\/?/)?.[1];
+
+const isRemote = (value: string) =>
+	value.startsWith("http://") || value.startsWith("https://");
+
+// No src = placeholder break; drop in default hero
+const resolvedSrc = src ?? DEFAULT_HERO_IMAGE;
+
+if (!alt) throw new Error("BlogpostImage: `alt` is required.");
+if (src2 && !alt2) throw new Error("BlogpostImage: `alt2` is required when `src2` is set.");
+if (!isRemote(resolvedSrc) && !resolvedSlug) throw new Error(`BlogpostImage: filename "${resolvedSrc}" needs a slug.`);
+if (src2 && !isRemote(src2) && !resolvedSlug) throw new Error(`BlogpostImage: filename "${src2}" needs a slug.`);
+
+const emCaption = (html?: string) => (html ? `<em>${html}</em>` : undefined);
+
+// Slot markup wins over prop; lets MDX author HTML without quote escaping
+const captionHtml = Astro.slots.has("caption") ? await Astro.slots.render("caption") : caption;
+const caption2Html = Astro.slots.has("caption2") ? await Astro.slots.render("caption2") : caption2;
+
+const first = {
+	url: getAssetUrl("blog", resolvedSlug ?? "", resolvedSrc),
+	alt,
+	caption: emCaption(captionHtml),
+};
+const second =
+	src2 && alt2
+		? { url: getAssetUrl("blog", resolvedSlug ?? "", src2), alt: alt2, caption: emCaption(caption2Html) }
+		: undefined;
+
+// width:auto keeps aspect ratio when max-height caps the render box
+const imgStyle = maxHeight ? `max-height:${maxHeight}; object-fit: cover; object-position: center;` : undefined;
+---
+
+{second ? (
+	<figure class={["blogpost-image", "blogpost-image-grid", className].filter(Boolean).join(" ")}>
+		<figure class="blogpost-image-cell">
+			<Image src={first.url} alt={first.alt} inferSize loading={loading} style={imgStyle} />
+			{first.caption && <figcaption set:html={first.caption} />}
+		</figure>
+		<figure class="blogpost-image-cell">
+			<Image src={second.url} alt={second.alt} inferSize loading={loading} style={imgStyle} />
+			{second.caption && <figcaption set:html={second.caption} />}
+		</figure>
+	</figure>
+) : (
+	<figure class={["blogpost-image", className].filter(Boolean).join(" ")}>
+		<Image src={first.url} alt={first.alt} inferSize loading={loading} style={imgStyle} />
+		{first.caption && <figcaption set:html={first.caption} />}
+	</figure>
+)}
+
+<style>
+.blogpost-image:not(.blogpost-image-grid) {
+  max-width: 80%;
+  @media (max-width: 768px) { max-width: 100%; }
+}
+.blogpost-image.blogpost-image-wide { max-width: 100%; }
+.blogpost-image-grid {
+  display: flex;
+  @media (max-width: 768px) { flex-direction: column; gap: 2rem; }
+
+}
+.blogpost-image-cell {
+  width: 48%;
+  margin: 0 auto;
+  @media (max-width: 768px) { width: 100%; }
+}
+</style>

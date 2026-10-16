@@ -1,18 +1,12 @@
 import type { CollectionEntry } from "astro:content";
 import { getAssetUrl } from "@scripts/asset-handling/r2-linking.js";
+import { stripHtml, formatCategoryLabel } from "@scripts/utils.js";
 import { siteInfo } from "@shared/siteInfo.js";
 
 const SCHEMA_BASE = "https://schema.org";
 
 function toDecimal(cents: number): string {
 	return (cents / 100).toFixed(2);
-}
-
-function formatCategoryLabel(slug: string): string {
-	return slug
-		.split("-")
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-		.join(" ");
 }
 
 function resolveAvailability(
@@ -78,14 +72,13 @@ export function buildProductSchema(
 	return {
 		"@type": "Product",
 		name: data.name,
-		description: data.shortDescription,
+		description: stripHtml(data.shortDescription),
 		image: images,
 		sku: data.masterSku,
 		url: pageUrl,
-		brand: {
-			"@type": "Brand",
-			name: siteInfo.businessName,
-		},
+		brand: data.brand
+			? { "@type": "Brand", name: data.brand }
+			: { "@id": `${siteInfo.url}#organization` },
 		category: subCategoryLabel
 			? `${categoryLabel} > ${subCategoryLabel}`
 			: categoryLabel,
@@ -98,10 +91,7 @@ export function buildProductSchema(
 			availability: availabilityUrl,
 			url: pageUrl,
 			itemCondition: "https://schema.org/NewCondition",
-			seller: {
-				"@type": "Organization",
-				name: siteInfo.businessName,
-			},
+			seller: { "@id": `${siteInfo.url}#organization` },
       shippingDetails: {
 				"@type": "OfferShippingDetails",
 				shippingDestination: shippingDestinationsMap

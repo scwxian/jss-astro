@@ -36,13 +36,11 @@ const enrichedFaqData = faqData.map((category, index) => ({
 ---
 
 <StandardLayout {title} {description} schemaItem={faqSchema}>
-	<h1 class="hidden-visually">{title}</h1>
-
 	<section class="faq-section center-layout">
 		<div class="section-subtitle">
 			Frequently asked questions
 		</div>
-		<h2 class="section-title">FAQ</h2>
+		<h1 class="section-title">FAQ</h1>
 
 		<div class="faq-tabs-wrapper">
 			<button id="scroll-left" class="carousel-arrow" aria-label="Scroll left">

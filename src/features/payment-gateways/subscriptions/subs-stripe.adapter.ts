@@ -368,6 +368,8 @@ export class StripeSubscriptionAdapter implements SubscriptionGateway {
 		const objectId = obj.id || "";
 		if (obj.subscription) {
 			result.providerSubscriptionId = typeof obj.subscription === "string" ? obj.subscription : obj.subscription.id;
+		} else if (obj.parent?.subscription_details?.subscription) {
+			result.providerSubscriptionId = obj.parent.subscription_details.subscription;
 		} else if (objectId.startsWith("sub_")) {
 			result.providerSubscriptionId = objectId;
 		}
@@ -379,6 +381,7 @@ export class StripeSubscriptionAdapter implements SubscriptionGateway {
 		}
 		
 		if (obj.status) result.subscriptionStatus = obj.status;
+		if (obj.billing_reason) result.billingReason = obj.billing_reason;
 		if (obj.current_period_end) result.nextBillingDate = obj.current_period_end;
 		if (obj.canceled_at) result.canceledAt = obj.canceled_at;
 		

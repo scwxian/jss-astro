@@ -1,0 +1,107 @@
+---
+export interface Props {
+  youtubeId?: string;
+  playlistId?: string;
+  title?: string;
+}
+
+const { youtubeId, playlistId, title = "Now Playing" } = Astro.props;
+---
+
+<div
+  class="youtube-trigger"
+  data-youtube-id={youtubeId}
+  data-playlist-id={playlistId}
+  data-modal-title={title}
+  style="cursor:pointer"
+>
+  <slot />
+</div>
+
+<style is:global>
+  .youtube-modal {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    margin: 0;
+    top: auto;
+    right: auto;
+    width: 100%;
+    max-width: 35vw;
+    background-color: var(--accent-bg);
+    border: none;
+    border-radius: var(--standard-border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+  @media (max-width: 768px) {
+    .youtube-modal { max-width: 60vw; max-height: 30vh; }
+  }
+  .youtube-modal.visible { opacity: 1; transform: translateY(0); }
+  .youtube-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: var(--border-width) solid var(--border);
+    background-color: var(--bg);
+  }
+  @media (max-width: 768px) {
+    .youtube-modal-header { padding: 0.2rem 0.5rem; }
+  }
+  .youtube-modal-title {
+    font-weight: var(--bold-font-weight);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    max-width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: clip;
+    color: var(--text);
+    margin: 0;
+  }
+  .youtube-modal-close {
+    box-shadow: none;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    transition: color 0.2s ease;
+  }
+  .youtube-modal-close:enabled:active,
+  .youtube-modal-close:enabled:hover {
+    color: var(--accent);
+    background: none;
+    transform: none;
+    box-shadow: none;
+  }
+  .youtube-modal-content {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .youtube-modal-content iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+
+<script>
+import "./youtube-modal.js"
+</script>

@@ -36,7 +36,12 @@ document.addEventListener("astro:page-load", () => {
 
 			if (newGrid) {
 				const newItems = Array.from(newGrid.children);
-				newItems.forEach((item) => grid.appendChild(item));
+				newItems.forEach((item) => {
+					grid.appendChild(item);
+					if (window.globalAnimationObserver && item.classList.contains("animate-element")) {
+						window.globalAnimationObserver.observe(item);
+					}
+				});
 			}
 
 			if (newTrigger) {

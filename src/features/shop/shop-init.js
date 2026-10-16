@@ -7,8 +7,10 @@
 
 import "@components/Carousel/base-carousel.js";
 import "@components/DatePicker/date-picker.js";
-import "./AdditionalInfo/additional-info.js";
+import "@components/Accordion/accordion.js";
 import "./VariantSelector/variant-selector.js";
 import "./AddToCartForm/add-to-cart-form.js";
 import "./PurchaseSubscriptionForm/purchase-subscription.js";
 import "@components/BentoCarousel/bento-carousel.js";
+import "@components/YouTubeModal/youtube-modal.js";
+import "@live-stock/live-stock.js";

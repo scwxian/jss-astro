@@ -143,90 +143,6 @@ export function initSelectPanes(
 	});
 }
 
-// Global YouTube Modal Handler
-// Define the escape handler globally so it can be reliably added/removed
-function globalYouTubeEscapeHandler(e) {
-	if (e.key === "Escape") {
-		closeGlobalYouTubeModal();
-	}
-}
-
-function closeGlobalYouTubeModal() {
-	const modal = document.getElementById("global-youtube-modal");
-	if (!modal) return;
-	if (modal.matches(":popover-open")) {
-		modal.hidePopover();
-	}
-	modal.classList.remove("visible");
-	const iframeEl = modal.querySelector(".yt-modal-iframe");
-	if (iframeEl) iframeEl.src = "";
-	document.removeEventListener("keydown", globalYouTubeEscapeHandler);
-}
-
-export function initYouTubeModals(
-	scope = document,
-	triggerSelector = ".youtube-trigger",
-) {
-	const triggers = scope.querySelectorAll(triggerSelector);
-	triggers.forEach((trigger) => {
-		if (trigger.dataset.ytInitialized) return;
-		trigger.dataset.ytInitialized = "true";
-		trigger.addEventListener("click", () => {
-			const videoId = trigger.dataset.youtubeId;
-			if (!videoId) return;
-			const rawTitle = trigger.dataset.modalTitle || "Now Playing";
-			let modal = document.getElementById("global-youtube-modal");
-			if (modal && modal.matches(":popover-open")) {
-				closeGlobalYouTubeModal();
-				return;
-			}
-
-			if (!modal) {
-				modal = document.createElement("div");
-				modal.id = "global-youtube-modal";
-				modal.className = "youtube-modal";
-				modal.popover = "manual";
-				modal.innerHTML = `
-					<div class="youtube-modal-header">
-						<span class="youtube-modal-title yt-modal-title"></span>
-						<button class="youtube-modal-close yt-modal-close" aria-label="Close video">
-							<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-								<path d="M5 5L15 15M5 15L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-							</svg>
-						</button>
-					</div>
-					<div class="youtube-modal-content">
-						<iframe 
-							class="yt-modal-iframe" 
-							src="" 
-							frameborder="0" 
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-							allowfullscreen
-						></iframe>
-					</div>
-				`;
-				document.body.appendChild(modal);
-				const closeBtn = modal.querySelector(".yt-modal-close");
-				closeBtn.addEventListener("click", closeGlobalYouTubeModal);
-			}
-
-			const titleEl = modal.querySelector(".yt-modal-title");
-			const iframeEl = modal.querySelector(".yt-modal-iframe");
-			titleEl.textContent = rawTitle;
-			iframeEl.src = `https://www.youtube.com/embed/${videoId}?controls=0&rel=0&modestbranding=1`;
-			if (!modal.matches(":popover-open")) {
-				modal.showPopover();
-			}
-			requestAnimationFrame(() => {
-				modal.classList.add("visible");
-			});
-
-			document.removeEventListener("keydown", globalYouTubeEscapeHandler);
-			document.addEventListener("keydown", globalYouTubeEscapeHandler);
-		});
-	});
-}
-
 import { siteInfo } from "@shared/siteInfo.js";
 
 // Common currency-to-locale mappings for deterministic formatting
@@ -247,5 +163,60 @@ export function formatPrice(cents, currency = siteInfo.defaultCurrency) {
 		style: "currency",
 		currency,
 	}).format(cents / 100);
+}
+
+// Format date as medium locale string
+export function formatDate(date) {
+	return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(date);
+}
+
+// Turn kebab slug into title label, e.g. "coffee-basics" -> "Coffee Basics"
+export function formatCategoryLabel(slug) {
+	if (!slug) return "";
+	return slug
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+}
+
+// Estimate reading time in minutes from raw content
+export function computeReadTime(content, wpm = 220) {
+	if (!content) return 1;
+	const stripped = content
+		.replace(/```[\s\S]*?```/g, " ")
+		.replace(/`[^`]*`/g, " ")
+		.replace(/\{\/\*[\s\S]*?\*\/\}/g, " ")
+		.replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+		.replace(/\[([^\]]*)\]\([^)]*\)/g, " $1 ")
+		.replace(/<[^>]*>/g, " ")
+		.replace(/https?:\/\/\S+/g, " ")
+		.replace(/^\s*(\d+\.|[-+])\s+/gm, " ")
+		.replace(/[#*_>~|{}[\]()]/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
+	const words = stripped.split(" ").filter((t) => /[A-Za-z0-9]/.test(t)).length;
+	return Math.max(1, Math.ceil(words / wpm));
+}
+
+// Strip HTML tags + decode entities + fix punctuation spacing
+const HTML_ENTITIES = {
+	"&amp;": "&",
+	"&lt;": "<",
+	"&gt;": ">",
+	"&quot;": '"',
+	"&#39;": "'",
+	"&nbsp;": " ",
+};
+
+export function stripHtml(html) {
+	if (!html) return "";
+	let text = html.replace(
+		/&(amp|lt|gt|quot|#39|nbsp);/g,
+		(_, e) => HTML_ENTITIES["&" + e + ";"] ?? _,
+	);
+	text = text.replace(/<[^>]*>/g, " ");
+	text = text.replace(/\s+/g, " ");
+	text = text.replace(/\s+([?.!,:;])/g, "$1");
+	return text.trim();
 }
 

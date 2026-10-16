@@ -178,6 +178,42 @@ function resolveNonPriceVariants(
 			errors.push(`Please select a ${group.name} for ${product.name}.`);
 			continue;
 		}
+
+		// Multi-select allows several picks at once
+		if (group.multiSelect) {
+			const required = group.pickCount;
+			const max = required ?? group.choices.length;
+			if (
+				groupSelections.length > max ||
+				(required !== undefined && groupSelections.length < required)
+			) {
+				errors.push(
+					`Please select ${max} ${group.name} for ${product.name}.`,
+				);
+				continue;
+			}
+			if (
+				new Set(groupSelections.map((s) => s.skuSuffix)).size !==
+				groupSelections.length
+			) {
+				errors.push(
+					`Please select ${max} different ${group.name} for ${product.name}.`,
+				);
+				continue;
+			}
+			for (const selection of groupSelections) {
+				const choice = group.choices.find(
+					(c) => c.skuSuffix === selection.skuSuffix,
+				);
+				if (!choice) {
+					errors.push(`Invalid ${group.name} selection for ${product.name}.`);
+					break;
+				}
+				resolved.push({ groupName: group.name, choice });
+			}
+			continue;
+		}
+
 		if (groupSelections.length > 1) {
 			errors.push(
 				`Only one ${group.name} can be selected for ${product.name}.`,

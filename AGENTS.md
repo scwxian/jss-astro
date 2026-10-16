@@ -40,6 +40,7 @@ Feature-sliced: `/src/features/{domain}/` owns models, logic, scripts, stores.
 
 - **Astro Actions**: Server-side functions via `defineAction` from `astro:actions`. Central registry: `src/actions/index.ts`. Zod input validation. Called from client via `actions.xxx()`.
 - **Content Collections**: `content.config.ts` defines schemas via `defineCollection` + Zod. `src/content/products/` = MDX product catalog. `src/content/blog/` = MDX blog posts. Never mutate MDX programmatically.
+- **MDX Auto-Import**: `src/features/shared/mdx-auto-import.ts` injects component imports into MDX at build. Scoped config `mdxAutoImport({ scopes: [{ match: "/blog/", imports: [...] }] })` in `astro.config.mjs` — MUST register BEFORE `mdx()`. NEVER write `import` lines inside MDX. New component = add path to matching scope. Rules: `.docs/standards/mdx-content-rules.md`.
 - **Env Vars (3 tiers)**:
 
   | Tier | Location | Purpose |
@@ -83,10 +84,14 @@ Feature-sliced: `/src/features/{domain}/` owns models, logic, scripts, stores.
 
 - Check `tsconfig.json` paths for import aliases. Prefer shortest (`@shared` not `@features/shared`).
 - Follow existing file + variable naming in codebase. Match conventions you find.
-- Config files: `astro.config.mjs`, `wrangler.jsonc`, `vitest.config.ts`.
+- Config files: `astro.config.mjs`, `wrangler.jsonc`, `vitest.config.ts`, `eslint.config.js`.
 - Cloudflare bindings (KV, D1, R2, env vars): read `wrangler.jsonc`.
 - Env vars: defined in `astro.config.mjs` `envField`. Type-safe via `astro:env/server`.
 - Path structure: list `/src/` before creating new files. Follow feature-sliced layout.
 - Content schemas: `content.config.ts` defines product/blog Zod schemas. Type exports at bottom of file.
 - Fonts + images: check `astro.config.mjs` for `fonts` and `image.remotePatterns` config.
 - D1 types: run `npm run generate-types` after DB schema changes to update `worker-configuration.d.ts`.
+- MDX component rules: `.docs/standards/mdx-content-rules.md`.
+- Blog/editorial copy: read `.docs/standards/blog-copy-conventions.md` (+ `brand-voice.md` + `blogpost-voice-calibration-log.md`) before writing or editing blog MDX. Pipeline (research → carve → draft → review): `.docs/blogpost-generation-engine/`.
+- Product page SEO: before writing/editing product `seo:` (title/description), body copy, or `additionalInfo` FAQ, run `.docs/product-seo-tool/` (DataForSEO) for live keyword volumes + Google SERP (PAA/related/SERP features) + autocomplete. Read its README. Needs `DF_LOCATION_CODE`/`DF_LOCATION_NAME` in `.env`. Products only — for blog/editorial use `.docs/blogpost-generation-engine/`.
+
